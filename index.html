@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>MizaxEngine Animator</title>
+
+<style>
+*{box-sizing:border-box}
+html,body{
+ margin:0;width:100%;height:100%;overflow:hidden;
+ background:#090909;color:#eee;font-family:Arial,sans-serif
+}
+#app{width:100%;height:100%;display:flex}
+#left,#right{
+ width:190px;flex-shrink:0;background:#111;
+ border-color:#292929;border-style:solid;z-index:5
+}
+#left{border-width:0 1px 0 0}
+#right{border-width:0 0 0 1px}
+#center{flex:1;min-width:0;position:relative;background:#181818}
+#viewport{position:absolute;inset:0}
+canvas{display:block}
+
+.title{
+ padding:12px;font-weight:bold;color:#ff3030;
+ border-bottom:1px solid #292929
+}
+.section{
+ padding:9px;border-bottom:1px solid #292929
+}
+.section b{
+ display:block;font-size:11px;color:#aaa;margin-bottom:7px
+}
+button{
+ width:100%;padding:8px;margin-bottom:5px;
+ border:1px solid #333;border-radius:4px;
+ background:#1c1c1c;color:#eee
+}
+button:active{background:#441010}
+.bone{
+ padding:7px;margin-bottom:4px;
+ border:1px solid #292929;border-radius:4px;
+ background:#181818;font-size:12px
+}
+.bone.active{
+ background:#401010;border-color:#ff3030
+}
+input{
+ width:100%;padding:6px;margin-bottom:5px;
+ background:#191919;color:#fff;
+ border:1px solid #333;border-radius:4px
+}
+#status{
+ position:absolute;top:8px;left:8px;z-index:10;
+ padding:6px 9px;background:#111d;
+ border:1px solid #333;border-radius:4px;font-size:11px
+}
+#timeline{
+ position:absolute;bottom:0;left:0;right:0;
+ height:145px;background:#0d0d0d;
+ border-top:1px solid #333;z-index:4
+}
+#top{
+ height:38px;display:flex;align-items:center;
+ gap:5px;padding:5px;border-bottom:1px solid #292929
+}
+#top button{width:auto;margin:0;padding:6px 10px}
+#frameText{font-size:11px;color:#aaa}
+#frames{
+ display:flex;gap:4px;padding:10px;
+ overflow-x:auto
+}
+.frame{
+ min-width:36px;height:34px;
+ display:flex;align-items:center;justify-content:center;
+ background:#181818;border:1px solid #333;
+ border-radius:3px;font-size:11px
+}
+.frame.active{
+ background:#8d1717;border-color:#ff3030
+}
+.tool{
+ display:flex;gap:5px
+}
+.tool button{flex:1}
+#mode{
+ font-size:11px;color:#aaa;margin-top:3px
+}
+
+@media(max-width:700px){
+ #left,#right{width:145px}
+ .title{font-size:13px}
+ .bone{font-size:11px}
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+<!-- LEFT -->
+<div id="left">
+
+<div class="title">MizaxEngine</div>
+
+<div class="section">
+<b>R6 PARTS</b>
+
+<div class="bone" data-name="Head">Head</div>
+<div class="bone" data-name="Torso">Torso</div>
+<div class="bone" data-name="Left Arm">Left Arm</div>
+<div class="bone" data-name="Right Arm">Right Arm</div>
+<div class="bone" data-name="Left Leg">Left Leg</div>
+<div class="bone" data-name="Right Leg">Right Leg</div>
+</div>
+
+<div class="section">
+<b>TOOLS</b>
+
+<div class="tool">
+<button id="moveBtn">MOVE</button>
+<button id="rotBtn">ROTATE</button>
+</div>
+
+<div id="mode">Mode: Move</div>
+
+<button id="keyBtn">◆ INSERT KEYFRAME</button>
+</div>
+
+</div>
+
+
+<!-- CENTER -->
+<div id="center">
+
+<div id="viewport"></div>
+
+<div id="status">Loading dummy.fbx...</div>
+
+<div id="timeline">
+
+<div id="top">
+
+<button id="play">▶</button>
+<button id="stop">■</button>
+<button id="prev">◀</button>
+<button id="next">▶</button>
+
+<span id="frameText">Frame: 0</span>
+
+</div>
+
+<div id="frames"></div>
+
+</div>
+
+</div>
+
+
+<!-- RIGHT -->
+<div id="right">
+
+<div class="title">Properties</div>
+
+<div class="section">
+
+<b>POSITION</b>
+
+<input id="px" type="number" value="0">
+<input id="py" type="number" value="0">
+<input id="pz" type="number" value="0">
+
+</div>
+
+<div class="section">
+
+<b>ROTATION</b>
+
+<input id="rx" type="number" value="0">
+<input id="ry" type="number" value="0">
+<input id="rz" type="number" value="0">
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- THREE -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/fflate@0.7.4/umd/index.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
+
+
+<script>
+
+let scene;
+let camera;
+let renderer;
+let controls;
+
+let model=null;
+let selected=null;
+
+let currentFrame=0;
+let mode="move";
+let playing=false;
+
+const keyframes={};
+
+
+/* =========================
+ INIT
+========================= */
+
+init();
+loadFBX();
+
+
+function init(){
+
+ scene=new THREE.Scene();
+ scene.background=new THREE.Color(0x181818);
+
+ camera=new THREE.PerspectiveCamera(
+  45,
+  innerWidth/innerHeight,
+  .1,
+  10000
+ );
+
+ camera.position.set(5,4,7);
+
+ renderer=new THREE.WebGLRenderer({
+  antialias:true
+ });
+
+ renderer.setPixelRatio(
+  Math.min(devicePixelRatio,2)
+ );
+
+ renderer.setSize(innerWidth,innerHeight);
+
+ document
+  .getElementById("viewport")
+  .appendChild(renderer.domElement);
+
+
+ controls=new THREE.OrbitControls(
+  camera,
+  renderer.domElement
+ );
+
+ controls.target.set(0,2,0);
+ controls.update();
+
+
+ scene.add(
+  new THREE.AmbientLight(
+   0xffffff,.7
+  )
+ );
+
+
+ const light=
+  new THREE.DirectionalLight(
+   0xffffff,1.2
+  );
+
+ light.position.set(5,10,5);
+ scene.add(light);
+
+
+ scene.add(
+  new THREE.GridHelper(
+   20,20,0x555555,0x292929
+  )
+ );
+
+
+ addFrames();
+
+ window.addEventListener(
+  "resize",
+  resize
+ );
+
+ animate();
+}
+
+
+/* =========================
+ RESIZE
+========================= */
+
+function resize(){
+
+ camera.aspect=innerWidth/innerHeight;
+ camera.updateProjectionMatrix();
+
+ renderer.setSize(
+  innerWidth,
+  innerHeight
+ );
+}
+
+
+/* =========================
+ LOAD FBX
+========================= */
+
+function loadFBX(){
+
+ const status=
+  document.getElementById("status");
+
+ status.textContent=
+  "Loading dummy.fbx...";
+
+
+ const loader=new THREE.FBXLoader();
+
+ fetch("./dummy.fbx")
+
+ .then(r=>{
+
+  if(!r.ok)
+   throw new Error("HTTP "+r.status);
+
+  return r.arrayBuffer();
+
+ })
+
+ .then(buffer=>{
+
+  return loader.parse(
+   buffer,
+   ""
+  );
+
+ })
+
+ .then(object=>{
+
+  model=object;
+
+  model.scale.setScalar(.01);
+
+  scene.add(model);
+
+  centerModel(model);
+
+  status.textContent=
+   "R6 Animator Ready";
+
+ })
+
+ .catch(err=>{
+
+  console.error(err);
+
+  status.textContent=
+   "FBX Error: "+err.message;
+
+ });
+}
+
+
+/* =========================
+ CENTER
+========================= */
+
+function centerModel(object){
+
+ const box=
+  new THREE.Box3()
+  .setFromObject(object);
+
+ const size=
+  new THREE.Vector3();
+
+ const center=
+  new THREE.Vector3();
+
+ box.getSize(size);
+ box.getCenter(center);
+
+ object.position.x-=center.x;
+ object.position.z-=center.z;
+ object.position.y-=box.min.y;
+
+ const h=Math.max(size.y,1);
+
+ controls.target.set(
+  0,
+  h/2,
+  0
+ );
+
+ camera.position.set(
+  h*1.5,
+  h*1.1,
+  h*1.5
+ );
+
+ controls.update();
+}
+
+
+/* =========================
+ FIND PART
+========================= */
+
+function findPart(name){
+
+ if(!model)return null;
+
+ let result=null;
+
+ const clean=x=>
+  x.toLowerCase()
+   .replace(/[^a-z0-9]/g,"");
+
+ const target=clean(name);
+
+ model.traverse(obj=>{
+
+  if(result)return;
+
+  const n=clean(obj.name);
+
+  if(n===target)
+   result=obj;
+
+ });
+
+ return result;
+}
+
+
+/* =========================
+ SELECT PART
+========================= */
+
+document
+ .querySelectorAll(".bone")
+ .forEach(el=>{
+
+  el.onclick=()=>{
+
+   document
+    .querySelectorAll(".bone")
+    .forEach(x=>
+     x.classList.remove("active")
+    );
+
+   el.classList.add("active");
+
+   selected=
+    findPart(
+     el.dataset.name
+    );
+
+   if(selected)
+    readProperties();
+  };
+ });
+
+
+/* =========================
+ READ PROPERTIES
+========================= */
+
+function readProperties(){
+
+ document.getElementById("px").value=
+  selected.position.x.toFixed(3);
+
+ document.getElementById("py").value=
+  selected.position.y.toFixed(3);
+
+ document.getElementById("pz").value=
+  selected.position.z.toFixed(3);
+
+
+ document.getElementById("rx").value=
+  THREE.MathUtils.radToDeg(
+   selected.rotation.x
+  ).toFixed(1);
+
+ document.getElementById("ry").value=
+  THREE.MathUtils.radToDeg(
+   selected.rotation.y
+  ).toFixed(1);
+
+ document.getElementById("rz").value=
+  THREE.MathUtils.radToDeg(
+   selected.rotation.z
+  ).toFixed(1);
+}
+
+
+/* =========================
+ UPDATE POSITION
+========================= */
+
+function updatePosition(){
+
+ if(!selected)return;
+
+ selected.position.set(
+
+  parseFloat(
+   document.getElementById("px").value
+  )||0,
+
+  parseFloat(
+   document.getElementById("py").value
+  )||0,
+
+  parseFloat(
+   document.getElementById("pz").value
+  )||0
+
+ );
+}
+
+
+/* =========================
+ UPDATE ROTATION
+========================= */
+
+function updateRotation(){
+
+ if(!selected)return;
+
+ selected.rotation.set(
+
+  THREE.MathUtils.degToRad(
+   parseFloat(
+    document.getElementById("rx").value
+   )||0
+  ),
+
+  THREE.MathUtils.degToRad(
+   parseFloat(
+    document.getElementById("ry").value
+   )||0
+  ),
+
+  THREE.MathUtils.degToRad(
+   parseFloat(
+    document.getElementById("rz").value
+   )||0
+  )
+
+ );
+}
+
+
+["px","py","pz"].forEach(id=>{
+
+ document.getElementById(id)
+ .addEventListener(
+  "input",
+  updatePosition
+ );
+
+});
+
+
+["rx","ry","rz"].forEach(id=>{
+
+ document.getElementById(id)
+ .addEventListener(
+  "input",
+  updateRotation
+ );
+
+});
+
+
+/* =========================
+ TOOLS
+========================= */
+
+document.getElementById("moveBtn").onclick=()=>{
+
+ mode="move";
+
+ document.getElementById("mode")
+ .textContent="Mode: Move";
+};
+
+
+document.getElementById("rotBtn").onclick=()=>{
+
+ mode="rotate";
+
+ document.getElementById("mode")
+ .textContent="Mode: Rotate";
+};
+
+
+/* =========================
+ INSERT KEYFRAME
+========================= */
+
+document.getElementById("keyBtn").onclick=()=>{
+
+ if(!selected)return;
+
+ if(!keyframes[currentFrame])
+  keyframes[currentFrame]={};
+
+
+ keyframes[currentFrame][
+  selected.name
+ ]={
+  position:[
+   selected.position.x,
+   selected.position.y,
+   selected.position.z
+  ],
+
+  rotation:[
+   selected.rotation.x,
+   selected.rotation.y,
+   selected.rotation.z
+  ]
+ };
+
+
+ updateFrameVisual();
+
+ document.getElementById("status")
+ .textContent=
+  "Keyframe saved: "+
+  currentFrame;
+};
+
+
+/* =========================
+ FRAME UI
+========================= */
+
+function addFrames(){
+
+ const container=
+  document.getElementById("frames");
+
+ for(let i=0;i<=60;i++){
+
+  const f=
+   document.createElement("div");
+
+  f.className="frame";
+  f.textContent=i;
+
+  f.onclick=()=>{
+
+   currentFrame=i;
+
+   applyFrame(i);
+
+   updateFrameVisual();
+
+  };
+
+  container.appendChild(f);
+ }
+}
+
+
+function updateFrameVisual(){
+
+ document
+  .querySelectorAll(".frame")
+  .forEach((f,i)=>{
+
+   f.classList.toggle(
+    "active",
+    i===currentFrame
+   );
+
+   if(keyframes[i])
+    f.style.borderColor=
+     "#ff3030";
+   else
+    f.style.borderColor=
+     "#333";
+  });
+
+ document.getElementById(
+  "frameText"
+ ).textContent=
+  "Frame: "+currentFrame;
+}
+
+
+/* =========================
+ APPLY FRAME
+========================= */
+
+function applyFrame(frame){
+
+ if(!model)return;
+
+ const data=
+  keyframes[frame];
+
+ if(!data){
+  updateFrameVisual();
+  return;
+ }
+
+
+ Object.keys(data)
+ .forEach(name=>{
+
+  const obj=
+   findPart(name);
+
+  if(!obj)return;
+
+  const d=data[name];
+
+  obj.position.set(
+   d.position[0],
+   d.position[1],
+   d.position[2]
+  );
+
+  obj.rotation.set(
+   d.rotation[0],
+   d.rotation[1],
+   d.rotation[2]
+  );
+
+ });
+
+ readProperties();
+}
+
+
+/* =========================
+ PLAY
+========================= */
+
+let playTimer=null;
+
+document.getElementById("play").onclick=()=>{
+
+ if(playing)return;
+
+ playing=true;
+
+ playTimer=setInterval(()=>{
+
+  currentFrame++;
+
+  if(currentFrame>60)
+   currentFrame=0;
+
+  applyFrame(currentFrame);
+
+  updateFrameVisual();
+
+ },100);
+};
+
+
+/* =========================
+ STOP
+========================= */
+
+document.getElementById("stop").onclick=()=>{
+
+ playing=false;
+
+ clearInterval(playTimer);
+
+};
+
+
+/* =========================
+ PREV / NEXT
+========================= */
+
+document.getElementById("prev").onclick=()=>{
+
+ currentFrame=
+  Math.max(
+   0,
+   currentFrame-1
+  );
+
+ applyFrame(currentFrame);
+ updateFrameVisual();
+};
+
+
+document.getElementById("next").onclick=()=>{
+
+ currentFrame=
+  Math.min(
+   60,
+   currentFrame+1
+  );
+
+ applyFrame(currentFrame);
+ updateFrameVisual();
+};
+
+
+/* =========================
+ RENDER
+========================= */
+
+function animate(){
+
+ requestAnimationFrame(
+  animate
+ );
+
+ renderer.render(
+  scene,
+  camera
+ );
+}
+
+</script>
+
+</body>
+  </html>
