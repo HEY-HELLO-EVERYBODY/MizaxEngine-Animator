@@ -2,684 +2,2417 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport"
+content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 
-<title>MizaxEngine Animator V2</title>
+<title>MizaxEngine Animator V5</title>
 
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111;color:#eee;font-family:Arial,sans-serif}
-#app{width:100%;height:100%;position:relative}
 
-#top{
- position:absolute;top:0;left:0;right:0;height:48px;
- background:#191919;border-bottom:1px solid #333;
- display:flex;align-items:center;padding:0 10px;z-index:10
-}
-#title{font-weight:bold;color:#ff3b3b;font-size:15px}
-#status{margin-left:auto;font-size:11px;color:#aaa}
-
-#view{
- position:absolute;top:48px;left:0;right:0;bottom:170px;
- overflow:hidden
-}
-
-#tools{
- position:absolute;left:8px;top:8px;z-index:5;
- display:flex;gap:5px
-}
-button{
- border:1px solid #444;background:#202020;color:#ddd;
- border-radius:6px;padding:9px 12px;font-size:12px;
- touch-action:none
-}
-button.active{background:#d52b2b;color:white;border-color:#ff5555}
-
-#parts{
- position:absolute;right:8px;top:8px;z-index:5;
- display:flex;flex-direction:column;gap:4px
-}
-.part{
- padding:7px 9px;background:#1d1d1d;border:1px solid #383838;
- border-radius:5px;font-size:10px;color:#bbb
-}
-.part.active{background:#9d2424;color:#fff}
-
-#bottom{
- position:absolute;left:0;right:0;bottom:0;height:170px;
- background:#181818;border-top:1px solid #333;
- z-index:10;padding:7px
-}
-
-#properties{
- display:flex;gap:5px;height:54px
-}
-.prop{
- flex:1;background:#101010;border:1px solid #333;
- border-radius:5px;padding:5px
-}
-.prop label{font-size:9px;color:#777;display:block}
-.prop input{
- width:100%;background:none;border:0;outline:0;
- color:white;font-size:12px
-}
-
-#timeline{
- height:58px;margin-top:5px;
- overflow-x:auto;overflow-y:hidden;
- display:flex;align-items:center;gap:2px;
- border-top:1px solid #292929;border-bottom:1px solid #292929;
- touch-action:pan-x
-}
-.frame{
- min-width:34px;height:34px;
- background:#242424;border:1px solid #3a3a3a;
- border-radius:4px;color:#aaa;font-size:10px
-}
-.frame.current{background:#d32d2d;color:#fff;border-color:#ff5555}
-.frame.key{border-color:#ff8a8a}
-
-#transport{
- display:flex;gap:5px;margin-top:5px
-}
-#transport button{flex:1}
-
-canvas{
- display:block;
+html,body{
+ margin:0;
  width:100%;
  height:100%;
- touch-action:none
+ overflow:hidden;
+ background:#0e0e0e;
+ color:#ddd;
+ font-family:Arial,sans-serif;
+}
+
+#app{
+ position:relative;
+ width:100%;
+ height:100%;
+}
+
+/* ================= TOP ================= */
+
+#top{
+ position:absolute;
+ top:0;
+ left:0;
+ right:0;
+ height:48px;
+ display:flex;
+ align-items:center;
+ gap:4px;
+ padding:4px 6px;
+ background:#181818;
+ border-bottom:1px solid #303030;
+ z-index:50;
+ overflow-x:auto;
+}
+
+#title{
+ font-size:11px;
+ font-weight:bold;
+ color:#eee;
+ white-space:nowrap;
+ margin-right:3px;
+}
+
+.tool{
+ height:30px;
+ padding:0 8px;
+ border:1px solid #3a3a3a;
+ border-radius:5px;
+ background:#222;
+ color:#aaa;
+ font-size:9px;
+ white-space:nowrap;
+ flex-shrink:0;
+}
+
+.tool.active{
+ background:#383838;
+ border-color:#aaa;
+ color:#fff;
+}
+
+.tool select{
+ height:20px;
+ background:#111;
+ color:#ddd;
+ border:1px solid #444;
+ font-size:9px;
+}
+
+/* ================= VIEW ================= */
+
+#view{
+ position:absolute;
+ top:48px;
+ left:0;
+ right:0;
+ bottom:185px;
+ background:#111;
+ overflow:hidden;
+}
+
+canvas{
+ position:absolute;
+ inset:0;
+ width:100%;
+ height:100%;
+ display:block;
+ touch-action:none;
+}
+
+/* ================= PARTS ================= */
+
+#parts{
+ position:absolute;
+ top:7px;
+ right:6px;
+ z-index:20;
+ display:flex;
+ flex-direction:column;
+ gap:3px;
+}
+
+.part{
+ min-width:82px;
+ height:31px;
+ padding:0 8px;
+ border:1px solid #393939;
+ border-radius:5px;
+ background:#202020;
+ color:#aaa;
+ font-size:8px;
+ text-align:left;
+}
+
+.part.active{
+ background:#383838;
+ border-color:#aaa;
+ color:#fff;
+}
+
+/* ================= TIMELINE ================= */
+
+#timelinePanel{
+ position:absolute;
+ left:0;
+ right:0;
+ bottom:0;
+ height:185px;
+ background:#151515;
+ border-top:1px solid #363636;
+ z-index:40;
+}
+
+/* PLAY BAR */
+
+#playBar{
+ height:38px;
+ display:flex;
+ align-items:center;
+ gap:5px;
+ padding:4px 6px;
+ background:#181818;
+ border-bottom:1px solid #303030;
+}
+
+.playButton{
+ width:54px;
+ height:28px;
+ border:1px solid #555;
+ border-radius:5px;
+ background:#282828;
+ color:#fff;
+ font-size:10px;
+}
+
+.playButton:active{
+ background:#444;
+}
+
+.smallButton{
+ height:28px;
+ min-width:48px;
+ border:1px solid #383838;
+ border-radius:5px;
+ background:#222;
+ color:#aaa;
+ font-size:8px;
+}
+
+.smallButton.active{
+ background:#383838;
+ border-color:#aaa;
+ color:#fff;
+}
+
+#timeReadout{
+ min-width:78px;
+ font-size:10px;
+ color:#ddd;
+ text-align:center;
+}
+
+#timelineScroll{
+ position:absolute;
+ top:38px;
+ left:0;
+ right:0;
+ bottom:0;
+ overflow-x:auto;
+ overflow-y:hidden;
+}
+
+/* ruler */
+
+#timeRuler{
+ position:relative;
+ height:32px;
+ background:#191919;
+ border-bottom:1px solid #303030;
+}
+
+.tick{
+ position:absolute;
+ top:0;
+ bottom:0;
+ width:1px;
+ background:#303030;
+ pointer-events:none;
+}
+
+.tick.major{
+ background:#606060;
+}
+
+.tick span{
+ position:absolute;
+ left:5px;
+ top:8px;
+ color:#aaa;
+ font-size:8px;
+ white-space:nowrap;
+}
+
+/* END DURATION */
+
+#durationHandle{
+ position:absolute;
+ top:0;
+ width:16px;
+ height:32px;
+ margin-left:-8px;
+ color:#fff;
+ font-size:23px;
+ line-height:29px;
+ font-weight:bold;
+ text-align:center;
+ z-index:30;
+ cursor:ew-resize;
+ touch-action:none;
+}
+
+#durationHandle:after{
+ content:"";
+ position:absolute;
+ top:0;
+ left:7px;
+ width:2px;
+ height:150px;
+ background:#7d35ff;
+}
+
+/* tracks */
+
+#trackArea{
+ position:relative;
+ min-height:112px;
+ background:#191919;
+}
+
+.trackRow{
+ position:relative;
+ height:17px;
+ border-bottom:1px solid #252525;
+}
+
+.trackRow:nth-child(even){
+ background:#202020;
+}
+
+.trackName{
+ position:absolute;
+ left:5px;
+ top:4px;
+ font-size:7px;
+ color:#777;
+ pointer-events:none;
+ z-index:2;
+}
+
+.keyDot{
+ position:absolute;
+ width:9px;
+ height:9px;
+ margin-left:-4px;
+ margin-top:-4px;
+ top:8px;
+ transform:rotate(45deg);
+ background:#aaa;
+ z-index:4;
+}
+
+.keyDot.current{
+ background:#fff;
+}
+
+#playhead{
+ position:absolute;
+ top:0;
+ bottom:0;
+ width:1px;
+ background:#fff;
+ z-index:20;
+ pointer-events:none;
+}
+
+#playheadHandle{
+ position:absolute;
+ top:0;
+ left:-5px;
+ width:11px;
+ height:8px;
+ background:#fff;
+ clip-path:polygon(
+  0 0,
+  100% 0,
+  50% 100%
+ );
+}
+
+/* mobile */
+
+@media(max-width:600px){
+
+ #title{
+  font-size:9px;
+ }
+
+ .tool{
+  padding:0 6px;
+ }
+
+ #view{
+  bottom:185px;
+ }
+
 }
 </style>
 </head>
 
 <body>
+
 <div id="app">
 
+<!-- =================================================
+ TOP
+================================================= -->
+
 <div id="top">
- <div id="title">MizaxEngine Animator V2</div>
- <div id="status">Creating R6...</div>
+
+ <div id="title">
+  MizaxEngine
+ </div>
+
+ <button id="moveBtn"
+  class="tool active">
+  MOVE
+ </button>
+
+ <button id="rotateBtn"
+  class="tool">
+  ROTATE
+ </button>
+
+ <button id="spaceBtn"
+  class="tool">
+  GLOBAL
+ </button>
+
+ <button id="smoothBtn"
+  class="tool active">
+  SMOOTH
+ </button>
+
+ <button id="choppyBtn"
+  class="tool">
+  CHOPPY
+ </button>
+
+ <button id="lockCamera"
+  class="tool">
+  🔓 CAMERA
+ </button>
+
+ <button class="tool">
+  FPS
+  <input id="fpsInput"
+   style="width:35px"
+   type="number"
+   value="30"
+   min="1"
+   max="60">
+ </button>
+
 </div>
+
+
+<!-- =================================================
+ VIEW
+================================================= -->
 
 <div id="view">
 
- <div id="tools">
-  <button id="moveBtn" class="active">MOVE</button>
-  <button id="rotateBtn">ROTATE</button>
- </div>
-
  <div id="parts">
-  <button class="part active" data-part="Head">HEAD</button>
-  <button class="part" data-part="Torso">TORSO</button>
-  <button class="part" data-part="Left Arm">L ARM</button>
-  <button class="part" data-part="Right Arm">R ARM</button>
-  <button class="part" data-part="Left Leg">L LEG</button>
-  <button class="part" data-part="Right Leg">R LEG</button>
+
+  <button class="part active"
+   data-part="Head">
+   Head
+  </button>
+
+  <button class="part"
+   data-part="Torso">
+   Torso
+  </button>
+
+  <button class="part"
+   data-part="Left Arm">
+   Left Arm
+  </button>
+
+  <button class="part"
+   data-part="Right Arm">
+   Right Arm
+  </button>
+
+  <button class="part"
+   data-part="Left Leg">
+   Left Leg
+  </button>
+
+  <button class="part"
+   data-part="Right Leg">
+   Right Leg
+  </button>
+
  </div>
 
 </div>
 
-<div id="bottom">
 
- <div id="properties">
-  <div class="prop"><label>POS X</label><input id="px"></div>
-  <div class="prop"><label>POS Y</label><input id="py"></div>
-  <div class="prop"><label>POS Z</label><input id="pz"></div>
-  <div class="prop"><label>ROT X</label><input id="rx"></div>
-  <div class="prop"><label>ROT Y</label><input id="ry"></div>
-  <div class="prop"><label>ROT Z</label><input id="rz"></div>
+<!-- =================================================
+ TIMELINE
+================================================= -->
+
+<div id="timelinePanel">
+
+ <div id="playBar">
+
+  <button id="play"
+   class="playButton">
+   ▶ PLAY
+  </button>
+
+  <button id="loopBtn"
+   class="smallButton">
+   LOOP
+  </button>
+
+  <button id="onceBtn"
+   class="smallButton active">
+   ONCE
+  </button>
+
+  <button id="prev"
+   class="smallButton">
+   ◀
+  </button>
+
+  <button id="next"
+   class="smallButton">
+   ▶
+  </button>
+
+  <div id="timeReadout">
+   00:00.00
+  </div>
+
+  <button class="smallButton">
+   DUR
+  </button>
+
+  <input id="durationInput"
+   style="
+    width:45px;
+    height:25px;
+    background:#111;
+    border:1px solid #383838;
+    color:#ddd;
+    text-align:center;
+    font-size:9px;
+   "
+   type="number"
+   value="2"
+   min=".05"
+   max="50"
+   step=".05">
+
  </div>
 
- <div id="timeline"></div>
 
- <div id="transport">
-  <button id="prev">◀</button>
-  <button id="key">◆ KEYFRAME</button>
-  <button id="play">▶ PLAY</button>
-  <button id="next">▶</button>
+ <div id="timelineScroll">
+
+  <div id="timeRuler">
+
+   <div id="durationHandle">
+    ]
+   </div>
+
+  </div>
+
+  <div id="trackArea">
+
+   <div id="playhead">
+    <div id="playheadHandle"></div>
+   </div>
+
+  </div>
+
  </div>
 
 </div>
+
 </div>
+
+
+<!-- =================================================
+ THREE
+================================================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TransformControls.js"></script>
 
+
 <script>
-/* =========================
-   MIZAXENGINE V2
-========================= */
 
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x111111);
+/* =====================================================
+ MIZAXENGINE V5
+===================================================== */
 
-const camera = new THREE.PerspectiveCamera(
-  45,
-  window.innerWidth / window.innerHeight,
+const view =
+ document.getElementById("view");
+
+const ruler =
+ document.getElementById("timeRuler");
+
+const track =
+ document.getElementById("trackArea");
+
+const scroll =
+ document.getElementById("timelineScroll");
+
+const playhead =
+ document.getElementById("playhead");
+
+const durationHandle =
+ document.getElementById("durationHandle");
+
+const readout =
+ document.getElementById("timeReadout");
+
+
+/* =====================================================
+ SCENE
+===================================================== */
+
+const scene =
+ new THREE.Scene();
+
+scene.background =
+ new THREE.Color(0x111111);
+
+
+/* =====================================================
+ CAMERA
+===================================================== */
+
+const camera =
+ new THREE.PerspectiveCamera(
+  38,
+  view.clientWidth /
+  view.clientHeight,
   .01,
   100
+ );
+
+camera.position.set(
+ 5.2,
+ 3.7,
+ 8.5
+ );
+
+
+/* =====================================================
+ RENDERER
+===================================================== */
+
+const renderer =
+ new THREE.WebGLRenderer({
+  antialias:true
+ });
+
+renderer.setPixelRatio(
+ Math.min(
+  window.devicePixelRatio,
+  1.5
+ )
 );
 
-camera.position.set(4,3,6);
+renderer.setSize(
+ view.clientWidth,
+ view.clientHeight
+);
 
-const renderer = new THREE.WebGLRenderer({
-  antialias:true
-});
+view.appendChild(
+ renderer.domElement
+);
 
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5));
-renderer.setSize(window.innerWidth,window.innerHeight);
-document.getElementById("view").appendChild(renderer.domElement);
 
-/* LIGHT */
+/* =====================================================
+ LIGHT
+===================================================== */
 
-scene.add(new THREE.HemisphereLight(0xffffff,0x333333,1.4));
+scene.add(
+ new THREE.HemisphereLight(
+  0xffffff,
+  0x444444,
+  1.55
+ )
+);
 
-const light = new THREE.DirectionalLight(0xffffff,1.5);
-light.position.set(4,7,5);
+const light =
+ new THREE.DirectionalLight(
+  0xffffff,
+  1.2
+ );
+
+light.position.set(
+ 4,8,6
+ );
+
 scene.add(light);
 
-/* CAMERA */
 
-const controls = new THREE.OrbitControls(
+/* =====================================================
+ ORBIT
+===================================================== */
+
+const orbit =
+ new THREE.OrbitControls(
   camera,
   renderer.domElement
-);
+ );
 
-controls.enableDamping = true;
-controls.dampingFactor = .18;
-controls.rotateSpeed = .35;
-controls.zoomSpeed = .35;
-controls.panSpeed = .25;
+orbit.enableDamping = true;
+orbit.dampingFactor = .12;
 
-/* =========================
-   R6
-========================= */
+orbit.rotateSpeed = .16;
+orbit.zoomSpeed = .20;
+orbit.panSpeed = .10;
 
-const rig = new THREE.Group();
+
+/* =====================================================
+ MATERIAL
+===================================================== */
+
+const material =
+ new THREE.MeshStandardMaterial({
+  color:0xb8b8b8,
+  roughness:.82,
+  metalness:0
+ });
+
+
+/* =====================================================
+ R6 ROOT
+===================================================== */
+
+const rig =
+ new THREE.Group();
+
 scene.add(rig);
 
 const parts = {};
 
-function material(color){
- return new THREE.MeshStandardMaterial({
-  color:color,
-  roughness:.75
- });
+
+/* =====================================================
+ ROUNDED BLOCK
+===================================================== */
+
+function roundedBlock(
+ w,h,d,r
+){
+
+ const shape =
+  new THREE.Shape();
+
+ const x=w/2;
+ const y=h/2;
+
+ const rr =
+  Math.min(
+   r,
+   x,
+   y
+  );
+
+ shape.moveTo(
+  -x+rr,
+  -y
+ );
+
+ shape.lineTo(
+  x-rr,
+  -y
+ );
+
+ shape.quadraticCurveTo(
+  x,-y,
+  x,-y+rr
+ );
+
+ shape.lineTo(
+  x,y-rr
+ );
+
+ shape.quadraticCurveTo(
+  x,y,
+  x-rr,y
+ );
+
+ shape.lineTo(
+  -x+rr,y
+ );
+
+ shape.quadraticCurveTo(
+  -x,y,
+  -x,y-rr
+ );
+
+ shape.lineTo(
+  -x,-y+rr
+ );
+
+ shape.quadraticCurveTo(
+  -x,-y,
+  -x+rr,-y
+ );
+
+ const geo =
+  new THREE.ExtrudeGeometry(
+   shape,
+   {
+    depth:d,
+    bevelEnabled:true,
+    bevelSegments:3,
+    bevelSize:r*.30,
+    bevelThickness:r*.30,
+    curveSegments:5
+   }
+  );
+
+ geo.center();
+
+ return new THREE.Mesh(
+  geo,
+  material
+ );
 }
 
-function cube(name,w,h,d,color){
- const group = new THREE.Group();
- group.name=name;
 
- const geo = new THREE.BoxGeometry(w,h,d);
- const mesh = new THREE.Mesh(geo,material(color));
+/* =====================================================
+ R6 PART
+===================================================== */
 
- mesh.position.y=-h/2;
+function makePart(
+ name,
+ w,h,d
+){
+
+ const group =
+  new THREE.Group();
+
+ group.name =
+  name;
+
+ const mesh =
+  roundedBlock(
+   w,h,d,.08
+  );
+
  group.add(mesh);
 
- rig.add(group);
  parts[name]=group;
 
  return group;
 }
 
-/* TORSO */
 
-const torso = cube(
- "Torso",
- 1.45,
- 2,
- .75,
- 0x3b82f6
-);
+/* =====================================================
+ CREATE RIG
+===================================================== */
 
-torso.position.y=2.9;
+/*
+   Proporsi sengaja dibuat
+   mendekati classic R6.
+
+             HEAD
+          ┌─────────┐
+          │         │
+          └─────────┘
+       ┌───────────────┐
+       │     TORSO     │
+   ┌───┤               ├───┐
+   │   └───────────────┘   │
+   │                       │
+   │       │       │       │
+       LEG       LEG
+*/
+
+
+const torso =
+ makePart(
+  "Torso",
+  2.0,
+  2.0,
+  .85
+ );
+
+rig.add(torso);
+
+
+/* ARMS */
+
+const leftArm =
+ makePart(
+  "Left Arm",
+  .65,
+  2.0,
+  .75
+ );
+
+const rightArm =
+ makePart(
+  "Right Arm",
+  .65,
+  2.0,
+  .75
+ );
+
+
+/* LEGS */
+
+const leftLeg =
+ makePart(
+  "Left Leg",
+  .72,
+  2.0,
+  .78
+ );
+
+const rightLeg =
+ makePart(
+  "Right Leg",
+  .72,
+  2.0,
+  .78
+ );
+
 
 /* HEAD */
 
-const head = cube(
- "Head",
- 1.25,
- 1.25,
- 1.25,
- 0xf1c27d
-);
+const head =
+ makePart(
+  "Head",
+  1.42,
+  1.30,
+  1.35
+ );
 
-head.position.y=4.525;
 
-/* FACE */
+/* =====================================================
+ HIERARCHY
+===================================================== */
 
-const face = new THREE.Mesh(
- new THREE.BoxGeometry(.55,.32,.04),
- material(0x222222)
-);
+torso.add(head);
+torso.add(leftArm);
+torso.add(rightArm);
+torso.add(leftLeg);
+torso.add(rightLeg);
 
-face.position.set(
+
+/*
+   Torso center = 4
+
+   Torso top = 5
+
+   Head height = 1.30
+
+   Head bottom =
+   5
+
+   Jadi nempel tepat.
+*/
+
+head.position.set(
  0,
- -.52,
- .63
+ 1.65,
+ 0
 );
 
-head.add(face);
 
-/* LEFT ARM */
+/*
+   Torso half width = 1
 
-const leftArm = cube(
- "Left Arm",
- .55,
- 1.8,
- .6,
- 0xf1c27d
-);
+   Arm half width = .325
+
+   Center = 1.325
+
+   Inner edge =
+   1.325-.325 = 1
+
+   Tepat dengan torso.
+*/
 
 leftArm.position.set(
- -1.0,
- 2.95,
+ -1.325,
+ 0,
  0
-);
-
-/* RIGHT ARM */
-
-const rightArm = cube(
- "Right Arm",
- .55,
- 1.8,
- .6,
- 0xf1c27d
-);
+ );
 
 rightArm.position.set(
- 1.0,
- 2.95,
+ 1.325,
+ 0,
  0
-);
+ );
 
-/* LEFT LEG */
 
-const leftLeg = cube(
- "Left Leg",
- .65,
- 1.9,
- .7,
- 0x202020
-);
+/* LEGS */
 
 leftLeg.position.set(
- -.4,
- .95,
+ -.5,
+ -2,
  0
-);
-
-/* RIGHT LEG */
-
-const rightLeg = cube(
- "Right Leg",
- .65,
- 1.9,
- .7,
- 0x202020
-);
+ );
 
 rightLeg.position.set(
- .4,
- .95,
+ .5,
+ -2,
  0
-);
+ );
 
-/* =========================
-   GROUND
-========================= */
 
-const ground = new THREE.GridHelper(
- 8,
- 16,
- 0x444444,
- 0x222222
-);
+/* =====================================================
+ FACE
+===================================================== */
 
-ground.position.y=0;
-scene.add(ground);
+function addFace(){
 
-/* =========================
-   GIZMO
-========================= */
+ const face =
+  new THREE.Group();
 
-const gizmo = new THREE.TransformControls(
- camera,
- renderer.domElement
-);
+ const eyeMat =
+  new THREE.MeshBasicMaterial({
+   color:0x151515
+  });
 
-gizmo.setSize(.65);
-gizmo.setMode("translate");
+ const eyeGeo =
+  new THREE.SphereGeometry(
+   .075,
+   12,
+   8
+  );
+
+ const e1 =
+  new THREE.Mesh(
+   eyeGeo,
+   eyeMat
+  );
+
+ const e2 =
+  new THREE.Mesh(
+   eyeGeo,
+   eyeMat
+  );
+
+ e1.position.set(
+  -.22,
+  .16,
+  .66
+ );
+
+ e2.position.set(
+  .22,
+  .16,
+  .66
+ );
+
+ face.add(e1,e2);
+
+ head.add(face);
+
+}
+
+addFace();
+
+
+/* =====================================================
+ GROUND
+===================================================== */
+
+const grid =
+ new THREE.GridHelper(
+  12,
+  24,
+  0x444444,
+  0x222222
+ );
+
+scene.add(grid);
+
+
+/* =====================================================
+ CAMERA TARGET
+===================================================== */
+
+orbit.target.set(
+ 0,
+ 3.2,
+ 0
+ );
+
+orbit.update();
+
+
+/* =====================================================
+ TRANSFORM CONTROLS
+===================================================== */
+
+let selected =
+ head;
+
+const gizmo =
+ new THREE.TransformControls(
+  camera,
+  renderer.domElement
+ );
+
+gizmo.setMode(
+ "translate"
+ );
+
+gizmo.setSpace(
+ "world"
+ );
+
+gizmo.setSize(
+ 1
+ );
 
 scene.add(gizmo);
 
-let selected = head;
+gizmo.attach(
+ selected
+ );
 
-/* berat / tidak licin */
 
-gizmo.setTranslationSnap(.05);
-gizmo.setRotationSnap(THREE.MathUtils.degToRad(5));
+/* =====================================================
+ TRANSFORM SPACE
+===================================================== */
+
+const spaces = [
+ "world",
+ "local",
+ "parent"
+];
+
+let spaceIndex=0;
+
+const spaceButton =
+ document.getElementById(
+  "spaceBtn"
+ );
+
+
+function updateSpace(){
+
+ const mode =
+  spaces[
+   spaceIndex
+  ];
+
+ gizmo.setSpace(
+  mode==="world"
+   ? "world"
+   : mode==="local"
+ );
+
+ spaceButton.textContent =
+  mode.toUpperCase();
+
+}
+
+
+/*
+   TransformControls sendiri
+   hanya punya world/local.
+   Parent kita buat sebagai
+   parent-relative fallback.
+*/
+
+spaceButton.onclick =
+ ()=>{
+
+  spaceIndex++;
+
+  if(
+   spaceIndex>=spaces.length
+  )
+   spaceIndex=0;
+
+  updateSpace();
+
+ };
+
+
+updateSpace();
+
+
+/* =====================================================
+ CAMERA LOCK
+===================================================== */
+
+let cameraLocked=false;
+
+document.getElementById(
+ "lockCamera"
+).onclick =
+ ()=>{
+
+  cameraLocked =
+   !cameraLocked;
+
+  orbit.enabled =
+   !cameraLocked;
+
+  const b =
+   document.getElementById(
+    "lockCamera"
+   );
+
+  b.textContent =
+   cameraLocked
+    ? "🔒 CAMERA"
+    : "🔓 CAMERA";
+
+  b.classList.toggle(
+   "active",
+   cameraLocked
+  );
+
+ };
+
+
+/* =====================================================
+ SELECT PART
+===================================================== */
+
+document
+.querySelectorAll(".part")
+.forEach(
+ button=>{
+
+  button.onclick =
+   ()=>{
+
+    selected =
+     parts[
+      button.dataset.part
+     ];
+
+    gizmo.attach(
+     selected
+    );
+
+    document
+    .querySelectorAll(".part")
+    .forEach(
+     x=>
+      x.classList.remove(
+       "active"
+      )
+    );
+
+    button.classList.add(
+     "active"
+    );
+
+   };
+
+ });
+
+
+/* =====================================================
+ MOVE / ROTATE
+===================================================== */
+
+const moveBtn =
+ document.getElementById(
+  "moveBtn"
+ );
+
+const rotateBtn =
+ document.getElementById(
+  "rotateBtn"
+ );
+
+
+moveBtn.onclick =
+ ()=>{
+
+  gizmo.setMode(
+   "translate"
+  );
+
+  moveBtn.classList.add(
+   "active"
+  );
+
+  rotateBtn.classList.remove(
+   "active"
+  );
+
+ };
+
+
+rotateBtn.onclick =
+ ()=>{
+
+  gizmo.setMode(
+   "rotate"
+  );
+
+  rotateBtn.classList.add(
+   "active"
+  );
+
+  moveBtn.classList.remove(
+   "active"
+  );
+
+ };
+
+
+/* =====================================================
+ AXIS LOCK DURING DRAG
+===================================================== */
+
+/*
+   TIDAK ADA tombol X/Y/Z.
+
+   Saat jari pertama menyentuh
+   ring/handle Y:
+
+        Y LOCKED
+
+   Selama drag berlangsung,
+   axis tidak boleh berganti.
+
+   Jadi kalau jari melewati
+   area Z, transform tetap Y.
+*/
+
+let lockedAxis =
+ null;
+
+
+gizmo.addEventListener(
+ "mouseDown",
+ ()=>{
+  lockedAxis =
+   gizmo.axis;
+ }
+);
+
+
+gizmo.addEventListener(
+ "mouseUp",
+ ()=>{
+  lockedAxis =
+   null;
+ }
+);
+
+
+/*
+   TransformControls memilih axis
+   ketika pointer pertama kali
+   mengenai handle.
+
+   objectChange hanya membaca
+   transform yang sedang aktif.
+*/
+
+
+/* =====================================================
+ GIZMO DRAG
+===================================================== */
 
 gizmo.addEventListener(
  "dragging-changed",
  e=>{
-  controls.enabled=!e.value;
+
+  if(!cameraLocked)
+   orbit.enabled =
+    !e.value;
+
  }
 );
 
-gizmo.addEventListener(
- "change",
- ()=>{
-  if(selected) updateInputs();
- }
-);
 
-gizmo.attach(selected);
+/* =====================================================
+ GIZMO SCALE
+===================================================== */
 
-/* =========================
-   SELECT PART
-========================= */
+function updateGizmoScale(){
 
-document.querySelectorAll(".part").forEach(btn=>{
+ const distance =
+  camera.position.distanceTo(
+   orbit.target
+  );
 
- btn.addEventListener("click",()=>{
+ gizmo.setSize(
+  THREE.MathUtils.clamp(
+   distance*.12,
+   .55,
+   2.3
+  )
+ );
 
-  const name=btn.dataset.part;
-
-  selected=parts[name];
-
-  gizmo.attach(selected);
-
-  document.querySelectorAll(".part")
-   .forEach(x=>x.classList.remove("active"));
-
-  btn.classList.add("active");
-
-  updateInputs();
- });
-});
-
-/* =========================
-   MODE
-========================= */
-
-const moveBtn=document.getElementById("moveBtn");
-const rotateBtn=document.getElementById("rotateBtn");
-
-moveBtn.onclick=()=>{
- gizmo.setMode("translate");
- moveBtn.classList.add("active");
- rotateBtn.classList.remove("active");
-};
-
-rotateBtn.onclick=()=>{
- gizmo.setMode("rotate");
- rotateBtn.classList.add("active");
- moveBtn.classList.remove("active");
-};
-
-/* =========================
-   INPUT
-========================= */
-
-const inputs={
- px:document.getElementById("px"),
- py:document.getElementById("py"),
- pz:document.getElementById("pz"),
- rx:document.getElementById("rx"),
- ry:document.getElementById("ry"),
- rz:document.getElementById("rz")
-};
-
-function updateInputs(){
-
- if(!selected)return;
-
- inputs.px.value=selected.position.x.toFixed(2);
- inputs.py.value=selected.position.y.toFixed(2);
- inputs.pz.value=selected.position.z.toFixed(2);
-
- inputs.rx.value=THREE.MathUtils.radToDeg(
-  selected.rotation.x
- ).toFixed(1);
-
- inputs.ry.value=THREE.MathUtils.radToDeg(
-  selected.rotation.y
- ).toFixed(1);
-
- inputs.rz.value=THREE.MathUtils.radToDeg(
-  selected.rotation.z
- ).toFixed(1);
 }
 
-function num(input){
- return parseFloat(input.value)||0;
-}
 
-inputs.px.onchange=()=>{
- selected.position.x=num(inputs.px);
-};
+/* =====================================================
+ ANIMATION
+===================================================== */
 
-inputs.py.onchange=()=>{
- selected.position.y=num(inputs.py);
-};
+let interpolation =
+ "smooth";
 
-inputs.pz.onchange=()=>{
- selected.position.z=num(inputs.pz);
-};
+let fps=30;
 
-inputs.rx.onchange=()=>{
- selected.rotation.x=THREE.MathUtils.degToRad(num(inputs.rx));
-};
+let currentTime=0;
 
-inputs.ry.onchange=()=>{
- selected.rotation.y=THREE.MathUtils.degToRad(num(inputs.ry));
-};
+let totalDuration=2;
 
-inputs.rz.onchange=()=>{
- selected.rotation.z=THREE.MathUtils.degToRad(num(inputs.rz));
-};
-
-/* =========================
-   KEYFRAMES
-========================= */
-
-let currentFrame=0;
 let playing=false;
+
+let loopPlayback=false;
+
 let timer=null;
 
-const keyframes={};
+const keyframes=[];
 
-for(let i=0;i<=60;i++){
 
- const b=document.createElement("button");
+/* =====================================================
+ CAPTURE
+===================================================== */
 
- b.className="frame";
- b.textContent=i;
+function capturePose(){
 
- b.onclick=()=>{
-  currentFrame=i;
-  applyFrame(i);
-  updateTimeline();
- };
+ const pose={};
 
- document.getElementById("timeline").appendChild(b);
+ Object.keys(parts)
+ .forEach(
+  name=>{
+
+   const p =
+    parts[name];
+
+   pose[name]={
+    position:[
+     p.position.x,
+     p.position.y,
+     p.position.z
+    ],
+    rotation:[
+     p.rotation.x,
+     p.rotation.y,
+     p.rotation.z
+    ]
+   };
+
+  }
+ );
+
+ return pose;
+
 }
 
-function saveKeyframe(){
 
- if(!keyframes[currentFrame])
-  keyframes[currentFrame]={};
+/* =====================================================
+ APPLY
+===================================================== */
 
- keyframes[currentFrame][selected.name]={
-  position:[
-   selected.position.x,
-   selected.position.y,
-   selected.position.z
-  ],
-  rotation:[
-   selected.rotation.x,
-   selected.rotation.y,
-   selected.rotation.z
-  ]
- };
+function applyPose(
+ pose
+){
+
+ if(!pose)return;
+
+ Object.keys(pose)
+ .forEach(
+  name=>{
+
+   const p =
+    parts[name];
+
+   if(!p)return;
+
+   const d =
+    pose[name];
+
+   p.position.set(
+    ...d.position
+   );
+
+   p.rotation.set(
+    ...d.rotation
+   );
+
+  }
+ );
+
+}
+
+
+/* =====================================================
+ AUTO KEY
+===================================================== */
+
+function autoKeyframe(){
+
+ if(playing)
+  return;
+
+ const old =
+  keyframes.find(
+   k=>
+    Math.abs(
+     k.time-currentTime
+    )<0.00001
+  );
+
+ if(old){
+
+  old.pose =
+   capturePose();
+
+ }else{
+
+  keyframes.push({
+   time:currentTime,
+   pose:capturePose()
+  });
+
+ }
+
+ keyframes.sort(
+  (a,b)=>
+   a.time-b.time
+ );
+
+ rebuildTimeline();
+
+}
+
+
+gizmo.addEventListener(
+ "objectChange",
+ autoKeyframe
+);
+
+
+/* INITIAL KEY */
+
+keyframes.push({
+ time:0,
+ pose:capturePose()
+});
+
+
+/* =====================================================
+ SURROUNDING
+===================================================== */
+
+function surrounding(
+ time
+){
+
+ let A=null;
+ let B=null;
+
+ for(
+  const k of keyframes
+ ){
+
+  if(k.time<=time)
+   A=k;
+
+  if(k.time>=time){
+
+   B=k;
+   break;
+
+  }
+
+ }
+
+ if(!A)
+  A=keyframes[0];
+
+ if(!B)
+  B=
+   keyframes[
+    keyframes.length-1
+   ];
+
+ return {A,B};
+
+}
+
+
+/* =====================================================
+ EVALUATE
+===================================================== */
+
+function evaluate(
+ time
+){
+
+ if(!keyframes.length)
+  return;
+
+ const {
+  A,B
+ } =
+ surrounding(time);
+
+ if(A===B){
+
+  applyPose(
+   A.pose
+  );
+
+  return;
+
+ }
+
+ if(
+  interpolation===
+  "choppy"
+ ){
+
+  applyPose(
+   A.pose
+  );
+
+  return;
+
+ }
+
+ let alpha =
+  (time-A.time)/
+  (B.time-A.time);
+
+ alpha =
+  THREE.MathUtils.clamp(
+   alpha,
+   0,
+   1
+  );
+
+ /*
+   Smooth.
+ */
+
+ alpha =
+  alpha*alpha*
+  (3-2*alpha);
+
+ Object.keys(parts)
+ .forEach(
+  name=>{
+
+   const p =
+    parts[name];
+
+   const a =
+    A.pose[name];
+
+   const b =
+    B.pose[name];
+
+   if(!a||!b)
+    return;
+
+   for(
+    let i=0;
+    i<3;
+    i++
+   ){
+
+    p.position.setComponent(
+     i,
+     THREE.MathUtils.lerp(
+      a.position[i],
+      b.position[i],
+      alpha
+     )
+    );
+
+    p.rotation.setComponent(
+     i,
+     THREE.MathUtils.lerp(
+      a.rotation[i],
+      b.rotation[i],
+      alpha
+     )
+    );
+
+   }
+
+  }
+ );
+
+}
+
+
+/* =====================================================
+ TIME
+===================================================== */
+
+function formatTime(
+ sec
+){
+
+ const m =
+  Math.floor(
+   sec/60
+  );
+
+ const s =
+  sec%60;
+
+ return(
+  String(m)
+   .padStart(2,"0")
+  +":"+
+  s.toFixed(2)
+   .padStart(5,"0")
+ );
+
+}
+
+
+/* =====================================================
+ TIMELINE WIDTH
+===================================================== */
+
+const PPS=75;
+
+
+function width(){
+
+ return Math.max(
+  scroll.clientWidth,
+  totalDuration*
+  PPS+
+  100
+ );
+
+}
+
+
+/* =====================================================
+ BUILD TIMELINE
+===================================================== */
+
+function rebuildTimeline(){
+
+ ruler.innerHTML="";
+ track.innerHTML="";
+
+ const w =
+  width();
+
+ ruler.style.width =
+  w+"px";
+
+ track.style.width =
+  w+"px";
+
+
+ /*
+   Hanya label setiap 1 detik.
+   Tick kecil tiap .25.
+ */
+
+ for(
+  let t=0;
+  t<=totalDuration+.001;
+  t+=.25
+ ){
+
+  const tick =
+   document.createElement(
+    "div"
+   );
+
+  tick.className =
+   "tick";
+
+  if(
+   Math.abs(
+    t-Math.round(t)
+   )<.001
+  ){
+
+   tick.classList.add(
+    "major"
+   );
+
+   const label =
+    document.createElement(
+     "span"
+    );
+
+   label.textContent =
+    formatTime(t);
+
+   tick.appendChild(
+    label
+   );
+
+  }
+
+  tick.style.left =
+   (
+    t*PPS
+   )+"px";
+
+  ruler.appendChild(
+   tick
+  );
+
+ }
+
+
+ ruler.appendChild(
+  durationHandle
+ );
+
+ durationHandle.style.left =
+  (
+   totalDuration*PPS
+  )+"px";
+
+
+ const names=[
+  "Head",
+  "Torso",
+  "Left Arm",
+  "Right Arm",
+  "Left Leg",
+  "Right Leg"
+ ];
+
+
+ names.forEach(
+  name=>{
+
+   const row =
+    document.createElement(
+     "div"
+    );
+
+   row.className =
+    "trackRow";
+
+   const label =
+    document.createElement(
+     "div"
+    );
+
+   label.className =
+    "trackName";
+
+   label.textContent =
+    name;
+
+   row.appendChild(
+    label
+   );
+
+
+   keyframes.forEach(
+    k=>{
+
+     const dot =
+      document.createElement(
+       "div"
+      );
+
+     dot.className =
+      "keyDot";
+
+     if(
+      Math.abs(
+       k.time-currentTime
+      )<.0001
+     ){
+
+      dot.classList.add(
+       "current"
+      );
+
+     }
+
+     dot.style.left =
+      (
+       k.time*PPS
+      )+"px";
+
+     dot.onclick =
+      e=>{
+
+       e.stopPropagation();
+
+       currentTime =
+        k.time;
+
+       evaluate(
+        currentTime
+       );
+
+       rebuildTimeline();
+
+      };
+
+     row.appendChild(
+      dot
+     );
+
+    }
+   );
+
+   track.appendChild(
+    row
+   );
+
+  }
+ );
+
+
+ track.appendChild(
+  playhead
+ );
 
  updateTimeline();
+
 }
 
-function applyFrame(frame){
 
- const data=keyframes[frame];
-
- if(!data)return;
-
- Object.keys(data).forEach(name=>{
-
-  const p=parts[name];
-
-  if(!p)return;
-
-  const d=data[name];
-
-  p.position.set(
-   d.position[0],
-   d.position[1],
-   d.position[2]
-  );
-
-  p.rotation.set(
-   d.rotation[0],
-   d.rotation[1],
-   d.rotation[2]
-  );
- });
-
- updateInputs();
-}
+/* =====================================================
+ UPDATE TIMELINE
+===================================================== */
 
 function updateTimeline(){
 
- document.querySelectorAll(".frame").forEach((b,i)=>{
+ playhead.style.left =
+  (
+   currentTime*PPS
+  )+"px";
 
-  b.classList.toggle(
-   "current",
-   i===currentFrame
+ readout.textContent =
+  formatTime(
+   currentTime
   );
 
-  b.classList.toggle(
-   "key",
-   !!keyframes[i]
-  );
- });
 }
 
-document.getElementById("key").onclick=()=>{
- saveKeyframe();
-};
 
-/* =========================
-   PLAY
-========================= */
+/* =====================================================
+ DURATION DRAG
+===================================================== */
+
+let durationDragging=false;
+
+
+durationHandle.addEventListener(
+ "pointerdown",
+ e=>{
+
+  e.preventDefault();
+
+  durationDragging=true;
+
+  durationHandle.setPointerCapture(
+   e.pointerId
+  );
+
+ }
+);
+
+
+durationHandle.addEventListener(
+ "pointermove",
+ e=>{
+
+  if(!durationDragging)
+   return;
+
+  const rect =
+   scroll.getBoundingClientRect();
+
+  let x =
+   e.clientX-
+   rect.left+
+   scroll.scrollLeft;
+
+  let t =
+   x/PPS;
+
+  t =
+   THREE.MathUtils.clamp(
+    t,
+    .05,
+    50
+   );
+
+  totalDuration=t;
+
+  if(
+   currentTime>
+   totalDuration
+  )
+   currentTime=
+    totalDuration;
+
+  document.getElementById(
+   "durationInput"
+  ).value=
+   t.toFixed(2);
+
+  updateTimeline();
+
+ }
+);
+
+
+durationHandle.addEventListener(
+ "pointerup",
+ e=>{
+
+  durationDragging=false;
+
+  try{
+   durationHandle.releasePointerCapture(
+    e.pointerId
+   );
+  }catch(err){}
+
+  rebuildTimeline();
+
+ }
+);
+
+
+/* =====================================================
+ DURATION INPUT
+===================================================== */
+
+document.getElementById(
+ "durationInput"
+).onchange =
+ e=>{
+
+  totalDuration =
+   THREE.MathUtils.clamp(
+    Number(e.target.value)||2,
+    .05,
+    50
+   );
+
+  e.target.value =
+   totalDuration;
+
+  currentTime =
+   Math.min(
+    currentTime,
+    totalDuration
+   );
+
+  rebuildTimeline();
+
+ };
+
+
+/* =====================================================
+ RULER SEEK
+===================================================== */
+
+ruler.addEventListener(
+ "pointerdown",
+ e=>{
+
+  if(
+   e.target===
+   durationHandle
+  )
+   return;
+
+  const rect =
+   scroll.getBoundingClientRect();
+
+  const x =
+   e.clientX-
+   rect.left+
+   scroll.scrollLeft;
+
+  currentTime =
+   THREE.MathUtils.clamp(
+    x/PPS,
+    0,
+    totalDuration
+   );
+
+  evaluate(
+   currentTime
+  );
+
+  rebuildTimeline();
+
+ }
+);
+
+
+/* =====================================================
+ SMOOTH
+===================================================== */
+
+document.getElementById(
+ "smoothBtn"
+).onclick =
+ ()=>{
+
+  interpolation="smooth";
+
+  document.getElementById(
+   "smoothBtn"
+  ).classList.add(
+   "active"
+  );
+
+  document.getElementById(
+   "choppyBtn"
+  ).classList.remove(
+   "active"
+  );
+
+ };
+
+
+/* =====================================================
+ CHOPPY
+===================================================== */
+
+document.getElementById(
+ "choppyBtn"
+).onclick =
+ ()=>{
+
+  interpolation="choppy";
+
+  document.getElementById(
+   "choppyBtn"
+  ).classList.add(
+   "active"
+  );
+
+  document.getElementById(
+   "smoothBtn"
+  ).classList.remove(
+   "active"
+  );
+
+ };
+
+
+/* =====================================================
+ FPS
+===================================================== */
+
+document.getElementById(
+ "fpsInput"
+).onchange =
+ e=>{
+
+  fps =
+   THREE.MathUtils.clamp(
+    Number(e.target.value)||30,
+    1,
+    60
+   );
+
+  e.target.value =
+   fps;
+
+ };
+
+
+/* =====================================================
+ LOOP / ONCE
+===================================================== */
+
+const loopBtn =
+ document.getElementById(
+  "loopBtn"
+ );
+
+const onceBtn =
+ document.getElementById(
+  "onceBtn"
+ );
+
+
+loopBtn.onclick =
+ ()=>{
+
+  loopPlayback=true;
+
+  loopBtn.classList.add(
+   "active"
+  );
+
+  onceBtn.classList.remove(
+   "active"
+  );
+
+ };
+
+
+onceBtn.onclick =
+ ()=>{
+
+  loopPlayback=false;
+
+  onceBtn.classList.add(
+   "active"
+  );
+
+  loopBtn.classList.remove(
+   "active"
+  );
+
+ };
+
+
+/* =====================================================
+ PLAY
+===================================================== */
 
 function stop(){
 
  playing=false;
 
- if(timer){
-  clearInterval(timer);
-  timer=null;
+ if(timer)
+  cancelAnimationFrame(
+   timer
+  );
+
+ timer=null;
+
+ document.getElementById(
+  "play"
+ ).textContent=
+  "▶ PLAY";
+
  }
 
- document.getElementById("play").textContent="▶ PLAY";
-}
 
-document.getElementById("play").onclick=()=>{
+function play(){
 
  if(playing){
+
   stop();
   return;
+
  }
 
+ if(keyframes.length<2)
+  return;
+
  playing=true;
- document.getElementById("play").textContent="■ STOP";
 
- timer=setInterval(()=>{
+ document.getElementById(
+  "play"
+ ).textContent=
+  "■ STOP";
 
-  currentFrame++;
+ let last =
+  performance.now();
 
-  if(currentFrame>60){
-   currentFrame=0;
+
+ function frame(now){
+
+  if(!playing)
+   return;
+
+  const dt =
+   (now-last)/1000;
+
+  last=now;
+
+  currentTime += dt;
+
+  if(
+   currentTime>=
+   totalDuration
+  ){
+
+   if(loopPlayback){
+
+    currentTime=0;
+
+   }else{
+
+    currentTime=
+     totalDuration;
+
+    evaluate(
+     currentTime
+    );
+
+    updateTimeline();
+
+    stop();
+
+    return;
+
+   }
+
   }
 
-  applyFrame(currentFrame);
+  evaluate(
+   currentTime
+  );
+
   updateTimeline();
 
- },100);
-};
+  timer =
+   requestAnimationFrame(
+    frame
+   );
 
-document.getElementById("prev").onclick=()=>{
- stop();
- currentFrame=Math.max(0,currentFrame-1);
- applyFrame(currentFrame);
- updateTimeline();
-};
+ }
 
-document.getElementById("next").onclick=()=>{
- stop();
- currentFrame=Math.min(60,currentFrame+1);
- applyFrame(currentFrame);
- updateTimeline();
-};
 
-/* =========================
-   RESIZE
-========================= */
+ timer =
+  requestAnimationFrame(
+   frame
+  );
+
+ }
+
+
+document.getElementById(
+ "play"
+).onclick=
+ play;
+
+
+/* =====================================================
+ PREV / NEXT
+===================================================== */
+
+document.getElementById(
+ "prev"
+).onclick =
+ ()=>{
+
+  stop();
+
+  currentTime =
+   Math.max(
+    0,
+    currentTime-
+    1/fps
+   );
+
+  evaluate(
+   currentTime
+  );
+
+  rebuildTimeline();
+
+ };
+
+
+document.getElementById(
+ "next"
+).onclick =
+ ()=>{
+
+  stop();
+
+  currentTime =
+   Math.min(
+    totalDuration,
+    currentTime+
+    1/fps
+   );
+
+  evaluate(
+   currentTime
+  );
+
+  rebuildTimeline();
+
+ };
+
+
+/* =====================================================
+ RESIZE
+===================================================== */
 
 function resize(){
 
- const box=document.getElementById("view");
+ const w =
+  view.clientWidth;
 
- camera.aspect=
-  box.clientWidth/box.clientHeight;
+ const h =
+  view.clientHeight;
+
+ if(!w||!h)
+  return;
+
+ camera.aspect =
+  w/h;
 
  camera.updateProjectionMatrix();
 
  renderer.setSize(
-  box.clientWidth,
-  box.clientHeight
+  w,
+  h,
+  false
  );
-}
 
-window.addEventListener("resize",resize);
+ rebuildTimeline();
 
-/* =========================
-   START
-========================= */
+ }
 
-updateInputs();
-updateTimeline();
 
-document.getElementById("status").textContent=
- "R6 Ready";
+window.addEventListener(
+ "resize",
+ resize
+);
+
+
+/* =====================================================
+ START
+===================================================== */
 
 resize();
 
+rebuildTimeline();
+
+
+/* =====================================================
+ LOOP
+===================================================== */
+
 function animate(){
 
- requestAnimationFrame(animate);
+ requestAnimationFrame(
+  animate
+ );
 
- controls.update();
+ orbit.update();
+
+ updateGizmoScale();
 
  renderer.render(
   scene,
   camera
  );
+
 }
 
 animate();
+
 </script>
 
 </body>
-</html>
+ </html>
