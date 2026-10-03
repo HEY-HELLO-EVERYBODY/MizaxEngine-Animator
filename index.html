@@ -2,1944 +2,846 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
- content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-
-<title>MizaxEngine Animator V6</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>MizaxEngine Animator</title>
 
 <style>
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
 
 html,body{
- margin:0;
- width:100%;
- height:100%;
- overflow:hidden;
- background:#0d0d0d;
- color:#ddd;
- font-family:Arial,sans-serif
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#070707;
+  color:#eee;
+  font-family:Arial,sans-serif;
 }
 
-button,input{font:inherit}
+button,input{
+  font-family:inherit;
+}
 
 #app{
- position:relative;
- width:100%;
- height:100%;
- overflow:hidden
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  background:#080808;
 }
 
-/* TOP */
-
-#top{
- position:absolute;
- top:0;
- left:0;
- right:0;
- height:48px;
-
- display:flex;
- align-items:center;
- gap:4px;
- padding:4px;
-
- background:#181818;
- border-bottom:1px solid #303030;
-
- z-index:50;
- overflow-x:auto;
- white-space:nowrap
+#toolbar{
+  height:52px;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  padding:5px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  border-bottom:1px solid #2b0909;
+  background:#0d0d0d;
 }
 
-#title{
- font-size:10px;
- font-weight:bold;
- color:#eee;
- margin-right:3px
+.toolBtn{
+  height:40px;
+  min-width:62px;
+  padding:0 11px;
+  flex-shrink:0;
+  border:1px solid #521010;
+  border-radius:7px;
+  background:#181010;
+  color:#ddd;
+  font-size:11px;
+  font-weight:bold;
 }
 
-.tool{
- height:31px;
- padding:0 8px;
-
- border:1px solid #3b3b3b;
- border-radius:6px;
-
- background:#222;
- color:#bbb;
-
- font-size:9px;
- white-space:nowrap
+.toolBtn.active{
+  background:#7c1010;
+  border-color:#e02a2a;
+  color:white;
 }
 
-.tool.active{
- background:#383838;
- border-color:#aaa;
- color:#fff
+#fpsWrap{
+  height:40px;
+  min-width:72px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border:1px solid #421010;
+  border-radius:7px;
+  background:#130d0d;
+  flex-shrink:0;
 }
 
-.tool input{
- width:40px;
- height:20px;
-
- background:#111;
- border:1px solid #333;
-
- color:#fff;
-
- text-align:center;
- font-size:9px;
-
- border-radius:3px
+#fpsWrap span{
+  font-size:9px;
+  color:#aaa;
 }
 
-/* VIEW */
+#fps{
+  width:48px;
+  background:#080808;
+  color:white;
+  border:0;
+  text-align:center;
+  font-size:12px;
+  outline:none;
+}
+
+#workspace{
+  position:relative;
+  flex:1;
+  min-height:0;
+  overflow:hidden;
+}
 
 #view{
- position:absolute;
- top:48px;
- left:0;
- right:0;
- bottom:190px;
-
- overflow:hidden;
- background:#111
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  touch-action:none;
+  background:
+  radial-gradient(circle at center,#161616 0%,#080808 75%);
 }
 
-canvas{
- position:absolute;
- inset:0;
-
- width:100%;
- height:100%;
-
- display:block;
-
- touch-action:none
+#view canvas{
+  display:block;
+  width:100%;
+  height:100%;
+  touch-action:none;
 }
 
-/* PARTS */
-
-#parts{
- position:absolute;
-
- top:7px;
- right:6px;
-
- display:flex;
- flex-direction:column;
- gap:3px;
-
- z-index:20
+#partPanel{
+  position:absolute;
+  left:6px;
+  top:7px;
+  width:99px;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  z-index:20;
 }
 
-.part{
- min-width:78px;
-
- padding:7px 8px;
-
- border:1px solid #393939;
- border-radius:6px;
-
- background:#202020;
- color:#aaa;
-
- font-size:9px;
- text-align:left
+.partBtn{
+  min-height:31px;
+  padding:4px 6px;
+  border:1px solid #4d1515;
+  border-radius:6px;
+  background:rgba(18,12,12,.88);
+  color:#ccc;
+  font-size:10px;
+  font-weight:bold;
+  backdrop-filter:blur(5px);
 }
 
-.part.active{
- background:#393939;
- border-color:#aaa;
- color:#fff
+.partBtn.active{
+  color:white;
+  border-color:#e02626;
+  background:#711010;
 }
 
-/* TIMELINE */
+#infoBox{
+  position:absolute;
+  right:7px;
+  top:7px;
+  z-index:20;
+  padding:6px 9px;
+  border:1px solid #3c1111;
+  border-radius:6px;
+  background:rgba(10,10,10,.8);
+  font-size:9px;
+  color:#aaa;
+  pointer-events:none;
+}
 
 #timelinePanel{
- position:absolute;
-
- left:0;
- right:0;
- bottom:0;
-
- height:190px;
-
- background:#151515;
-
- border-top:1px solid #353535;
-
- z-index:40;
-
- overflow:hidden
+  height:205px;
+  flex-shrink:0;
+  display:flex;
+  flex-direction:column;
+  background:#0c0c0c;
+  border-top:1px solid #3f0e0e;
 }
 
-#timelineScroll{
- position:absolute;
-
- left:0;
- right:0;
- top:0;
- bottom:47px;
-
- overflow-x:auto;
- overflow-y:hidden
+#timelineTop{
+  height:40px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  padding:4px 6px;
+  flex-shrink:0;
+  background:#111;
+  border-bottom:1px solid #262626;
 }
 
-#timelineInner{
- position:relative;
-
- min-width:100%;
- height:143px
+.timeBtn{
+  height:31px;
+  min-width:42px;
+  border:1px solid #4a1111;
+  border-radius:6px;
+  background:#171010;
+  color:white;
+  font-weight:bold;
 }
 
-#timeRuler{
- position:absolute;
-
- left:0;
- top:0;
-
- height:34px;
-
- background:#191919;
-
- border-bottom:1px solid #303030;
-
- touch-action:none
-}
-
-.tick{
- position:absolute;
-
- top:0;
- bottom:0;
-
- width:1px;
-
- background:#333
-}
-
-.tick.major{
- background:#666
-}
-
-.tick span{
- position:absolute;
-
- top:5px;
- left:4px;
-
- color:#aaa;
-
- font-size:8px;
-
- white-space:nowrap
-}
-
-/* TRACKS */
-
-#tracks{
- position:absolute;
-
- left:0;
- right:0;
- top:34px;
-
- height:109px
-}
-
-.trackRow{
- position:relative;
-
- height:18px;
-
- border-bottom:1px solid #242424;
-
- background:#191919
-}
-
-.trackRow:nth-child(even){
- background:#161616
-}
-
-.trackName{
- position:absolute;
-
- left:5px;
- top:4px;
-
- color:#888;
-
- font-size:8px;
-
- z-index:3
-}
-
-.keyDot{
- position:absolute;
-
- width:9px;
- height:9px;
-
- margin-left:-4px;
- margin-top:-4px;
-
- top:9px;
-
- transform:rotate(45deg);
-
- background:#aaa;
-
- border:1px solid #ccc
-}
-
-.keyDot.selected{
- background:#fff
-}
-
-/* PLAYHEAD */
-
-#playhead{
- position:absolute;
-
- top:0;
- bottom:0;
-
- width:2px;
-
- background:#fff;
-
- z-index:15;
-
- pointer-events:none
-}
-
-#playheadHandle{
- position:absolute;
-
- top:0;
- left:-5px;
-
- width:12px;
- height:9px;
-
- background:#fff;
-
- clip-path:polygon(
-  0 0,
-  100% 0,
-  50% 100%
- )
-}
-
-/* END MARKER */
-
-#endMarker{
- position:absolute;
-
- top:0;
- bottom:0;
-
- width:2px;
-
- background:#a66;
-
- z-index:12;
-
- touch-action:none
-}
-
-#endMarker::before{
- content:"]";
-
- position:absolute;
-
- top:-2px;
- left:-7px;
-
- color:#ddd;
-
- font-size:17px;
-
- font-weight:bold
-}
-
-/* CONTROLS */
-
-#timelineControls{
- position:absolute;
-
- left:0;
- right:0;
- bottom:0;
-
- height:47px;
-
- display:flex;
- align-items:center;
-
- gap:4px;
- padding:4px;
-
- background:#171717;
-
- border-top:1px solid #292929;
-
- z-index:30
-}
-
-.control{
- height:32px;
-
- min-width:45px;
-
- border:1px solid #383838;
- border-radius:6px;
-
- background:#222;
-
- color:#bbb;
-
- font-size:9px
-}
-
-.control:active{
- background:#333
+#play{
+  min-width:58px;
+  background:#6b1111;
+  border-color:#d32727;
 }
 
 #timeReadout{
- min-width:76px;
-
- color:#ddd;
-
- font-size:10px;
-
- text-align:center
+  min-width:112px;
+  text-align:center;
+  font-size:11px;
+  color:#ddd;
 }
 
-#loopBtn{
- min-width:52px
+#timeline{
+  position:relative;
+  flex:1;
+  overflow:auto;
+  touch-action:pan-x;
+  background:#090909;
 }
 
-@media(max-width:600px){
-
- #top{
-  gap:3px
- }
-
- .tool{
-  padding:0 7px
- }
-
- #view{
-  bottom:190px
- }
+#timelineInner{
+  position:relative;
+  min-height:100%;
 }
+
+#ruler{
+  position:sticky;
+  top:0;
+  height:26px;
+  z-index:10;
+  background:#101010;
+  border-bottom:1px solid #242424;
+}
+
+.tick{
+  position:absolute;
+  top:0;
+  height:26px;
+  width:1px;
+  background:#333;
+}
+
+.tick.major{
+  background:#555;
+}
+
+.tick span{
+  position:absolute;
+  top:4px;
+  left:4px;
+  font-size:9px;
+  color:#888;
+  white-space:nowrap;
+}
+
+#tracks{
+  position:relative;
+}
+
+.track{
+  position:relative;
+  height:25px;
+  border-bottom:1px solid #181818;
+}
+
+.track:nth-child(even){
+  background:#0c0c0c;
+}
+
+.trackLabel{
+  position:sticky;
+  left:0;
+  z-index:6;
+  width:92px;
+  height:25px;
+  display:flex;
+  align-items:center;
+  padding-left:7px;
+  background:rgba(17,17,17,.94);
+  border-right:1px solid #292929;
+  color:#888;
+  font-size:9px;
+  pointer-events:none;
+}
+
+.key{
+  position:absolute;
+  top:7px;
+  width:11px;
+  height:11px;
+  transform:translateX(-5px) rotate(45deg);
+  background:#b91a1a;
+  border:1px solid #ff4d4d;
+  z-index:5;
+}
+
+#playhead{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:2px;
+  background:#ff3434;
+  z-index:15;
+  pointer-events:none;
+}
+
+#playhead::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-5px;
+  width:12px;
+  height:9px;
+  background:#ff3434;
+  clip-path:polygon(0 0,100% 0,50% 100%);
+}
+
+#endMarker{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:20px;
+  transform:translateX(-10px);
+  z-index:18;
+  cursor:ew-resize;
+  touch-action:none;
+}
+
+#endMarker::before{
+  content:"";
+  position:absolute;
+  left:9px;
+  top:0;
+  bottom:0;
+  width:2px;
+  background:#d4d4d4;
+}
+
+#endMarker::after{
+  content:"]";
+  position:absolute;
+  left:1px;
+  top:3px;
+  color:#fff;
+  font-size:17px;
+  font-weight:bold;
+}
+
+@media(max-height:650px){
+  #timelinePanel{
+    height:175px;
+  }
+}
+
 </style>
 </head>
 
 <body>
-
 <div id="app">
 
-<!-- TOP TOOLBAR -->
+<div id="toolbar">
+<button class="toolBtn active" id="moveBtn">MOVE</button>
+<button class="toolBtn" id="rotateBtn">ROTATE</button>
 
-<div id="top">
+<button class="toolBtn active" id="globalBtn">GLOBAL</button>
+<button class="toolBtn" id="parentBtn">PARENT</button>
+<button class="toolBtn" id="localBtn">LOCAL</button>
 
- <div id="title">
-  MizaxEngine
- </div>
+<button class="toolBtn active" id="smoothBtn">SMOOTH</button>
+<button class="toolBtn" id="choppyBtn">CHOPPY</button>
 
- <button
-  id="moveBtn"
-  class="tool active">
-  MOVE
- </button>
+<button class="toolBtn active" id="loopBtn">↻ LOOP</button>
+<button class="toolBtn" id="cameraBtn">🔓 CAMERA</button>
 
- <button
-  id="rotateBtn"
-  class="tool">
-  ROTATE
- </button>
-
- <button
-  id="globalBtn"
-  class="tool active">
-  GLOBAL
- </button>
-
- <button
-  id="localBtn"
-  class="tool">
-  LOCAL
- </button>
-
- <button
-  id="parentBtn"
-  class="tool">
-  PARENT
- </button>
-
- <button
-  id="smoothBtn"
-  class="tool active">
-  SMOOTH
- </button>
-
- <button
-  id="choppyBtn"
-  class="tool">
-  CHOPPY
- </button>
-
- <button
-  id="loopBtn"
-  class="tool active">
-  ↻ LOOP
- </button>
-
- <button
-  id="lockCamera"
-  class="tool">
-  🔓 CAMERA
- </button>
-
- <button class="tool">
-  FPS
-  <input
-   id="fpsInput"
-   type="number"
-   value="30"
-   min="1"
-   max="60">
- </button>
-
+<div id="fpsWrap">
+<span>FPS</span>
+<input id="fps" type="number" min="1" max="60" value="30">
+</div>
 </div>
 
+<div id="workspace">
+<div id="view"></div>
 
-<!-- 3D VIEW -->
-
-<div id="view">
-
- <div id="parts">
-
-  <button
-   class="part active"
-   data-part="Head">
-   Head
-  </button>
-
-  <button
-   class="part"
-   data-part="Torso">
-   Torso
-  </button>
-
-  <button
-   class="part"
-   data-part="Left Arm">
-   Left Arm
-  </button>
-
-  <button
-   class="part"
-   data-part="Right Arm">
-   Right Arm
-  </button>
-
-  <button
-   class="part"
-   data-part="Left Leg">
-   Left Leg
-  </button>
-
-  <button
-   class="part"
-   data-part="Right Leg">
-   Right Leg
-  </button>
-
- </div>
-
+<div id="partPanel">
+<button class="partBtn" data-part="Head">HEAD</button>
+<button class="partBtn active" data-part="Torso">TORSO</button>
+<button class="partBtn" data-part="Left Arm">LEFT ARM</button>
+<button class="partBtn" data-part="Right Arm">RIGHT ARM</button>
+<button class="partBtn" data-part="Left Leg">LEFT LEG</button>
+<button class="partBtn" data-part="Right Leg">RIGHT LEG</button>
 </div>
 
-
-<!-- TIMELINE -->
+<div id="infoBox">
+MizaxEngine R6
+</div>
+</div>
 
 <div id="timelinePanel">
 
- <div id="timelineScroll">
+<div id="timelineTop">
+<button class="timeBtn" id="prevBtn">◀</button>
+<button class="timeBtn" id="play">▶</button>
+<button class="timeBtn" id="nextBtn">▶|</button>
+<div id="timeReadout">0.00 / 2.00</div>
+</div>
 
-  <div id="timelineInner">
-
-   <div id="timeRuler"></div>
-
-   <div id="tracks"></div>
-
-   <div id="playhead">
-
-    <div id="playheadHandle"></div>
-
-   </div>
-
-   <div id="endMarker"></div>
-
-  </div>
-
- </div>
-
-
- <div id="timelineControls">
-
-  <button
-   id="prev"
-   class="control">
-   ◀
-  </button>
-
-  <div id="timeReadout">
-   00:00.00
-  </div>
-
-  <button
-   id="play"
-   class="control">
-   ▶ PLAY
-  </button>
-
-  <button
-   id="next"
-   class="control">
-   ▶
-  </button>
-
-  <button
-   id="addKey"
-   class="control">
-   ◆ KEY
-  </button>
-
- </div>
-
+<div id="timeline">
+<div id="timelineInner">
+<div id="ruler"></div>
+<div id="tracks"></div>
+<div id="playhead"></div>
+<div id="endMarker"></div>
+</div>
 </div>
 
 </div>
 
-
-<!-- THREE.JS -->
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TransformControls.js"></script>
 
 <script>
 
-/* ==========================================
-   PART 1 SELESAI
-   SCRIPT LANJUT DI PART 2
-========================================== */
-<script>
+const view=document.getElementById("view");
 
-/* ==========================================
-   MIZAXENGINE V6
-   PART 2 — 3D + R6 + HANDLES
-========================================== */
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x090909);
 
-const view =
- document.getElementById("view");
-
-const scene =
- new THREE.Scene();
-
-scene.background =
- new THREE.Color(0x111111);
-
-
-/* CAMERA */
-
-const camera =
- new THREE.PerspectiveCamera(
+const camera=new THREE.PerspectiveCamera(
   45,
-  view.clientWidth /
-  view.clientHeight,
-  .01,
-  100
- );
-
-camera.position.set(
-  5,
-  3.5,
-  7
+  Math.max(1,view.clientWidth)/Math.max(1,view.clientHeight),
+  0.05,
+  200
 );
 
+camera.position.set(8,5.5,10);
 
-/* RENDERER */
+const renderer=new THREE.WebGLRenderer({
+  antialias:true,
+  alpha:false
+});
 
-const renderer =
- new THREE.WebGLRenderer({
-  antialias:true
- });
-
-renderer.setPixelRatio(
- Math.min(
-  window.devicePixelRatio,
-  1.5
- )
-);
-
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.outputEncoding=THREE.sRGBEncoding;
 renderer.setSize(
- view.clientWidth,
- view.clientHeight
+  Math.max(1,view.clientWidth),
+  Math.max(1,view.clientHeight)
 );
 
-view.appendChild(
- renderer.domElement
+view.appendChild(renderer.domElement);
+
+const hemi=new THREE.HemisphereLight(0xffffff,0x331111,1.45);
+scene.add(hemi);
+
+const light=new THREE.DirectionalLight(0xffffff,1.1);
+light.position.set(4,8,7);
+scene.add(light);
+
+const fill=new THREE.DirectionalLight(0x8a2020,.45);
+fill.position.set(-6,4,-4);
+scene.add(fill);
+
+const grid=new THREE.GridHelper(
+  30,
+  30,
+  0x451414,
+  0x191919
 );
-
-
-/* LIGHT */
-
-scene.add(
- new THREE.HemisphereLight(
-  0xffffff,
-  0x444444,
-  1.4
- )
-);
-
-const sun =
- new THREE.DirectionalLight(
-  0xffffff,
-  1.2
- );
-
-sun.position.set(
-  4,8,6
- );
-
-scene.add(sun);
-
-
-/* ORBIT */
-
-const orbit =
- new THREE.OrbitControls(
-  camera,
-  renderer.domElement
- );
-
-orbit.enableDamping = true;
-orbit.dampingFactor = .14;
-
-orbit.rotateSpeed = .22;
-orbit.zoomSpeed = .28;
-orbit.panSpeed = .18;
-
-
-/* ==========================================
-   RIG
-========================================== */
-
-const rig =
- new THREE.Group();
-
-rig.name = "R6";
-
-scene.add(rig);
-
-const parts = {};
-
-
-/* MATERIAL */
-
-const bodyMaterial =
- new THREE.MeshStandardMaterial({
-  color:0x9d9d9d,
-  roughness:.82,
-  metalness:0
- });
-
-
-/* ==========================================
-   ROUNDED BLOCK
-========================================== */
-
-function roundedBlock(
- w,
- h,
- d,
- r=.07
-){
-
- const shape =
-  new THREE.Shape();
-
- const hw = w/2;
- const hh = h/2;
-
- shape.moveTo(
-  -hw+r,
-  -hh
- );
-
- shape.lineTo(
-  hw-r,
-  -hh
- );
-
- shape.quadraticCurveTo(
-  hw,
-  -hh,
-  hw,
-  -hh+r
- );
-
- shape.lineTo(
-  hw,
-  hh-r
- );
-
- shape.quadraticCurveTo(
-  hw,
-  hh,
-  hw-r,
-  hh
- );
-
- shape.lineTo(
-  -hw+r,
-  hh
- );
-
- shape.quadraticCurveTo(
-  -hw,
-  hh,
-  -hw,
-  hh-r
- );
-
- shape.lineTo(
-  -hw,
-  -hh+r
- );
-
- shape.quadraticCurveTo(
-  -hw,
-  -hh,
-  -hw+r,
-  -hh
- );
-
-
- const geo =
-  new THREE.ExtrudeGeometry(
-   shape,
-   {
-    depth:d,
-
-    bevelEnabled:true,
-
-    bevelSegments:3,
-
-    bevelSize:r*.3,
-
-    bevelThickness:r*.3,
-
-    curveSegments:5
-   }
-  );
-
- geo.center();
-
- const mesh =
-  new THREE.Mesh(
-   geo,
-   bodyMaterial
-  );
-
- return mesh;
-}
-
-
-/* ==========================================
-   ROUNDED CYLINDER HEAD
-========================================== */
-
-function makeHead(){
-
- const points=[];
-
- const height=1.35;
- const radius=.70;
-
- const segments=24;
-
- for(
-  let i=0;
-  i<=segments;
-  i++
- ){
-
-  const t=
-   i/segments;
-
-  const y=
-   -height/2+
-   t*height;
-
-  const edge=
-   Math.min(
-    t,
-    1-t
-   );
-
-  let r=
-   radius;
-
-  /*
-    Rounded atas/bawah.
-  */
-
-  if(edge<.18){
-
-   const f=
-    edge/.18;
-
-   r=
-    radius*
-    (
-     .84+
-     .16*
-     Math.sin(
-      f*Math.PI/2
-     )
-    );
-
-  }
-
-  points.push(
-   new THREE.Vector2(
-    r,
-    y
-   )
-  );
-
- }
-
-
- const geo =
-  new THREE.LatheGeometry(
-   points,
-   32
-  );
-
- geo.computeVertexNormals();
-
-
- const mesh =
-  new THREE.Mesh(
-   geo,
-   bodyMaterial
-  );
-
- return mesh;
-}
-
-
-/* ==========================================
-   CREATE BODY PART
-========================================== */
-
-function createPart(
- name,
- w,
- h,
- d
-){
-
- const group =
-  new THREE.Group();
-
- group.name =
-  name;
-
- const mesh =
-  roundedBlock(
-   w,
-   h,
-   d
-  );
-
- group.add(mesh);
-
- parts[name]=group;
-
- return group;
-}
-
-
-/* ==========================================
-   TORSO
-========================================== */
-
-const torso =
- createPart(
-  "Torso",
-  2,
-  2,
-  1
- );
-
-rig.add(torso);
-
-torso.position.set(
- 0,
- 4,
- 0
-);
-
-
-/* ==========================================
-   ARMS
-========================================== */
-
-const leftArm =
- createPart(
-  "Left Arm",
-  1,
-  2,
-  1
- );
-
-const rightArm =
- createPart(
-  "Right Arm",
-  1,
-  2,
-  1
- );
-
-torso.add(leftArm);
-torso.add(rightArm);
-
-leftArm.position.set(
- -1.5,
- 0,
- 0
- );
-
-rightArm.position.set(
- 1.5,
- 0,
- 0
- );
-
-
-/* ==========================================
-   LEGS
-========================================== */
-
-const leftLeg =
- createPart(
-  "Left Leg",
-  1,
-  2,
-  1
- );
-
-const rightLeg =
- createPart(
-  "Right Leg",
-  1,
-  2,
-  1
- );
-
-torso.add(leftLeg);
-torso.add(rightLeg);
-
-
-/*
-   KAKI RAPAT.
-
-   Left:
-   -1 → 0
-
-   Right:
-    0 → 1
-*/
-
-leftLeg.position.set(
- -.5,
- -2,
- 0
- );
-
-rightLeg.position.set(
- .5,
- -2,
- 0
- );
-
-
-/* ==========================================
-   HEAD
-========================================== */
-
-const head =
- new THREE.Group();
-
-head.name =
- "Head";
-
-head.add(
- makeHead()
-);
-
-parts["Head"] =
- head;
-
-torso.add(head);
-
-
-/*
-   Head diturunkan supaya
-   benar-benar dekat dengan torso.
-*/
-
-head.position.set(
- 0,
- 1.66,
- 0
- );
-
-
-/* ==========================================
-   PART STORAGE
-========================================== */
-
-parts["Torso"] = torso;
-parts["Left Arm"] = leftArm;
-parts["Right Arm"] = rightArm;
-parts["Left Leg"] = leftLeg;
-parts["Right Leg"] = rightLeg;
-
-
-/* ==========================================
-   GROUND
-========================================== */
-
-const grid =
- new THREE.GridHelper(
-  12,
-  24,
-  0x444444,
-  0x222222
- );
 
 grid.position.y=0;
-
 scene.add(grid);
 
-
-/* CAMERA TARGET */
-
-orbit.target.set(
- 0,
- 3,
- 0
-);
-
+const orbit=new THREE.OrbitControls(camera,renderer.domElement);
+orbit.target.set(0,3,0);
+orbit.enableDamping=true;
+orbit.dampingFactor=.08;
+orbit.minDistance=4;
+orbit.maxDistance=30;
 orbit.update();
 
-
-/* ==========================================
-   TRANSFORM HANDLES
-========================================== */
-
-let selected =
- head;
-
-let gizmo =
- new THREE.TransformControls(
-  camera,
-  renderer.domElement
- );
-
+const gizmo=new THREE.TransformControls(camera,renderer.domElement);
+gizmo.setSize(.8);
 scene.add(gizmo);
 
-gizmo.attach(
- selected
-);
-
-gizmo.setMode(
- "translate"
-);
-
-
-/* ==========================================
-   TRANSFORM SPACE
-========================================== */
-
-let transformSpace =
- "world";
-
-
-document
- .getElementById("globalBtn")
- .onclick=()=>{
-
-  transformSpace="world";
-
-  gizmo.setSpace(
-   "world"
-  );
-
-  setSpaceButtons();
-
- };
-
-
-document
- .getElementById("localBtn")
- .onclick=()=>{
-
-  transformSpace="local";
-
-  gizmo.setSpace(
-   "local"
-  );
-
-  setSpaceButtons();
-
- };
-
-
-document
- .getElementById("parentBtn")
- .onclick=()=>{
-
-  transformSpace="parent";
-
-  /*
-    TransformControls tidak punya
-    mode "parent" langsung.
-
-    Parent space disimulasikan
-    menggunakan local transform.
-  */
-
-  gizmo.setSpace(
-   "local"
-  );
-
-  setSpaceButtons();
-
- };
-
-
-function setSpaceButtons(){
-
- document
-  .getElementById("globalBtn")
-  .classList.toggle(
-   "active",
-   transformSpace==="world"
-  );
-
- document
-  .getElementById("localBtn")
-  .classList.toggle(
-   "active",
-   transformSpace==="local"
-  );
-
- document
-  .getElementById("parentBtn")
-  .classList.toggle(
-   "active",
-   transformSpace==="parent"
-  );
-
-}
-
-
-/* ==========================================
-   MOVE / ROTATE
-========================================== */
-
-const moveBtn =
- document.getElementById(
-  "moveBtn"
- );
-
-const rotateBtn =
- document.getElementById(
-  "rotateBtn"
- );
-
-
-moveBtn.onclick=()=>{
-
- gizmo.setMode(
-  "translate"
- );
-
- moveBtn.classList.add(
-  "active"
- );
-
- rotateBtn.classList.remove(
-  "active"
- );
-
- };
-
-
-rotateBtn.onclick=()=>{
-
- gizmo.setMode(
-  "rotate"
- );
-
- rotateBtn.classList.add(
-  "active"
- );
-
- moveBtn.classList.remove(
-  "active"
- );
-
- };
-
-
-/* ==========================================
-   AXIS LOCK
-========================================== */
-
-/*
-   Saat jari mulai drag salah satu
-   axis, axis itu dikunci.
-
-   Jadi kalau awalnya Y,
-   geser jari ke arah lain
-   tidak tiba-tiba menjadi X/Z.
-*/
-
-let lockedAxis =
- null;
-
-
-gizmo.addEventListener(
- "mouseDown",
- event=>{
-
-  lockedAxis =
-   gizmo.axis;
-
- });
-
-
-gizmo.addEventListener(
- "mouseUp",
- ()=>{
-
-  lockedAxis=null;
-
- });
-
-
-/*
-   Touch/drag detection tambahan.
-*/
-
-renderer.domElement
- .addEventListener(
-  "pointerdown",
-  ()=>{
-   lockedAxis =
-    gizmo.axis;
-  }
- );
-
-
-renderer.domElement
- .addEventListener(
-  "pointerup",
-  ()=>{
-   lockedAxis=null;
-  }
- );
-
-
-/* ==========================================
-   DRAGGING
-========================================== */
-
-let cameraLocked=false;
-
-
-gizmo.addEventListener(
- "dragging-changed",
- event=>{
-
-  if(
-   !cameraLocked
-  ){
-
-   orbit.enabled =
-    !event.value;
-
-  }
-
- });
-
-
-/* ==========================================
-   CAMERA LOCK
-========================================== */
-
-const cameraButton =
- document.getElementById(
-  "lockCamera"
- );
-
-
-cameraButton.onclick=()=>{
-
- cameraLocked =
-  !cameraLocked;
-
- orbit.enabled =
-  !cameraLocked;
-
- if(cameraLocked){
-
-  cameraButton.textContent =
-   "🔒 CAMERA";
-
-  cameraButton.classList.add(
-   "active"
-  );
-
- }else{
-
-  cameraButton.textContent =
-   "🔓 CAMERA";
-
-  cameraButton.classList.remove(
-   "active"
-  );
-
- }
-
- };
-
-
-/* ==========================================
-   SELECT PART
-========================================== */
-
-document
- .querySelectorAll(".part")
- .forEach(button=>{
-
-  button.onclick=()=>{
-
-   const name =
-    button.dataset.part;
-
-   if(!parts[name])
-    return;
-
-   selected =
-    parts[name];
-
-   gizmo.attach(
-    selected
-   );
-
-
-   document
-    .querySelectorAll(".part")
-    .forEach(
-     x=>
-      x.classList.remove(
-       "active"
-      )
-    );
-
-
-   button.classList.add(
-    "active"
-   );
-
-  };
-
- });
-
-
-/* ==========================================
-   GIZMO SCALE
-========================================== */
-
-function updateGizmo(){
-
- const distance =
-  camera.position.distanceTo(
-   orbit.target
-  );
-
- const size =
-  THREE.MathUtils.clamp(
-   distance*.11,
-   .55,
-   2.2
-  );
-
- gizmo.setSize(
-  size
-  );
-
-}
-
-
-/* ==========================================
-   ANIMATION STATE
-========================================== */
-
-let interpolation =
- "smooth";
-
-let fps=30;
-
-let currentTime=0;
-
-let totalDuration=2;
-
-let playing=false;
-
-let loopPlayback=true;
-
-let playbackRequest=null;
-
-let lastPlayback=0;
-
-const keyframes=[];
-
-
-/* ==========================================
-   CAPTURE POSE
-========================================== */
-
-function capturePose(){
-
- const pose={};
-
- Object.keys(parts)
- .forEach(name=>{
-
-  const p =
-   parts[name];
-
-  pose[name]={
-
-   position:[
-    p.position.x,
-    p.position.y,
-    p.position.z
-   ],
-
-   rotation:[
-    p.rotation.x,
-    p.rotation.y,
-    p.rotation.z
-   ]
-
-  };
-
- });
-
- return pose;
-
-}
-
-
-/* ==========================================
-   APPLY POSE
-========================================== */
-
-function applyPose(
- pose
-){
-
- if(!pose)
-  return;
-
-
- Object.keys(pose)
- .forEach(name=>{
-
-  const p =
-   parts[name];
-
-  const d =
-   pose[name];
-
-  if(!p||!d)
-   return;
-
-
-  p.position.set(
-   d.position[0],
-   d.position[1],
-   d.position[2]
-  );
-
-  p.rotation.set(
-   d.rotation[0],
-   d.rotation[1],
-   d.rotation[2]
-  );
-
- });
-
-}
-
-
-/* ==========================================
-   AUTO KEYFRAME
-========================================== */
-
-let lastPose =
- capturePose();
-
-
-function poseChanged(){
-
- const now =
-  capturePose();
-
- const old =
-  lastPose;
-
- let changed=false;
-
-
- Object.keys(now)
- .forEach(name=>{
-
-  if(changed)
-   return;
-
-  const a =
-   now[name];
-
-  const b =
-   old[name];
-
-  if(!b){
-
-   changed=true;
-   return;
-
-  }
-
-
-  for(
-   let i=0;
-   i<3;
-   i++
-  ){
-
-   if(
-    Math.abs(
-     a.position[i]-
-     b.position[i]
-    )>.0001
-   ){
-
-    changed=true;
-    return;
-
-   }
-
-   if(
-    Math.abs(
-     a.rotation[i]-
-     b.rotation[i]
-    )>.0001
-   ){
-
-    changed=true;
-    return;
-
-   }
-
-  }
-
- });
-
-
- return {
-  changed,
-  pose:now
- };
-
-
-}
-
-
-/* ==========================================
-   MAKE / UPDATE KEYFRAME
-========================================== */
-
-function autoKey(){
-
- const result =
-  poseChanged();
-
- if(!result.changed)
-  return;
-
-
- const existing =
-  keyframes.find(
-   k=>
-    Math.abs(
-     k.time-currentTime
-    )<.0001
-  );
-
-
- if(existing){
-
-  existing.pose =
-   result.pose;
-
- }else{
-
-  keyframes.push({
-
-   time:currentTime,
-
-   pose:result.pose
-
+gizmo.addEventListener("dragging-changed",e=>{
+  orbit.enabled=!e.value && !cameraLocked;
+});
+
+function roundedBox(w,h,d,r=.12){
+
+  const shape=new THREE.Shape();
+
+  const x=-w/2;
+  const y=-h/2;
+
+  shape.moveTo(x+r,y);
+  shape.lineTo(x+w-r,y);
+  shape.quadraticCurveTo(x+w,y,x+w,y+r);
+  shape.lineTo(x+w,y+h-r);
+  shape.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  shape.lineTo(x+r,y+h);
+  shape.quadraticCurveTo(x,y+h,x,y+h-r);
+  shape.lineTo(x,y+r);
+  shape.quadraticCurveTo(x,y,x+r,y);
+
+  const geo=new THREE.ExtrudeGeometry(shape,{
+    depth:d,
+    bevelEnabled:true,
+    bevelSegments:2,
+    steps:1,
+    bevelSize:r*.42,
+    bevelThickness:r*.42
   });
 
- }
+  geo.center();
+  geo.computeVertexNormals();
 
-
- keyframes.sort(
-  (a,b)=>
-   a.time-b.time
- );
-
-
- lastPose =
-  result.pose;
-
-
- if(
-  currentTime>
-  totalDuration
- ){
-
-  totalDuration =
-   currentTime;
-
- }
-
-
- rebuildTimeline();
-
+  return geo;
 }
 
+function makeHeadGeometry(){
 
-/* ==========================================
-   TRANSFORM CHANGE DETECTION
-========================================== */
+  const points=[];
 
-gizmo.addEventListener(
- "change",
- ()=>{
+  points.push(new THREE.Vector2(0.74,-0.67));
+  points.push(new THREE.Vector2(0.79,-0.58));
+  points.push(new THREE.Vector2(0.82,-0.42));
+  points.push(new THREE.Vector2(0.83,-0.12));
+  points.push(new THREE.Vector2(0.83,0.20));
+  points.push(new THREE.Vector2(0.81,0.43));
+  points.push(new THREE.Vector2(0.76,0.59));
+  points.push(new THREE.Vector2(0.68,0.67));
 
-  if(
-   playing
-  )
-   return;
+  const geo=new THREE.LatheGeometry(
+    points,
+    32
+  );
 
-  autoKey();
+  geo.computeVertexNormals();
 
- });
+  return geo;
+}
 
+const skinMat=new THREE.MeshStandardMaterial({
+  color:0xf3d5b7,
+  roughness:.72,
+  metalness:0
+});
 
-/* ==========================================
-   INITIAL KEYFRAME
-========================================== */
+const torsoMat=new THREE.MeshStandardMaterial({
+  color:0x951717,
+  roughness:.65
+});
 
-keyframes.push({
+const limbMat=new THREE.MeshStandardMaterial({
+  color:0x292929,
+  roughness:.7
+});
 
- time:0,
+const rigRoot=new THREE.Group();
+rigRoot.position.y=0;
+scene.add(rigRoot);
 
- pose:capturePose()
+const parts={};
+
+function makePart(name,geometry,material,parent){
+
+  const group=new THREE.Group();
+  group.name=name;
+
+  const mesh=new THREE.Mesh(
+    geometry,
+    material
+  );
+
+  mesh.castShadow=false;
+  mesh.receiveShadow=false;
+
+  group.add(mesh);
+  parent.add(group);
+
+  parts[name]=group;
+
+  return group;
+}
+
+const torso=makePart(
+  "Torso",
+  roundedBox(2,2,1,.12),
+  torsoMat,
+  rigRoot
+);
+
+torso.position.set(0,4,0);
+
+const head=makePart(
+  "Head",
+  makeHeadGeometry(),
+  skinMat,
+  torso
+);
+
+head.position.set(0,1.7,0);
+
+const leftArm=makePart(
+  "Left Arm",
+  roundedBox(1,2,1,.1),
+  limbMat,
+  torso
+);
+
+leftArm.position.set(-1.5,0,0);
+
+const rightArm=makePart(
+  "Right Arm",
+  roundedBox(1,2,1,.1),
+  limbMat,
+  torso
+);
+
+rightArm.position.set(1.5,0,0);
+
+const leftLeg=makePart(
+  "Left Leg",
+  roundedBox(1,2,1,.1),
+  limbMat,
+  torso
+);
+
+leftLeg.position.set(-.5,-2,0);
+
+const rightLeg=makePart(
+  "Right Leg",
+  roundedBox(1,2,1,.1),
+  limbMat,
+  torso
+);
+
+rightLeg.position.set(.5,-2,0);
+
+const neckRing=new THREE.Mesh(
+  new THREE.CylinderGeometry(.25,.25,.18,20),
+  skinMat
+);
+
+neckRing.position.set(0,1.05,0);
+torso.add(neckRing);
+
+let selectedPart="Torso";
+gizmo.attach(parts[selectedPart]);
+
+function selectPart(name){
+
+  selectedPart=name;
+
+  document.querySelectorAll(".partBtn").forEach(btn=>{
+    btn.classList.toggle(
+      "active",
+      btn.dataset.part===name
+    );
+  });
+
+  gizmo.attach(parts[name]);
+}
+
+document.querySelectorAll(".partBtn").forEach(btn=>{
+
+  btn.addEventListener("pointerdown",e=>{
+    e.stopPropagation();
+    selectPart(btn.dataset.part);
+  });
 
 });
 
-lastPose =
- capturePose();
-/* =========================
-   PART 3 — TIMELINE + ANIMATION
-========================= */
+const moveBtn=document.getElementById("moveBtn");
+const rotateBtn=document.getElementById("rotateBtn");
 
-const timeline = document.getElementById("timeline");
-const timelineInner = document.getElementById("timelineInner");
-const ruler = document.getElementById("ruler");
-const tracks = document.getElementById("tracks");
-const playhead = document.getElementById("playhead");
-const endMarker = document.getElementById("endMarker");
-const timeReadout = document.getElementById("timeReadout");
-const playBtn = document.getElementById("play");
-const loopBtn = document.getElementById("loop");
-const smoothBtn = document.getElementById("smooth");
-const choppyBtn = document.getElementById("choppy");
-const fpsInput = document.getElementById("fps");
+moveBtn.onclick=()=>{
+  gizmo.setMode("translate");
+  moveBtn.classList.add("active");
+  rotateBtn.classList.remove("active");
+};
 
-let pixelsPerSecond = 120;
-let draggingPlayhead = false;
-let draggingEnd = false;
+rotateBtn.onclick=()=>{
+  gizmo.setMode("rotate");
+  rotateBtn.classList.add("active");
+  moveBtn.classList.remove("active");
+};
 
-/* ---------- TIME ---------- */
+const globalBtn=document.getElementById("globalBtn");
+const parentBtn=document.getElementById("parentBtn");
+const localBtn=document.getElementById("localBtn");
 
-function clamp(v, a, b){
-  return Math.max(a, Math.min(b, v));
+function setSpace(type){
+
+  globalBtn.classList.toggle("active",type==="global");
+  parentBtn.classList.toggle("active",type==="parent");
+  localBtn.classList.toggle("active",type==="local");
+
+  if(type==="global"){
+    gizmo.setSpace("world");
+  }else{
+    gizmo.setSpace("local");
+  }
 }
 
-function setTime(t, rebuild=true){
-  currentTime = clamp(t, 0, totalDuration);
-  evaluate(currentTime);
+globalBtn.onclick=()=>setSpace("global");
+parentBtn.onclick=()=>setSpace("parent");
+localBtn.onclick=()=>setSpace("local");
 
-  lastPose = capturePose();
+let cameraLocked=false;
 
-  updateTimeline();
+const cameraBtn=document.getElementById("cameraBtn");
 
-  if(rebuild) renderTimeline();
-}
+cameraBtn.onclick=()=>{
 
-/* ---------- POSE INTERPOLATION ---------- */
+  cameraLocked=!cameraLocked;
 
-const qa = new THREE.Quaternion();
-const qb = new THREE.Quaternion();
+  orbit.enabled=!cameraLocked;
 
-function poseToQuat(rot, target){
-  target.setFromEuler(
-    new THREE.Euler(rot.x, rot.y, rot.z, "XYZ")
+  cameraBtn.textContent=
+    cameraLocked
+    ?"🔒 CAMERA"
+    :"🔓 CAMERA";
+
+  cameraBtn.classList.toggle(
+    "active",
+    cameraLocked
   );
-  return target;
+};
+
+let interpolation="smooth";
+
+const smoothBtn=document.getElementById("smoothBtn");
+const choppyBtn=document.getElementById("choppyBtn");
+
+smoothBtn.onclick=()=>{
+  interpolation="smooth";
+  smoothBtn.classList.add("active");
+  choppyBtn.classList.remove("active");
+  evaluate(currentTime);
+};
+
+choppyBtn.onclick=()=>{
+  interpolation="choppy";
+  choppyBtn.classList.add("active");
+  smoothBtn.classList.remove("active");
+  evaluate(currentTime);
+};
+
+let loopPlayback=true;
+
+const loopBtn=document.getElementById("loopBtn");
+
+loopBtn.onclick=()=>{
+  loopPlayback=!loopPlayback;
+  loopBtn.classList.toggle("active",loopPlayback);
+};
+
+let fps=30;
+
+document.getElementById("fps").onchange=e=>{
+
+  fps=Math.max(
+    1,
+    Math.min(
+      60,
+      Number(e.target.value)||30
+    )
+  );
+
+  e.target.value=fps;
+};
+
+function capturePose(){
+
+  const pose={};
+
+  Object.keys(parts).forEach(name=>{
+
+    const p=parts[name];
+
+    pose[name]={
+      position:{
+        x:p.position.x,
+        y:p.position.y,
+        z:p.position.z
+      },
+      quaternion:{
+        x:p.quaternion.x,
+        y:p.quaternion.y,
+        z:p.quaternion.z,
+        w:p.quaternion.w
+      }
+    };
+  });
+
+  return pose;
 }
 
-function applyInterpolatedPose(a, b, alpha){
+function applyPose(pose){
 
-  for(const name of Object.keys(parts)){
+  if(!pose)return;
 
-    const p = parts[name];
+  Object.keys(parts).forEach(name=>{
 
-    const pa = a[name];
-    const pb = b[name];
+    const data=pose[name];
+    if(!data)return;
+
+    const p=parts[name];
 
     p.position.set(
-      THREE.MathUtils.lerp(pa.position.x, pb.position.x, alpha),
-      THREE.MathUtils.lerp(pa.position.y, pb.position.y, alpha),
-      THREE.MathUtils.lerp(pa.position.z, pb.position.z, alpha)
+      data.position.x,
+      data.position.y,
+      data.position.z
     );
 
-    poseToQuat(pa.rotation, qa);
-    poseToQuat(pb.rotation, qb);
-
-    qa.slerp(qb, alpha);
-
-    p.quaternion.copy(qa);
-  }
+    p.quaternion.set(
+      data.quaternion.x,
+      data.quaternion.y,
+      data.quaternion.z,
+      data.quaternion.w
+    );
+  });
 }
 
-/* ---------- EVALUATE ---------- */
+function poseChanged(a,b){
 
-function evaluate(time){
-
-  if(!keyframes.length) return;
-
-  if(keyframes.length === 1){
-    applyPose(keyframes[0].pose);
-    return;
-  }
-
-  let A = keyframes[0];
-  let B = keyframes[keyframes.length - 1];
-
-  for(let i=0;i<keyframes.length-1;i++){
-
-    if(
-      time >= keyframes[i].time &&
-      time <= keyframes[i+1].time
-    ){
-      A = keyframes[i];
-      B = keyframes[i+1];
-      break;
-    }
-  }
-
-  if(time <= A.time){
-    applyPose(A.pose);
-    return;
-  }
-
-  if(time >= B.time){
-    applyPose(B.pose);
-    return;
-  }
-
-  let alpha =
-    (time - A.time) /
-    Math.max(0.0001, B.time - A.time);
-
-  if(interpolation === "choppy"){
-    applyPose(A.pose);
-    return;
-  }
-
-  /* SMOOTH */
-  alpha = alpha * alpha * (3 - 2 * alpha);
-
-  applyInterpolatedPose(
-    A.pose,
-    B.pose,
-    alpha
-  );
-}
-
-/* ---------- AUTO KEY ---------- */
-
-function poseDifferent(a,b){
-
-  if(!a || !b) return true;
+  if(!a||!b)return true;
 
   for(const name of Object.keys(parts)){
 
-    const A = a[name];
-    const B = b[name];
+    const A=a[name];
+    const B=b[name];
 
-    if(!A || !B) return true;
+    if(!A||!B)return true;
 
-    if(
-      Math.abs(A.position.x-B.position.x) > 0.0001 ||
-      Math.abs(A.position.y-B.position.y) > 0.0001 ||
-      Math.abs(A.position.z-B.position.z) > 0.0001 ||
-      Math.abs(A.rotation.x-B.rotation.x) > 0.0001 ||
-      Math.abs(A.rotation.y-B.rotation.y) > 0.0001 ||
-      Math.abs(A.rotation.z-B.rotation.z) > 0.0001
-    ){
+    const dp=
+      Math.abs(A.position.x-B.position.x)+
+      Math.abs(A.position.y-B.position.y)+
+      Math.abs(A.position.z-B.position.z);
+
+    const dq=
+      Math.abs(A.quaternion.x-B.quaternion.x)+
+      Math.abs(A.quaternion.y-B.quaternion.y)+
+      Math.abs(A.quaternion.z-B.quaternion.z)+
+      Math.abs(A.quaternion.w-B.quaternion.w);
+
+    if(dp>.0001||dq>.0001){
       return true;
     }
   }
@@ -1947,88 +849,179 @@ function poseDifferent(a,b){
   return false;
 }
 
+let currentTime=0;
+let totalDuration=2;
+let keyframes=[];
+let playing=false;
+
+keyframes.push({
+  time:0,
+  pose:capturePose()
+});
+
+let lastPose=capturePose();
+
 function autoKey(){
 
-  const pose = capturePose();
+  if(playing)return;
 
-  if(!poseDifferent(lastPose, pose)){
+  const pose=capturePose();
+
+  if(!poseChanged(lastPose,pose)){
     return;
   }
 
-  let existing = null;
-
-  for(const k of keyframes){
-
-    if(Math.abs(k.time-currentTime) < 0.035){
-      existing = k;
-      break;
-    }
-  }
+  let existing=keyframes.find(
+    k=>Math.abs(k.time-currentTime)<.025
+  );
 
   if(existing){
-    existing.time = currentTime;
-    existing.pose = pose;
+    existing.pose=pose;
   }else{
-
     keyframes.push({
-      time: currentTime,
-      pose: pose
+      time:currentTime,
+      pose:pose
     });
-
-    keyframes.sort((a,b)=>a.time-b.time);
   }
 
-  lastPose = pose;
+  keyframes.sort((a,b)=>a.time-b.time);
+
+  lastPose=capturePose();
 
   renderTimeline();
 }
 
-/* ---------- TRANSFORM AUTO KEY ---------- */
+let autoKeyTimer=null;
 
-gizmo.addEventListener("change",()=>{
+gizmo.addEventListener("objectChange",()=>{
 
-  if(playing) return;
+  clearTimeout(autoKeyTimer);
 
-  autoKey();
+  autoKeyTimer=setTimeout(()=>{
+    autoKey();
+  },35);
+
 });
 
-/* ---------- RULER ---------- */
+const tempA=new THREE.Quaternion();
+const tempB=new THREE.Quaternion();
+const tempQ=new THREE.Quaternion();
 
-function buildRuler(){
+function evaluate(time){
 
-  ruler.innerHTML = "";
+  if(keyframes.length===0)return;
 
-  const width =
-    Math.max(
-      timeline.clientWidth,
-      totalDuration * pixelsPerSecond + 200
+  if(keyframes.length===1){
+    applyPose(keyframes[0].pose);
+    return;
+  }
+
+  if(time<=keyframes[0].time){
+    applyPose(keyframes[0].pose);
+    return;
+  }
+
+  const last=
+    keyframes[keyframes.length-1];
+
+  if(time>=last.time){
+    applyPose(last.pose);
+    return;
+  }
+
+  let A=keyframes[0];
+  let B=keyframes[1];
+
+  for(let i=0;i<keyframes.length-1;i++){
+
+    if(
+      time>=keyframes[i].time &&
+      time<=keyframes[i+1].time
+    ){
+      A=keyframes[i];
+      B=keyframes[i+1];
+      break;
+    }
+  }
+
+  if(interpolation==="choppy"){
+    applyPose(A.pose);
+    return;
+  }
+
+  let alpha=
+    (time-A.time)/
+    Math.max(.00001,B.time-A.time);
+
+  alpha=Math.max(
+    0,
+    Math.min(1,alpha)
+  );
+
+  alpha=
+    alpha*alpha*(3-2*alpha);
+
+  Object.keys(parts).forEach(name=>{
+
+    const a=A.pose[name];
+    const b=B.pose[name];
+    const p=parts[name];
+
+    p.position.set(
+      THREE.MathUtils.lerp(
+        a.position.x,
+        b.position.x,
+        alpha
+      ),
+      THREE.MathUtils.lerp(
+        a.position.y,
+        b.position.y,
+        alpha
+      ),
+      THREE.MathUtils.lerp(
+        a.position.z,
+        b.position.z,
+        alpha
+      )
     );
 
-  timelineInner.style.width = width + "px";
+    tempA.set(
+      a.quaternion.x,
+      a.quaternion.y,
+      a.quaternion.z,
+      a.quaternion.w
+    );
 
-  for(
-    let t=0;
-    t<=totalDuration+0.001;
-    t+=0.5
-  ){
+    tempB.set(
+      b.quaternion.x,
+      b.quaternion.y,
+      b.quaternion.z,
+      b.quaternion.w
+    );
 
-    const x = t * pixelsPerSecond;
+    THREE.Quaternion.slerp(
+      tempA,
+      tempB,
+      tempQ,
+      alpha
+    );
 
-    const mark = document.createElement("div");
-
-    mark.className = "tick";
-    mark.style.left = x + "px";
-
-    mark.innerHTML =
-      `<span>${t.toFixed(1)}s</span>`;
-
-    ruler.appendChild(mark);
-  }
+    p.quaternion.copy(tempQ);
+  });
 }
 
-/* ---------- TRACKS ---------- */
+const timeline=document.getElementById("timeline");
+const timelineInner=document.getElementById("timelineInner");
+const ruler=document.getElementById("ruler");
+const tracks=document.getElementById("tracks");
+const playhead=document.getElementById("playhead");
+const endMarker=document.getElementById("endMarker");
+const timeReadout=document.getElementById("timeReadout");
 
-const trackNames = [
+const pixelsPerSecond=130;
+const leftOffset=95;
+
+const trackNames=[
   "Head",
   "Torso",
   "Left Arm",
@@ -2037,137 +1030,176 @@ const trackNames = [
   "Right Leg"
 ];
 
+function buildRuler(){
+
+  ruler.innerHTML="";
+
+  const width=
+    Math.max(
+      timeline.clientWidth,
+      leftOffset+
+      totalDuration*pixelsPerSecond+
+      100
+    );
+
+  timelineInner.style.width=
+    width+"px";
+
+  for(
+    let t=0;
+    t<=totalDuration+.001;
+    t+=.25
+  ){
+
+    const tick=
+      document.createElement("div");
+
+    const major=
+      Math.abs((t*2)-Math.round(t*2))
+      <.001;
+
+    tick.className=
+      major
+      ?"tick major"
+      :"tick";
+
+    tick.style.left=
+      (
+        leftOffset+
+        t*pixelsPerSecond
+      )+"px";
+
+    if(major){
+
+      const span=
+        document.createElement("span");
+
+      span.textContent=
+        t.toFixed(1)+"s";
+
+      tick.appendChild(span);
+    }
+
+    ruler.appendChild(tick);
+  }
+}
+
 function renderTimeline(){
 
   buildRuler();
 
-  tracks.innerHTML = "";
+  tracks.innerHTML="";
 
-  const width =
-    Math.max(
-      timeline.clientWidth,
-      totalDuration * pixelsPerSecond + 200
-    );
+  trackNames.forEach(name=>{
 
-  timelineInner.style.width = width + "px";
-
-  for(const name of trackNames){
-
-    const row =
+    const row=
       document.createElement("div");
 
-    row.className = "track";
+    row.className="track";
 
-    const label =
+    const label=
       document.createElement("div");
 
-    label.className = "trackLabel";
-    label.textContent = name;
+    label.className="trackLabel";
+    label.textContent=name;
 
     row.appendChild(label);
 
-    const lane =
-      document.createElement("div");
+    keyframes.forEach(k=>{
 
-    lane.className = "trackLane";
-
-    for(const k of keyframes){
-
-      const diamond =
+      const key=
         document.createElement("div");
 
-      diamond.className = "keyDiamond";
+      key.className="key";
 
-      diamond.style.left =
-        (k.time * pixelsPerSecond) + "px";
+      key.style.left=
+        (
+          leftOffset+
+          k.time*pixelsPerSecond
+        )+"px";
 
-      diamond.title =
-        `${name} — ${k.time.toFixed(2)}s`;
+      key.addEventListener(
+        "pointerdown",
+        e=>{
+          e.stopPropagation();
+          setTime(k.time);
+        }
+      );
 
-      diamond.addEventListener("pointerdown",e=>{
+      row.appendChild(key);
+    });
 
-        e.stopPropagation();
-
-        setTime(k.time);
-
-      });
-
-      lane.appendChild(diamond);
-    }
-
-    row.appendChild(lane);
     tracks.appendChild(row);
-  }
+  });
 
   updateTimeline();
 }
 
-/* ---------- PLAYHEAD ---------- */
-
 function updateTimeline(){
 
-  const x =
-    currentTime * pixelsPerSecond;
+  playhead.style.left=
+    (
+      leftOffset+
+      currentTime*pixelsPerSecond
+    )+"px";
 
-  playhead.style.left =
-    x + "px";
+  endMarker.style.left=
+    (
+      leftOffset+
+      totalDuration*pixelsPerSecond
+    )+"px";
 
-  endMarker.style.left =
-    (totalDuration * pixelsPerSecond) + "px";
-
-  timeReadout.textContent =
-    currentTime.toFixed(2) +
-    "s / " +
-    totalDuration.toFixed(2) +
-    "s";
-
-  /* keep playhead visible */
-  if(playing){
-
-    const left =
-      timeline.scrollLeft;
-
-    const right =
-      left + timeline.clientWidth;
-
-    if(x > right - 80){
-      timeline.scrollLeft =
-        Math.max(0,x-timeline.clientWidth+120);
-    }
-
-    if(x < left+40){
-      timeline.scrollLeft =
-        Math.max(0,x-40);
-    }
-  }
+  timeReadout.textContent=
+    currentTime.toFixed(2)+
+    " / "+
+    totalDuration.toFixed(2);
 }
 
-/* ---------- CLICK TIMELINE ---------- */
+function setTime(t){
+
+  currentTime=Math.max(
+    0,
+    Math.min(
+      totalDuration,
+      t
+    )
+  );
+
+  evaluate(currentTime);
+
+  lastPose=capturePose();
+
+  updateTimeline();
+}
+
+let scrubbing=false;
 
 timeline.addEventListener(
   "pointerdown",
   e=>{
 
     if(
-      e.target === endMarker ||
+      e.target===endMarker ||
       endMarker.contains(e.target)
     ){
       return;
     }
 
-    const rect =
+    const rect=
       timelineInner.getBoundingClientRect();
 
-    const x =
-      e.clientX -
-      rect.left +
-      timeline.scrollLeft;
+    let x=
+      e.clientX-
+      rect.left-
+      leftOffset;
+
+    if(x<0)return;
+
+    scrubbing=true;
 
     setTime(
-      x / pixelsPerSecond
+      x/pixelsPerSecond
     );
-
-    draggingPlayhead = true;
 
     timeline.setPointerCapture?.(
       e.pointerId
@@ -2179,46 +1211,39 @@ timeline.addEventListener(
   "pointermove",
   e=>{
 
-    if(!draggingPlayhead) return;
+    if(!scrubbing)return;
 
-    const rect =
+    const rect=
       timelineInner.getBoundingClientRect();
 
-    const x =
-      e.clientX -
-      rect.left +
-      timeline.scrollLeft;
+    let x=
+      e.clientX-
+      rect.left-
+      leftOffset;
 
     setTime(
-      clamp(
-        x / pixelsPerSecond,
-        0,
-        totalDuration
-      )
+      x/pixelsPerSecond
     );
   }
 );
 
 timeline.addEventListener(
   "pointerup",
-  ()=>{
-    draggingPlayhead=false;
-  }
+  ()=>scrubbing=false
 );
 
 timeline.addEventListener(
   "pointercancel",
-  ()=>{
-    draggingPlayhead=false;
-  }
+  ()=>scrubbing=false
 );
 
-/* ---------- END MARKER ---------- */
+let draggingEnd=false;
 
 endMarker.addEventListener(
   "pointerdown",
   e=>{
 
+    e.preventDefault();
     e.stopPropagation();
 
     draggingEnd=true;
@@ -2233,28 +1258,28 @@ endMarker.addEventListener(
   "pointermove",
   e=>{
 
-    if(!draggingEnd) return;
+    if(!draggingEnd)return;
 
-    const rect =
+    const rect=
       timelineInner.getBoundingClientRect();
 
-    const x =
-      e.clientX -
-      rect.left +
-      timeline.scrollLeft;
+    let x=
+      e.clientX-
+      rect.left-
+      leftOffset;
 
-    let duration =
-      x / pixelsPerSecond;
+    totalDuration=
+      Math.max(
+        .25,
+        Math.min(
+          50,
+          x/pixelsPerSecond
+        )
+      );
 
-    duration =
-      clamp(duration,0.25,50);
-
-    totalDuration =
-      duration;
-
-    if(currentTime > totalDuration){
-      currentTime =
-        totalDuration;
+    if(currentTime>totalDuration){
+      currentTime=totalDuration;
+      evaluate(currentTime);
     }
 
     renderTimeline();
@@ -2263,228 +1288,141 @@ endMarker.addEventListener(
 
 endMarker.addEventListener(
   "pointerup",
-  ()=>{
-    draggingEnd=false;
-  }
+  ()=>draggingEnd=false
 );
 
 endMarker.addEventListener(
   "pointercancel",
-  ()=>{
-    draggingEnd=false;
-  }
+  ()=>draggingEnd=false
 );
 
-/* ---------- INTERPOLATION BUTTONS ---------- */
+const playBtn=document.getElementById("play");
 
-smoothBtn.addEventListener("click",()=>{
+playBtn.onclick=()=>{
 
-  interpolation="smooth";
+  playing=!playing;
 
-  smoothBtn.classList.add("active");
-  choppyBtn.classList.remove("active");
+  playBtn.textContent=
+    playing
+    ?"⏸"
+    :"▶";
 
-  evaluate(currentTime);
-});
+  if(playing){
 
-choppyBtn.addEventListener("click",()=>{
-
-  interpolation="choppy";
-
-  choppyBtn.classList.add("active");
-  smoothBtn.classList.remove("active");
-
-  evaluate(currentTime);
-});
-
-/* ---------- LOOP ---------- */
-
-loopBtn.addEventListener("click",()=>{
-
-  loopPlayback =
-    !loopPlayback;
-
-  loopBtn.classList.toggle(
-    "active",
-    loopPlayback
-  );
-});
-
-/* ---------- FPS ---------- */
-
-fpsInput.addEventListener(
-  "change",
-  ()=>{
-
-    fps =
-      clamp(
-        Number(fpsInput.value)||30,
-        1,
-        60
-      );
-
-    fpsInput.value=fps;
-  }
-);
-
-/* ---------- PLAY ---------- */
-
-function playAnimation(){
-
-  if(totalDuration<=0) return;
-
-  playing=true;
-
-  playBtn.textContent="⏸";
-
-  lastPlayback =
-    performance.now();
-}
-
-function stopAnimation(){
-
-  playing=false;
-
-  playBtn.textContent="▶";
-
-  evaluate(currentTime);
-
-  lastPose =
-    capturePose();
-}
-
-playBtn.addEventListener(
-  "click",
-  ()=>{
-
-    if(playing){
-      stopAnimation();
-    }else{
-      playAnimation();
-    }
-  }
-);
-
-/* ---------- PREV / NEXT ---------- */
-
-document.getElementById("prev").addEventListener(
-  "click",
-  ()=>{
-
-    let previous=0;
-
-    for(const k of keyframes){
-
-      if(k.time < currentTime-0.02){
-        previous=k.time;
-      }
+    if(currentTime>=totalDuration){
+      currentTime=0;
+      evaluate(0);
     }
 
-    setTime(previous);
+    lastFrameTime=
+      performance.now();
   }
-);
+};
 
-document.getElementById("next").addEventListener(
-  "click",
-  ()=>{
+document.getElementById("prevBtn").onclick=()=>{
 
-    for(const k of keyframes){
+  let target=0;
 
-      if(k.time > currentTime+0.02){
+  for(const k of keyframes){
 
-        setTime(k.time);
-        return;
-      }
-    }
-
-    setTime(totalDuration);
-  }
-);
-
-/* ---------- MANUAL KEY BUTTON NOT NEEDED ---------- */
-
-const manualKey =
-  document.getElementById("addKey");
-
-if(manualKey){
-  manualKey.style.opacity="0.35";
-  manualKey.title=
-    "Keyframe dibuat otomatis saat pose berubah";
-}
-
-/* ---------- CAMERA LOCK ---------- */
-
-const cameraButton =
-  document.getElementById("cameraLock");
-
-if(cameraButton){
-
-  cameraButton.addEventListener(
-    "click",
-    ()=>{
-
-      cameraLocked =
-        !cameraLocked;
-
-      controls.enabled =
-        !cameraLocked;
-
-      cameraButton.textContent =
-        cameraLocked
-        ? "🔒 CAMERA"
-        : "🔓 CAMERA";
-    }
-  );
-}
-
-/* ---------- REAL-TIME PLAYBACK ---------- */
-
-function playbackUpdate(now){
-
-  if(!playing){
-    lastPlayback=now;
-    return;
-  }
-
-  let delta =
-    (now-lastPlayback)/1000;
-
-  lastPlayback=now;
-
-  /* prevent huge jumps after lag */
-  delta =
-    Math.min(delta,0.1);
-
-  currentTime += delta;
-
-  if(currentTime >= totalDuration){
-
-    if(loopPlayback){
-
-      currentTime =
-        0;
-
-    }else{
-
-      currentTime =
-        totalDuration;
-
-      stopAnimation();
+    if(k.time<currentTime-.02){
+      target=k.time;
     }
   }
 
-  evaluate(currentTime);
+  setTime(target);
+};
 
-  updateTimeline();
-}
+document.getElementById("nextBtn").onclick=()=>{
 
-/* ---------- RENDER LOOP ---------- */
+  for(const k of keyframes){
+
+    if(k.time>currentTime+.02){
+      setTime(k.time);
+      return;
+    }
+  }
+
+  setTime(totalDuration);
+};
+
+let lastFrameTime=performance.now();
 
 function animate(now){
 
   requestAnimationFrame(animate);
 
-  playbackUpdate(now);
+  orbit.update();
+
+  const distance=
+    camera.position.distanceTo(
+      gizmo.position
+    );
+
+  gizmo.setSize(
+    Math.max(
+      .55,
+      Math.min(
+        1.1,
+        distance*.075
+      )
+    )
+  );
+
+  if(playing){
+
+    const delta=
+      Math.min(
+        .08,
+        (now-lastFrameTime)/1000
+      );
+
+    lastFrameTime=now;
+
+    currentTime+=delta;
+
+    if(currentTime>=totalDuration){
+
+      if(loopPlayback){
+
+        currentTime=
+          currentTime%
+          totalDuration;
+
+        evaluate(currentTime);
+
+      }else{
+
+        currentTime=totalDuration;
+        evaluate(currentTime);
+        playing=false;
+        playBtn.textContent="▶";
+      }
+
+    }else{
+
+      evaluate(currentTime);
+    }
+
+    updateTimeline();
+
+    const px=
+      leftOffset+
+      currentTime*pixelsPerSecond;
+
+    if(
+      px-timeline.scrollLeft >
+      timeline.clientWidth-55
+    ){
+      timeline.scrollLeft=
+        Math.max(
+          0,
+          px-
+          timeline.clientWidth+
+          90
+        );
+    }
+  }
 
   renderer.render(
     scene,
@@ -2492,23 +1430,21 @@ function animate(now){
   );
 }
 
-requestAnimationFrame(animate);
-
-/* ---------- RESIZE ---------- */
-
 function resize(){
 
-  const w =
-    view.clientWidth;
+  const w=
+    Math.max(
+      1,
+      view.clientWidth
+    );
 
-  const h =
-    view.clientHeight;
+  const h=
+    Math.max(
+      1,
+      view.clientHeight
+    );
 
-  if(!w || !h) return;
-
-  camera.aspect =
-    w/h;
-
+  camera.aspect=w/h;
   camera.updateProjectionMatrix();
 
   renderer.setSize(
@@ -2516,6 +1452,8 @@ function resize(){
     h,
     false
   );
+
+  renderTimeline();
 }
 
 window.addEventListener(
@@ -2523,50 +1461,9 @@ window.addEventListener(
   resize
 );
 
-resize();
-
-/* ---------- INITIAL STATE ---------- */
-
-smoothBtn.classList.add("active");
-loopBtn.classList.add("active");
-
-interpolation="smooth";
-loopPlayback=true;
-
-if(!keyframes.length){
-
-  keyframes.push({
-    time:0,
-    pose:capturePose()
-  });
-}
-
-lastPose =
-  capturePose();
-
 renderTimeline();
-
-/* ---------- DEFAULT CAMERA ---------- */
-
-camera.position.set(
-  7,
-  5,
-  9
-);
-
-controls.target.set(
-  0,
-  2.8,
-  0
-);
-
-controls.update();
-
-/* ---------- FINISH ---------- */
-
-console.log(
-  "MizaxEngine Animator V6 loaded."
-);
+resize();
+requestAnimationFrame(animate);
 
 </script>
 </body>
