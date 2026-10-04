@@ -3,85 +3,394 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+
 <title>MizaxEngine Animator</title>
+
 <style>
-*{box-sizing:border-box;user-select:none;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080808;color:#eee;font-family:Arial}
-button{border:1px solid #444;background:#151515;color:#ddd;border-radius:7px;font-weight:bold}
-button.active{background:#777;color:#fff;border-color:#aaa}
-#app{height:100%;display:flex;flex-direction:column}
-#top{height:50px;display:flex;gap:5px;padding:5px;background:#101010;overflow:auto}
-.tool{height:40px;min-width:64px;padding:0 10px;flex-shrink:0}
-#page{height:32px;display:flex;background:#0d0d0d;border-bottom:1px solid #292929}
-.page{flex:1;border:0;border-radius:0;background:#111;color:#777;font-size:10px}
-.page.active{background:#292929;color:#fff}
-#work{position:relative;flex:1;min-height:0}
-#view{position:absolute;inset:0;touch-action:none}
-#view canvas{display:block;width:100%;height:100%}
-#parts{position:absolute;left:5px;top:5px;z-index:5;display:flex;flex-direction:column;gap:4px}
-.part{width:92px;height:30px;font-size:9px;background:#111c}
-.part.active{background:#777}
-#panel{position:absolute;right:5px;top:5px;z-index:5;background:#111d;border:1px solid #333;border-radius:7px;padding:7px;font-size:9px}
-#timelinePanel{height:205px;display:flex;flex-direction:column;background:#090909;border-top:1px solid #333}
-#controls{height:40px;display:flex;gap:5px;padding:4px}
-.ctrl{height:32px;min-width:42px}
-#readout{min-width:110px;text-align:center;padding-top:9px;font-size:10px}
-#timeline{flex:1;overflow:auto;position:relative;touch-action:pan-x}
-#inner{position:relative;min-height:100%;width:500px}
-#ruler{height:25px;background:#111;position:relative}
-.tick{position:absolute;height:25px;width:1px;background:#333}
-.tick span{font-size:8px;color:#888;position:absolute;left:3px;top:5px;white-space:nowrap}
-.track{height:27px;border-bottom:1px solid #191919;position:relative}
-.label{position:sticky;left:0;z-index:4;width:92px;height:27px;background:#111;color:#888;font-size:8px;padding:9px 5px;border-right:1px solid #333}
-.key{position:absolute;top:8px;width:11px;height:11px;background:#aaa;transform:translateX(-5px) rotate(45deg);border:1px solid #fff;z-index:3}
-#playhead{position:absolute;top:0;bottom:0;width:2px;background:#fff;z-index:8;pointer-events:none}
-#end{position:absolute;top:0;bottom:0;width:20px;z-index:9;touch-action:none}
-#end:before{content:"]";font-size:18px;position:absolute;left:0;color:#fff}
-#end:after{content:"";position:absolute;left:9px;top:0;bottom:0;width:1px;background:#aaa}
-#popup{display:none;position:fixed;z-index:50;background:#161616;border:1px solid #666;border-radius:9px;padding:5px;box-shadow:0 5px 25px #000}
-#popup button{display:block;width:110px;height:30px;margin:3px;font-size:10px}
-.pageContent{display:none}
-.pageContent.active{display:block}
-#transformInfo{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:#111d;border:1px solid #444;border-radius:7px;padding:5px 10px;font-size:9px;z-index:10}
+
+*{
+box-sizing:border-box;
+user-select:none;
+-webkit-tap-highlight-color:transparent
+}
+
+html,body{
+margin:0;
+width:100%;
+height:100%;
+overflow:hidden;
+background:#080808;
+color:#eee;
+font-family:Arial
+}
+
+button{
+border:1px solid #444;
+background:#151515;
+color:#ddd;
+border-radius:7px;
+font-weight:bold
+}
+
+button.active{
+background:#777;
+color:#fff;
+border-color:#aaa
+}
+
+#app{
+height:100%;
+display:flex;
+flex-direction:column
+}
+
+#top{
+height:50px;
+display:flex;
+gap:5px;
+padding:5px;
+background:#101010;
+overflow:auto
+}
+
+.tool{
+height:40px;
+min-width:64px;
+padding:0 10px;
+flex-shrink:0
+}
+
+#page{
+height:32px;
+display:flex;
+background:#0d0d0d;
+border-bottom:1px solid #292929
+}
+
+.page{
+flex:1;
+border:0;
+border-radius:0;
+background:#111;
+color:#777;
+font-size:10px
+}
+
+.page.active{
+background:#292929;
+color:#fff
+}
+
+#work{
+position:relative;
+flex:1;
+min-height:0
+}
+
+#view{
+position:absolute;
+inset:0;
+touch-action:none
+}
+
+#view canvas{
+display:block;
+width:100%;
+height:100%
+}
+
+#parts{
+position:absolute;
+left:5px;
+top:5px;
+z-index:5;
+display:flex;
+flex-direction:column;
+gap:4px
+}
+
+.part{
+width:92px;
+height:30px;
+font-size:9px;
+background:#111c
+}
+
+.part.active{
+background:#777
+}
+
+#panel{
+position:absolute;
+right:5px;
+top:5px;
+z-index:5;
+background:#111d;
+border:1px solid #333;
+border-radius:7px;
+padding:7px;
+font-size:9px
+}
+
+#timelinePanel{
+height:205px;
+display:flex;
+flex-direction:column;
+background:#090909;
+border-top:1px solid #333
+}
+
+#controls{
+height:40px;
+display:flex;
+gap:5px;
+padding:4px
+}
+
+.ctrl{
+height:32px;
+min-width:42px
+}
+
+#readout{
+min-width:110px;
+text-align:center;
+padding-top:9px;
+font-size:10px
+}
+
+#timeline{
+flex:1;
+overflow:auto;
+position:relative;
+touch-action:pan-x
+}
+
+#inner{
+position:relative;
+min-height:100%;
+width:500px
+}
+
+#ruler{
+height:25px;
+background:#111;
+position:relative
+}
+
+.tick{
+position:absolute;
+height:25px;
+width:1px;
+background:#333
+}
+
+.tick span{
+font-size:8px;
+color:#888;
+position:absolute;
+left:3px;
+top:5px;
+white-space:nowrap
+}
+
+.track{
+height:27px;
+border-bottom:1px solid #191919;
+position:relative
+}
+
+.label{
+position:sticky;
+left:0;
+z-index:4;
+width:92px;
+height:27px;
+background:#111;
+color:#888;
+font-size:8px;
+padding:9px 5px;
+border-right:1px solid #333
+}
+
+.key{
+position:absolute;
+top:8px;
+width:11px;
+height:11px;
+background:#aaa;
+transform:translateX(-5px) rotate(45deg);
+border:1px solid #fff;
+z-index:3
+}
+
+#playhead{
+position:absolute;
+top:0;
+bottom:0;
+width:2px;
+background:#fff;
+z-index:8;
+pointer-events:none
+}
+
+#end{
+position:absolute;
+top:0;
+bottom:0;
+width:20px;
+z-index:9;
+touch-action:none
+}
+
+#end:before{
+content:"]";
+font-size:18px;
+position:absolute;
+left:0;
+color:#fff
+}
+
+#end:after{
+content:"";
+position:absolute;
+left:9px;
+top:0;
+bottom:0;
+width:1px;
+background:#aaa
+}
+
+#popup{
+display:none;
+position:fixed;
+z-index:50;
+background:#161616;
+border:1px solid #666;
+border-radius:9px;
+padding:5px;
+box-shadow:0 5px 25px #000
+}
+
+#popup button{
+display:block;
+width:110px;
+height:30px;
+margin:3px;
+font-size:10px
+}
+
+#transformInfo{
+position:absolute;
+bottom:8px;
+left:50%;
+transform:translateX(-50%);
+background:#111d;
+border:1px solid #444;
+border-radius:7px;
+padding:5px 10px;
+font-size:9px;
+z-index:10
+}
+
 </style>
 </head>
 
 <body>
+
 <div id="app">
 
 <div id="top">
-<button class="tool active" id="modeBtn">MOVE</button>
-<button class="tool active" id="dirBtn">FIXED</button>
-<button class="tool active" id="playMode">LOOP</button>
-<button class="tool" id="cameraBtn">CAM</button>
-<button class="tool" id="undoBtn">UNDO</button>
-<button class="tool" id="redoBtn">REDO</button>
+
+<button class="tool active" id="modeBtn">
+MOVE
+</button>
+
+<button class="tool active" id="dirBtn">
+FIXED
+</button>
+
+<button class="tool active" id="playMode">
+LOOP
+</button>
+
+<button class="tool" id="cameraBtn">
+CAM
+</button>
+
+<button class="tool" id="undoBtn">
+UNDO
+</button>
+
+<button class="tool" id="redoBtn">
+REDO
+</button>
+
 </div>
 
+
 <div id="page">
-<button class="page active" data-page="animate">ANIMATE</button>
-<button class="page" data-page="transform">TRANSFORM</button>
-<button class="page" data-page="rig">RIG</button>
-<button class="page" data-page="camera">CAMERA</button>
+
+<button class="page active" data-page="animate">
+ANIMATE
+</button>
+
+<button class="page" data-page="transform">
+TRANSFORM
+</button>
+
+<button class="page" data-page="rig">
+RIG
+</button>
+
+<button class="page" data-page="camera">
+CAMERA
+</button>
+
 </div>
+
 
 <div id="work">
 
 <div id="view"></div>
 
+
 <div id="parts">
-<button class="part" data-part="Head">HEAD</button>
-<button class="part active" data-part="Torso">TORSO</button>
-<button class="part" data-part="Left Arm">L ARM</button>
-<button class="part" data-part="Right Arm">R ARM</button>
-<button class="part" data-part="Left Leg">L LEG</button>
-<button class="part" data-part="Right Leg">R LEG</button>
+
+<button class="part" data-part="Head">
+HEAD
+</button>
+
+<button class="part active" data-part="Torso">
+TORSO
+</button>
+
+<button class="part" data-part="Left Arm">
+L ARM
+</button>
+
+<button class="part" data-part="Right Arm">
+R ARM
+</button>
+
+<button class="part" data-part="Left Leg">
+L LEG
+</button>
+
+<button class="part" data-part="Right Leg">
+R LEG
+</button>
+
 </div>
 
+
 <div id="panel">
+
 R6<br>
-GRAY RIG
+MIZAX RIG
+
 </div>
+
 
 <div id="transformInfo">
 MOVE • FIXED
@@ -89,416 +398,1189 @@ MOVE • FIXED
 
 </div>
 
+
 <div id="timelinePanel">
 
 <div id="controls">
-<button class="ctrl" id="prev">◀</button>
-<button class="ctrl" id="play">▶</button>
-<button class="ctrl" id="next">▶|</button>
-<div id="readout">0.00 / 2.00</div>
+
+<button class="ctrl" id="prev">
+◀
+</button>
+
+<button class="ctrl" id="play">
+▶
+</button>
+
+<button class="ctrl" id="next">
+▶|
+</button>
+
+<div id="readout">
+0.00 / 2.00
 </div>
+
+</div>
+
 
 <div id="timeline">
+
 <div id="inner">
+
 <div id="ruler"></div>
+
 <div id="tracks"></div>
+
 <div id="playhead"></div>
+
 <div id="end"></div>
-</div>
+
 </div>
 
 </div>
+
 </div>
+
+</div>
+
 
 <div id="popup">
-<button id="kfMove">KF MOVE</button>
-<button id="kfCopy">DUPLICATE</button>
-<button id="kfDelete">DELETE</button>
+
+<button id="kfMove">
+KF MOVE
+</button>
+
+<button id="kfCopy">
+DUPLICATE
+</button>
+
+<button id="kfDelete">
+DELETE
+</button>
+
 </div>
 
+
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TransformControls.js"></script>
 
+
 <script>
-const view=document.getElementById("view");
 
-const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x090909);
+/* =========================================================
+   SCENE
+========================================================= */
 
-const camera=new THREE.PerspectiveCamera(
+const view =
+document.getElementById("view");
+
+const scene =
+new THREE.Scene();
+
+scene.background =
+new THREE.Color(0x090909);
+
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+const camera =
+new THREE.PerspectiveCamera(
 45,
 1,
 .05,
 100
 );
 
-camera.position.set(7,5,9);
+camera.position.set(
+7,
+5,
+9
+);
 
-const renderer=new THREE.WebGLRenderer({
+
+/* =========================================================
+   RENDERER
+========================================================= */
+
+const renderer =
+new THREE.WebGLRenderer({
 antialias:true
 });
 
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-renderer.setSize(view.clientWidth,view.clientHeight);
-renderer.outputEncoding=THREE.sRGBEncoding;
-view.appendChild(renderer.domElement);
+renderer.setPixelRatio(
+Math.min(devicePixelRatio,2)
+);
 
-scene.add(new THREE.HemisphereLight(0xffffff,0x333333,1.5));
+renderer.setSize(
+view.clientWidth,
+view.clientHeight
+);
 
-const dl=new THREE.DirectionalLight(0xffffff,1);
-dl.position.set(5,8,7);
+renderer.outputEncoding =
+THREE.sRGBEncoding;
+
+view.appendChild(
+renderer.domElement
+);
+
+
+/* =========================================================
+   LIGHT
+========================================================= */
+
+scene.add(
+new THREE.HemisphereLight(
+0xffffff,
+0x333333,
+1.5
+));
+
+const dl =
+new THREE.DirectionalLight(
+0xffffff,
+1
+);
+
+dl.position.set(
+5,
+8,
+7
+);
+
 scene.add(dl);
 
-const grid=new THREE.GridHelper(
-30,30,0x444444,0x191919
+
+/* =========================================================
+   GRID
+========================================================= */
+
+const grid =
+new THREE.GridHelper(
+30,
+30,
+0x444444,
+0x191919
 );
+
 scene.add(grid);
 
-const orbit=new THREE.OrbitControls(
+
+/* =========================================================
+   ORBIT
+========================================================= */
+
+const orbit =
+new THREE.OrbitControls(
 camera,
 renderer.domElement
 );
 
-orbit.target.set(0,3,0);
-orbit.enableDamping=true;
+orbit.target.set(
+0,
+3,
+0
+);
 
-const gizmo=new THREE.TransformControls(
+orbit.enableDamping =
+true;
+
+
+/* =========================================================
+   GIZMO
+========================================================= */
+
+const gizmo =
+new THREE.TransformControls(
 camera,
 renderer.domElement
 );
 
 gizmo.setSize(.8);
+
 scene.add(gizmo);
 
+
+/* =========================================================
+   STATES
+========================================================= */
+
 let cameraLocked=false;
+
 let selected="Torso";
+
 let transformMode="translate";
+
 let directionMode="world";
 
-const gray=new THREE.MeshStandardMaterial({
+
+/* =========================================================
+   MATERIAL
+========================================================= */
+
+const gray =
+new THREE.MeshStandardMaterial({
+
 color:0x888888,
+
 roughness:.72
+
 });
 
-const darkGray=new THREE.MeshStandardMaterial({
+
+const darkGray =
+new THREE.MeshStandardMaterial({
+
 color:0x777777,
+
 roughness:.72
+
 });
 
-function box(w,h,d,r=.1){
 
-const s=new THREE.Shape();
-const x=-w/2,y=-h/2;
+/* =========================================================
+   ROUNDED BOX
+========================================================= */
 
-s.moveTo(x+r,y);
-s.lineTo(x+w-r,y);
-s.quadraticCurveTo(x+w,y,x+w,y+r);
-s.lineTo(x+w,y+h-r);
-s.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
-s.lineTo(x+r,y+h);
-s.quadraticCurveTo(x,y+h,x,y+h-r);
-s.lineTo(x,y+r);
-s.quadraticCurveTo(x,y,x+r,y);
+function roundedBox(
+w,
+h,
+d,
+r=.08
+){
 
-const g=new THREE.ExtrudeGeometry(s,{
+const shape =
+new THREE.Shape();
+
+const x=-w/2;
+const y=-h/2;
+
+
+shape.moveTo(
+x+r,
+y
+);
+
+shape.lineTo(
+x+w-r,
+y
+);
+
+shape.quadraticCurveTo(
+x+w,
+y,
+x+w,
+y+r
+);
+
+shape.lineTo(
+x+w,
+y+h-r
+);
+
+shape.quadraticCurveTo(
+x+w,
+y+h,
+x+w-r,
+y+h
+);
+
+shape.lineTo(
+x+r,
+y+h
+);
+
+shape.quadraticCurveTo(
+x,
+y+h,
+x,
+y+h-r
+);
+
+shape.lineTo(
+x,
+y+r
+);
+
+shape.quadraticCurveTo(
+x,
+y,
+x+r,
+y
+);
+
+
+const g =
+new THREE.ExtrudeGeometry(
+shape,
+{
+
 depth:d,
+
 bevelEnabled:true,
-bevelSegments:3,
+
+bevelSegments:4,
+
 bevelSize:r*.4,
-bevelThickness:r*.4
+
+bevelThickness:r*.4,
+
+curveSegments:8
+
 });
+
 
 g.center();
+
 return g;
 }
 
-function makeHead(){
 
-const g=box(1.65,1.55,1.55,.22);
-const group=new THREE.Group();
+/* =========================================================
+   SHARP HEAD
+========================================================= */
 
-const mesh=new THREE.Mesh(g,gray);
-group.add(mesh);
+function sharpBox(
+w,
+h,
+d
+){
 
-/* XD FACE — ROTATED 90° */
-const canvas=document.createElement("canvas");
-canvas.width=256;
+return new THREE.BoxGeometry(
+w,
+h,
+d
+);
+
+}
+
+
+/* =========================================================
+   FACE
+========================================================= */
+
+function makeFace(){
+
+const canvas =
+document.createElement(
+"canvas"
+);
+
+canvas.width=512;
 canvas.height=256;
 
-const ctx=canvas.getContext("2d");
+const ctx =
+canvas.getContext("2d");
 
-ctx.clearRect(0,0,256,256);
+ctx.clearRect(
+0,
+0,
+512,
+256
+);
+
 ctx.fillStyle="#222";
-ctx.font="bold 78px Arial";
+
+ctx.font=
+"bold 180px Arial";
+
 ctx.textAlign="center";
 ctx.textBaseline="middle";
 
-ctx.save();
-ctx.translate(128,128);
-ctx.rotate(Math.PI/2);
-ctx.fillText("XD",0,0);
-ctx.restore();
-
-const tex=new THREE.CanvasTexture(canvas);
-tex.needsUpdate=true;
-
-const faceMat=new THREE.MeshBasicMaterial({
-map:tex,
-transparent:true
-});
-
-const face=new THREE.Mesh(
-new THREE.PlaneGeometry(1.05,1.05),
-faceMat
+ctx.fillText(
+">o<",
+256,
+128
 );
 
-face.position.z=.786;
-group.add(face);
 
-return group;
+const tex =
+new THREE.CanvasTexture(
+canvas
+);
+
+tex.needsUpdate=true;
+
+
+const mat =
+new THREE.MeshBasicMaterial({
+
+map:tex,
+
+transparent:true,
+
+depthWrite:false
+
+});
+
+
+const face =
+new THREE.Mesh(
+
+new THREE.PlaneGeometry(
+1.65,
+.85
+),
+
+mat
+
+);
+
+face.name="Face";
+
+
+/*
+   HEAD DEPTH = 1.1
+   FRONT = +0.55
+
+   Slightly forward to avoid Z-fighting.
+*/
+
+face.position.set(
+0,
+.30,
+.556
+);
+
+return face;
 }
 
-const root=new THREE.Group();
+
+/* =========================================================
+   R6 ROOT
+========================================================= */
+
+const root =
+new THREE.Group();
+
+root.name="R6";
+
 scene.add(root);
+
+
+/* =========================================================
+   PART STORAGE
+========================================================= */
 
 const parts={};
 
-function part(name,geo,mat,parent){
+const pivots={};
 
-const g=new THREE.Group();
-g.name=name;
 
-g.add(new THREE.Mesh(geo,mat));
-parent.add(g);
+/* =========================================================
+   CREATE PIVOT
+========================================================= */
 
-parts[name]=g;
+function createPivot(
+name,
+position
+){
 
-return g;
+const pivot =
+new THREE.Group();
+
+pivot.name=name;
+
+pivot.position.copy(
+position
+);
+
+
+/*
+   VERY IMPORTANT:
+
+   This pivot is EDITOR ONLY.
+
+   It is NOT a Roblox body part.
+   It will NOT be exported as a Joint.
+*/
+
+pivot.userData.editorOnly=true;
+
+pivots[name]=pivot;
+
+return pivot;
 }
 
-const torso=part(
-"Torso",
-box(2,2,1,.12),
-gray,
-root
+
+/* =========================================================
+   TORSO
+========================================================= */
+
+const torso =
+new THREE.Group();
+
+torso.name="Torso";
+
+torso.position.set(
+0,
+3.3,
+0
 );
 
-torso.position.y=4;
+root.add(torso);
 
-const head=makeHead();
+parts.Torso=torso;
+
+
+const torsoMesh =
+new THREE.Mesh(
+roundedBox(
+2,
+2.2,
+1,
+.10
+),
+gray
+);
+
+torsoMesh.name="TorsoMesh";
+
+torsoMesh.position.set(
+0,
+0,
+0
+);
+
+torso.add(torsoMesh);
+
+
+/* =========================================================
+   HEAD PIVOT
+========================================================= */
+
+const headPivot =
+createPivot(
+"HeadJoint",
+new THREE.Vector3(
+0,
+1.1,
+0
+)
+);
+
+torso.add(headPivot);
+
+
+/* =========================================================
+   HEAD
+   1.95 × 1.30 × 1.10
+========================================================= */
+
+const head =
+new THREE.Group();
+
 head.name="Head";
-head.position.y=1.72;
-torso.add(head);
+
+headPivot.add(head);
+
 parts.Head=head;
 
-const la=part(
-"Left Arm",
-box(1,2,1,.1),
-darkGray,
-torso
+
+const headMesh =
+new THREE.Mesh(
+sharpBox(
+1.95,
+1.30,
+1.10
+),
+gray
 );
 
-la.position.x=-1.5;
+headMesh.name="HeadMesh";
 
-const ra=part(
-"Right Arm",
-box(1,2,1,.1),
-darkGray,
-torso
+headMesh.position.y=.65;
+
+head.add(headMesh);
+
+
+/* FACE */
+
+head.add(
+makeFace()
 );
 
-ra.position.x=1.5;
 
-const ll=part(
-"Left Leg",
-box(1,2,1,.1),
-darkGray,
-torso
+/* =========================================================
+   LEFT SHOULDER PIVOT
+========================================================= */
+
+const leftShoulder =
+createPivot(
+"LeftShoulder",
+new THREE.Vector3(
+-1,
+1.1,
+0
+)
 );
 
-ll.position.set(-.5,-2,0);
-
-const rl=part(
-"Right Leg",
-box(1,2,1,.1),
-darkGray,
-torso
+torso.add(
+leftShoulder
 );
 
-rl.position.set(.5,-2,0);
+
+/* =========================================================
+   LEFT ARM
+   1 × 2.2 × 1
+========================================================= */
+
+const leftArm =
+new THREE.Group();
+
+leftArm.name="Left Arm";
+
+leftShoulder.add(
+leftArm
+);
+
+parts["Left Arm"]=
+leftArm;
+
+
+const leftArmMesh =
+new THREE.Mesh(
+roundedBox(
+1,
+2.2,
+1,
+.08
+),
+darkGray
+);
+
+leftArmMesh.name=
+"Left Arm Mesh";
+
+leftArmMesh.position.y=
+-1.1;
+
+leftArm.add(
+leftArmMesh
+);
+
+
+/* =========================================================
+   RIGHT SHOULDER PIVOT
+========================================================= */
+
+const rightShoulder =
+createPivot(
+"RightShoulder",
+new THREE.Vector3(
+1,
+1.1,
+0
+)
+);
+
+torso.add(
+rightShoulder
+);
+
+
+/* =========================================================
+   RIGHT ARM
+   1 × 2.2 × 1
+========================================================= */
+
+const rightArm =
+new THREE.Group();
+
+rightArm.name="Right Arm";
+
+rightShoulder.add(
+rightArm
+);
+
+parts["Right Arm"]=
+rightArm;
+
+
+const rightArmMesh =
+new THREE.Mesh(
+roundedBox(
+1,
+2.2,
+1,
+.08
+),
+darkGray
+);
+
+rightArmMesh.name=
+"Right Arm Mesh";
+
+rightArmMesh.position.y=
+-1.1;
+
+rightArm.add(
+rightArmMesh
+);
+
+
+/* =========================================================
+   LEFT HIP
+========================================================= */
+
+const leftHip =
+createPivot(
+"LeftHip",
+new THREE.Vector3(
+-.5,
+-1.1,
+0
+)
+);
+
+torso.add(
+leftHip
+);
+
+
+/* =========================================================
+   LEFT LEG
+   1 × 2.2 × 1
+========================================================= */
+
+const leftLeg =
+new THREE.Group();
+
+leftLeg.name="Left Leg";
+
+leftHip.add(
+leftLeg
+);
+
+parts["Left Leg"]=
+leftLeg;
+
+
+const leftLegMesh =
+new THREE.Mesh(
+roundedBox(
+1,
+2.2,
+1,
+.08
+),
+darkGray
+);
+
+leftLegMesh.name=
+"Left Leg Mesh";
+
+leftLegMesh.position.y=
+-1.1;
+
+leftLeg.add(
+leftLegMesh
+);
+
+
+/* =========================================================
+   RIGHT HIP
+========================================================= */
+
+const rightHip =
+createPivot(
+"RightHip",
+new THREE.Vector3(
+.5,
+-1.1,
+0
+)
+);
+
+torso.add(
+rightHip
+);
+
+
+/* =========================================================
+   RIGHT LEG
+   1 × 2.2 × 1
+========================================================= */
+
+const rightLeg =
+new THREE.Group();
+
+rightLeg.name="Right Leg";
+
+rightHip.add(
+rightLeg
+);
+
+parts["Right Leg"]=
+rightLeg;
+
+
+const rightLegMesh =
+new THREE.Mesh(
+roundedBox(
+1,
+2.2,
+1,
+.08
+),
+darkGray
+);
+
+rightLegMesh.name=
+"Right Leg Mesh";
+
+rightLegMesh.position.y=
+-1.1;
+
+rightLeg.add(
+rightLegMesh
+);
+
+
+/* =========================================================
+   SELECT
+========================================================= */
 
 function selectPart(n){
 
 selected=n;
 
-document.querySelectorAll(".part").forEach(b=>{
+document
+.querySelectorAll(".part")
+.forEach(b=>{
+
 b.classList.toggle(
 "active",
 b.dataset.part===n
 );
+
 });
 
-gizmo.attach(parts[n]);
+
+gizmo.attach(
+parts[n]
+);
+
 }
 
-document.querySelectorAll(".part").forEach(b=>{
+
+document
+.querySelectorAll(".part")
+.forEach(b=>{
+
 b.onpointerdown=e=>{
+
 e.stopPropagation();
-selectPart(b.dataset.part);
+
+selectPart(
+b.dataset.part
+);
+
 };
+
 });
 
-gizmo.attach(parts.Torso);
 
-document.getElementById("modeBtn").onclick=()=>{
+gizmo.attach(
+parts.Torso
+);
+
+
+/* =========================================================
+   MOVE / ROTATE
+========================================================= */
+
+document
+.getElementById("modeBtn")
+.onclick=()=>{
 
 transformMode=
 transformMode==="translate"
 ?"rotate"
 :"translate";
 
-gizmo.setMode(transformMode);
+gizmo.setMode(
+transformMode
+);
 
-document.getElementById("modeBtn").textContent=
+document
+.getElementById("modeBtn")
+.textContent=
 transformMode==="translate"
 ?"MOVE"
 :"ROTATE";
 
-document.getElementById("transformInfo").textContent=
-(transformMode==="translate"?"MOVE":"ROTATE")+
-" • "+
-(directionMode==="world"?"FIXED":"LOCAL");
+document
+.getElementById("transformInfo")
+.textContent=
+(transformMode==="translate"
+?"MOVE"
+:"ROTATE")
++" • "+
+(directionMode==="world"
+?"FIXED"
+:"LOCAL");
+
 };
 
-document.getElementById("dirBtn").onclick=()=>{
+
+/* =========================================================
+   FIXED / LOCAL
+========================================================= */
+
+document
+.getElementById("dirBtn")
+.onclick=()=>{
 
 directionMode=
 directionMode==="world"
 ?"local"
 :"world";
 
-gizmo.setSpace(directionMode);
+gizmo.setSpace(
+directionMode
+);
 
-document.getElementById("dirBtn").textContent=
+document
+.getElementById("dirBtn")
+.textContent=
 directionMode==="world"
 ?"FIXED"
 :"LOCAL";
 
-document.getElementById("transformInfo").textContent=
-(transformMode==="translate"?"MOVE":"ROTATE")+
-" • "+
-(directionMode==="world"?"FIXED":"LOCAL");
+document
+.getElementById("transformInfo")
+.textContent=
+(transformMode==="translate"
+?"MOVE"
+:"ROTATE")
++" • "+
+(directionMode==="world"
+?"FIXED"
+:"LOCAL");
+
 };
 
-document.getElementById("cameraBtn").onclick=()=>{
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+document
+.getElementById("cameraBtn")
+.onclick=()=>{
 
 cameraLocked=!cameraLocked;
 
-orbit.enabled=!cameraLocked;
+orbit.enabled=
+!cameraLocked;
 
-document.getElementById("cameraBtn").textContent=
-cameraLocked?"CAM 🔒":"CAM";
+document
+.getElementById("cameraBtn")
+.textContent=
+cameraLocked
+?"CAM 🔒"
+:"CAM";
+
 };
+
+
+/* =========================================================
+   LOOP
+========================================================= */
 
 let loop=true;
 
-document.getElementById("playMode").onclick=()=>{
+document
+.getElementById("playMode")
+.onclick=()=>{
 
 loop=!loop;
 
-document.getElementById("playMode").textContent=
-loop?"LOOP":"ONCE";
+document
+.getElementById("playMode")
+.textContent=
+loop
+?"LOOP"
+:"ONCE";
+
 };
 
-/* =====================
-   PER-PART KEYFRAMES
-===================== */
+
+/* =========================================================
+   KEYFRAMES
+========================================================= */
 
 const tracks={};
 
-Object.keys(parts).forEach(n=>{
+Object.keys(parts)
+.forEach(n=>{
 tracks[n]=[];
 });
 
+
 let currentTime=0;
+
 let duration=2;
+
 let playing=false;
+
+
+/* =========================================================
+   CAPTURE
+========================================================= */
 
 function capturePart(name){
 
-const p=parts[name];
+const p=
+parts[name];
 
 return {
-position:p.position.clone(),
-quaternion:p.quaternion.clone()
+
+position:
+p.position.clone(),
+
+quaternion:
+p.quaternion.clone()
+
 };
+
 }
 
-function applyPart(name,data){
 
-const p=parts[name];
+/* =========================================================
+   APPLY
+========================================================= */
 
-p.position.copy(data.position);
-p.quaternion.copy(data.quaternion);
+function applyPart(
+name,
+data
+){
+
+const p=
+parts[name];
+
+p.position.copy(
+data.position
+);
+
+p.quaternion.copy(
+data.quaternion
+);
+
 }
+
+
+/* =========================================================
+   STATE
+========================================================= */
 
 function saveState(){
 
 const state={};
 
-Object.keys(parts).forEach(n=>{
-state[n]=capturePart(n);
+Object.keys(parts)
+.forEach(n=>{
+
+state[n]=
+capturePart(n);
+
 });
 
 return state;
 }
 
+
+function restore(state){
+
+Object.keys(state)
+.forEach(n=>{
+
+applyPart(
+n,
+state[n]
+);
+
+});
+
+}
+
+
+/* =========================================================
+   UNDO
+========================================================= */
+
 const undoStack=[];
 const redoStack=[];
 
+
 function history(){
 
-undoStack.push(saveState());
+undoStack.push(
+saveState()
+);
 
 if(undoStack.length>30)
 undoStack.shift();
 
 redoStack.length=0;
+
 }
 
-function restore(state){
 
-Object.keys(state).forEach(n=>{
-applyPart(n,state[n]);
-});
-}
+/* =========================================================
+   ADD KEY
+========================================================= */
 
-function addKey(name,time){
+function addKey(
+name,
+time
+){
 
-const data=capturePart(name);
+const data=
+capturePart(name);
 
-let list=tracks[name];
+let list=
+tracks[name];
 
-let k=list.find(
-x=>Math.abs(x.time-time)<.03
+let k=
+list.find(
+x=>Math.abs(
+x.time-time
+)<.03
 );
 
 if(k){
+
 k.data=data;
+
 }else{
+
 list.push({
+
 time:time,
+
 data:data
+
 });
+
 }
 
-list.sort((a,b)=>a.time-b.time);
+list.sort(
+(a,b)=>a.time-b.time
+);
 
 renderTimeline();
+
 }
 
-let lastTransform=null;
+
+/* =========================================================
+   GIZMO EVENTS
+========================================================= */
 
 gizmo.addEventListener(
 "dragging-changed",
@@ -511,13 +1593,10 @@ if(e.value){
 
 history();
 
-lastTransform={
-name:selected,
-data:capturePart(selected)
-};
-
 }
+
 });
+
 
 gizmo.addEventListener(
 "objectChange",
@@ -531,31 +1610,54 @@ currentTime
 );
 
 }
+
 });
 
-/* =====================
+
+/* =========================================================
    EVALUATION
-===================== */
+========================================================= */
 
-function evaluatePart(name,time){
+function evaluatePart(
+name,
+time
+){
 
-const list=tracks[name];
+const list=
+tracks[name];
 
-if(!list.length)return;
+if(!list.length)
+return;
+
 
 if(list.length===1){
 
-applyPart(name,list[0].data);
+applyPart(
+name,
+list[0].data
+);
+
 return;
+
 }
+
 
 if(time<=list[0].time){
 
-applyPart(name,list[0].data);
+applyPart(
+name,
+list[0].data
+);
+
 return;
+
 }
 
-if(time>=list[list.length-1].time){
+
+if(
+time>=
+list[list.length-1].time
+){
 
 applyPart(
 name,
@@ -563,11 +1665,19 @@ list[list.length-1].data
 );
 
 return;
+
 }
 
-let a=list[0],b=list[1];
 
-for(let i=0;i<list.length-1;i++){
+let a=list[0];
+let b=list[1];
+
+
+for(
+let i=0;
+i<list.length-1;
+i++
+){
 
 if(
 time>=list[i].time&&
@@ -575,18 +1685,35 @@ time<=list[i+1].time
 ){
 
 a=list[i];
+
 b=list[i+1];
+
 break;
+
 }
+
 }
+
 
 let t=
 (time-a.time)/
-Math.max(.00001,b.time-a.time);
+Math.max(
+.00001,
+b.time-a.time
+);
 
-t=t*t*(3-2*t);
 
-const p=parts[name];
+/*
+   Smooth interpolation
+*/
+
+t=
+t*t*(3-2*t);
+
+
+const p=
+parts[name];
+
 
 p.position.lerpVectors(
 a.data.position,
@@ -594,98 +1721,173 @@ b.data.position,
 t
 );
 
+
 p.quaternion.slerpQuaternions(
 a.data.quaternion,
 b.data.quaternion,
 t
 );
+
 }
+
 
 function evaluate(){
 
-Object.keys(parts).forEach(n=>{
-evaluatePart(n,currentTime);
+Object.keys(parts)
+.forEach(n=>{
+
+evaluatePart(
+n,
+currentTime
+);
+
 });
 
 }
 
-/* =====================
+
+/* =========================================================
    TIMELINE
-===================== */
+========================================================= */
 
 const timeline=
-document.getElementById("timeline");
+document.getElementById(
+"timeline"
+);
 
 const inner=
-document.getElementById("inner");
+document.getElementById(
+"inner"
+);
 
 const ruler=
-document.getElementById("ruler");
+document.getElementById(
+"ruler"
+);
 
 const tracksEl=
-document.getElementById("tracks");
+document.getElementById(
+"tracks"
+);
 
 const playhead=
-document.getElementById("playhead");
+document.getElementById(
+"playhead"
+);
 
 const end=
-document.getElementById("end");
+document.getElementById(
+"end"
+);
 
 const readout=
-document.getElementById("readout");
+document.getElementById(
+"readout"
+);
 
 const PX=130;
+
 const OFFSET=92;
+
 
 function renderTimeline(){
 
 ruler.innerHTML="";
+
 tracksEl.innerHTML="";
+
 
 inner.style.width=
 Math.max(
 timeline.clientWidth,
-OFFSET+duration*PX+100
+OFFSET+
+duration*PX+
+100
 )+"px";
 
-for(let t=0;t<=duration+.001;t+=.25){
 
-const tick=document.createElement("div");
+for(
+let t=0;
+t<=duration+.001;
+t+=.25
+){
+
+const tick=
+document.createElement(
+"div"
+);
 
 tick.className="tick";
+
 tick.style.left=
-OFFSET+t*PX+"px";
+OFFSET+
+t*PX+
+"px";
 
-if(Math.abs(t%0.5)<.001){
 
-const s=document.createElement("span");
-s.textContent=t.toFixed(1)+"s";
+if(
+Math.abs(t%0.5)<.001
+){
+
+const s=
+document.createElement(
+"span"
+);
+
+s.textContent=
+t.toFixed(1)+"s";
+
 tick.appendChild(s);
 
 }
 
 ruler.appendChild(tick);
+
 }
 
-Object.keys(parts).forEach(name=>{
 
-const row=document.createElement("div");
+Object.keys(parts)
+.forEach(name=>{
+
+const row=
+document.createElement(
+"div"
+);
+
 row.className="track";
 
-const label=document.createElement("div");
+
+const label=
+document.createElement(
+"div"
+);
+
 label.className="label";
+
 label.textContent=name;
-row.appendChild(label);
+
+row.appendChild(
+label
+);
+
 
 tracks[name].forEach(k=>{
 
-const key=document.createElement("div");
+const key=
+document.createElement(
+"div"
+);
+
 key.className="key";
 
 key.style.left=
-OFFSET+k.time*PX+"px";
+OFFSET+
+k.time*PX+
+"px";
+
 
 let holdTimer;
+
 
 key.addEventListener(
 "pointerdown",
@@ -693,7 +1895,8 @@ e=>{
 
 e.stopPropagation();
 
-holdTimer=setTimeout(()=>{
+holdTimer=
+setTimeout(()=>{
 
 openKeyMenu(
 e.clientX,
@@ -706,53 +1909,87 @@ k
 
 });
 
+
 key.addEventListener(
 "pointerup",
-()=>clearTimeout(holdTimer)
+()=>clearTimeout(
+holdTimer
+)
 );
+
 
 key.addEventListener(
 "pointercancel",
-()=>clearTimeout(holdTimer)
+()=>clearTimeout(
+holdTimer
+)
 );
 
-row.appendChild(key);
+
+row.appendChild(
+key
+);
 
 });
 
-tracksEl.appendChild(row);
+
+tracksEl.appendChild(
+row
+);
 
 });
+
 
 updateTimeline();
+
 }
+
+
+/* =========================================================
+   UPDATE TIMELINE
+========================================================= */
 
 function updateTimeline(){
 
 playhead.style.left=
-OFFSET+currentTime*PX+"px";
+OFFSET+
+currentTime*PX+
+"px";
 
 end.style.left=
-OFFSET+duration*PX+"px";
+OFFSET+
+duration*PX+
+"px";
 
 readout.textContent=
 currentTime.toFixed(2)+
 " / "+
 duration.toFixed(2);
+
 }
 
-/* =====================
-   KEY MOVE
-===================== */
+
+/* =========================================================
+   KEY MENU
+========================================================= */
 
 let movingKey=null;
 
-function openKeyMenu(x,y,name,k){
+
+function openKeyMenu(
+x,
+y,
+name,
+k
+){
 
 const popup=
-document.getElementById("popup");
+document.getElementById(
+"popup"
+);
 
-popup.style.display="block";
+popup.style.display=
+"block";
 
 popup.style.left=
 Math.min(
@@ -767,96 +2004,168 @@ innerHeight-120
 )+"px";
 
 popup.dataset.name=name;
+
 popup._key=k;
+
 }
+
 
 document.addEventListener(
 "pointerdown",
 e=>{
 
 const popup=
-document.getElementById("popup");
+document.getElementById(
+"popup"
+);
 
 if(
 popup.style.display==="block"&&
 !popup.contains(e.target)
 ){
-popup.style.display="none";
+
+popup.style.display=
+"none";
+
 }
 
 });
 
-document.getElementById("kfMove").onclick=()=>{
 
-const popup=document.getElementById("popup");
-const name=popup.dataset.name;
-const k=popup._key;
+/* MOVE KEY */
+
+document
+.getElementById("kfMove")
+.onclick=()=>{
+
+const popup=
+document.getElementById(
+"popup"
+);
 
 movingKey={
-name:name,
-key:k
+
+name:
+popup.dataset.name,
+
+key:
+popup._key
+
 };
 
-popup.style.display="none";
+popup.style.display=
+"none";
 
 };
 
-document.getElementById("kfCopy").onclick=()=>{
 
-const popup=document.getElementById("popup");
+/* DUPLICATE */
 
-const name=popup.dataset.name;
-const k=popup._key;
+document
+.getElementById("kfCopy")
+.onclick=()=>{
+
+const popup=
+document.getElementById(
+"popup"
+);
+
+const name=
+popup.dataset.name;
+
+const k=
+popup._key;
+
 
 const copy={
-time:Math.min(
+
+time:
+Math.min(
 duration,
 k.time+.25
 ),
+
 data:{
-position:k.data.position.clone(),
-quaternion:k.data.quaternion.clone()
+
+position:
+k.data.position.clone(),
+
+quaternion:
+k.data.quaternion.clone()
+
 }
+
 };
 
-tracks[name].push(copy);
-tracks[name].sort((a,b)=>a.time-b.time);
 
-popup.style.display="none";
+tracks[name].push(
+copy
+);
+
+tracks[name].sort(
+(a,b)=>a.time-b.time
+);
+
+popup.style.display=
+"none";
 
 renderTimeline();
+
 };
 
-document.getElementById("kfDelete").onclick=()=>{
 
-const popup=document.getElementById("popup");
+/* DELETE */
 
-const name=popup.dataset.name;
-const k=popup._key;
+document
+.getElementById("kfDelete")
+.onclick=()=>{
+
+const popup=
+document.getElementById(
+"popup"
+);
+
+const name=
+popup.dataset.name;
+
+const k=
+popup._key;
+
 
 tracks[name]=
-tracks[name].filter(x=>x!==k);
+tracks[name].filter(
+x=>x!==k
+);
 
-popup.style.display="none";
+popup.style.display=
+"none";
 
 renderTimeline();
+
 };
 
-/* drag KF */
+
+/* =========================================================
+   MOVE KEY
+========================================================= */
 
 timeline.addEventListener(
 "pointermove",
 e=>{
 
-if(!movingKey)return;
+if(!movingKey)
+return;
+
 
 const rect=
 inner.getBoundingClientRect();
+
 
 let x=
 e.clientX-
 rect.left-
 OFFSET;
+
 
 let t=
 Math.max(
@@ -867,14 +2176,20 @@ x/PX
 )
 );
 
+
 movingKey.key.time=t;
 
-tracks[movingKey.name].sort(
+
+tracks[
+movingKey.name
+].sort(
 (a,b)=>a.time-b.time
 );
 
 renderTimeline();
+
 });
+
 
 timeline.addEventListener(
 "pointerup",
@@ -883,103 +2198,140 @@ timeline.addEventListener(
 if(movingKey){
 
 movingKey=null;
+
 renderTimeline();
 
 }
+
 });
 
-/* =====================
-   PLAYHEAD
-===================== */
+
+/* =========================================================
+   SCRUB
+========================================================= */
 
 let scrub=false;
+
 
 timeline.addEventListener(
 "pointerdown",
 e=>{
 
 if(
-e.target.classList.contains("key")||
+e.target.classList.contains(
+"key"
+)||
 e.target===end
-)return;
+)
+return;
+
 
 const rect=
 inner.getBoundingClientRect();
+
 
 let x=
 e.clientX-
 rect.left-
 OFFSET;
 
+
 scrub=true;
+
 
 currentTime=
 Math.max(
 0,
-Math.min(duration,x/PX)
+Math.min(
+duration,
+x/PX
+)
 );
 
+
 evaluate();
+
 updateTimeline();
 
 });
+
 
 timeline.addEventListener(
 "pointermove",
 e=>{
 
-if(!scrub)return;
+if(!scrub)
+return;
+
 
 const rect=
 inner.getBoundingClientRect();
+
 
 let x=
 e.clientX-
 rect.left-
 OFFSET;
 
+
 currentTime=
 Math.max(
 0,
-Math.min(duration,x/PX)
+Math.min(
+duration,
+x/PX
+)
 );
 
+
 evaluate();
+
 updateTimeline();
 
 });
+
 
 timeline.addEventListener(
 "pointerup",
 ()=>scrub=false
 );
 
-/* =====================
-   DURATION 0-50s
-===================== */
+
+/* =========================================================
+   DURATION
+========================================================= */
 
 let draggingEnd=false;
+
 
 end.addEventListener(
 "pointerdown",
 e=>{
+
 e.stopPropagation();
+
 draggingEnd=true;
+
 });
+
 
 end.addEventListener(
 "pointermove",
 e=>{
 
-if(!draggingEnd)return;
+if(!draggingEnd)
+return;
+
 
 const rect=
 inner.getBoundingClientRect();
+
 
 let x=
 e.clientX-
 rect.left-
 OFFSET;
+
 
 duration=
 Math.max(
@@ -990,11 +2342,19 @@ x/PX
 )
 );
 
-if(currentTime>duration)
-currentTime=duration;
+
+if(
+currentTime>
+duration
+)
+currentTime=
+duration;
+
 
 renderTimeline();
+
 });
+
 
 end.addEventListener(
 "pointerup",
@@ -1006,72 +2366,125 @@ end.addEventListener(
 ()=>draggingEnd=false
 );
 
-/* =====================
-   PLAY
-===================== */
 
-let lastTime=performance.now();
+/* =========================================================
+   PLAYBACK
+========================================================= */
 
-document.getElementById("play").onclick=()=>{
+let lastTime=
+performance.now();
+
+
+document
+.getElementById("play")
+.onclick=()=>{
 
 playing=!playing;
 
-document.getElementById("play").textContent=
-playing?"⏸":"▶";
+document
+.getElementById("play")
+.textContent=
+playing
+?"⏸"
+:"▶";
 
-lastTime=performance.now();
+lastTime=
+performance.now();
 
 };
 
-document.getElementById("prev").onclick=()=>{
+
+document
+.getElementById("prev")
+.onclick=()=>{
 
 let t=0;
 
-Object.values(tracks).forEach(list=>{
+Object.values(tracks)
+.forEach(list=>{
 
 list.forEach(k=>{
 
-if(k.time<currentTime-.02)
-t=Math.max(t,k.time);
+if(
+k.time<
+currentTime-.02
+){
+
+t=
+Math.max(
+t,
+k.time
+);
+
+}
 
 });
 
 });
+
 
 currentTime=t;
+
 evaluate();
+
 updateTimeline();
+
 };
 
-document.getElementById("next").onclick=()=>{
+
+document
+.getElementById("next")
+.onclick=()=>{
 
 let t=duration;
 
-Object.values(tracks).forEach(list=>{
+Object.values(tracks)
+.forEach(list=>{
 
 list.forEach(k=>{
 
-if(k.time>currentTime+.02)
-t=Math.min(t,k.time);
+if(
+k.time>
+currentTime+.02
+){
+
+t=
+Math.min(
+t,
+k.time
+);
+
+}
 
 });
 
 });
+
 
 currentTime=t;
+
 evaluate();
+
 updateTimeline();
+
 };
 
-/* =====================
-   UNDO REDO
-===================== */
 
-document.getElementById("undoBtn").onclick=()=>{
+/* =========================================================
+   UNDO
+========================================================= */
 
-if(!undoStack.length)return;
+document
+.getElementById("undoBtn")
+.onclick=()=>{
 
-redoStack.push(saveState());
+if(!undoStack.length)
+return;
+
+
+redoStack.push(
+saveState()
+);
 
 restore(
 undoStack.pop()
@@ -1081,11 +2494,22 @@ renderTimeline();
 
 };
 
-document.getElementById("redoBtn").onclick=()=>{
 
-if(!redoStack.length)return;
+/* =========================================================
+   REDO
+========================================================= */
 
-undoStack.push(saveState());
+document
+.getElementById("redoBtn")
+.onclick=()=>{
+
+if(!redoStack.length)
+return;
+
+
+undoStack.push(
+saveState()
+);
 
 restore(
 redoStack.pop()
@@ -1095,44 +2519,81 @@ renderTimeline();
 
 };
 
-/* =====================
-   PAGES
-===================== */
 
-document.querySelectorAll(".page").forEach(btn=>{
+/* =========================================================
+   PAGES
+========================================================= */
+
+document
+.querySelectorAll(".page")
+.forEach(btn=>{
 
 btn.onclick=()=>{
 
-document.querySelectorAll(".page")
-.forEach(x=>x.classList.remove("active"));
+document
+.querySelectorAll(".page")
+.forEach(x=>
+x.classList.remove(
+"active"
+)
+);
 
-btn.classList.add("active");
+btn.classList.add(
+"active"
+);
 
-const page=btn.dataset.page;
 
-document.getElementById("timelinePanel")
+const page=
+btn.dataset.page;
+
+
+document
+.getElementById(
+"timelinePanel"
+)
 .style.display=
-page==="animate"?"flex":"none";
+page==="animate"
+?"flex"
+:"none";
 
-document.getElementById("parts")
+
+document
+.getElementById(
+"parts"
+)
 .style.display=
-page==="rig"||page==="transform"
-?"flex":"none";
+page==="rig"||
+page==="transform"
+?"flex"
+:"none";
 
-document.getElementById("transformInfo")
+
+document
+.getElementById(
+"transformInfo"
+)
 .style.display=
 page==="transform"
-?"block":"none";
+?"block"
+:"none";
 
-if(page==="camera"){
+
+if(
+page==="camera"
+){
 
 orbit.enabled=true;
 
 }
 
-if(page==="transform"){
 
-gizmo.attach(parts[selected]);
+if(
+page==="transform"
+){
+
+gizmo.attach(
+parts[selected]
+);
 
 }
 
@@ -1140,34 +2601,61 @@ gizmo.attach(parts[selected]);
 
 });
 
-/* =====================
+
+/* =========================================================
    RESIZE
-===================== */
+========================================================= */
 
 function resize(){
 
-const w=Math.max(1,view.clientWidth);
-const h=Math.max(1,view.clientHeight);
+const w=
+Math.max(
+1,
+view.clientWidth
+);
 
-camera.aspect=w/h;
+const h=
+Math.max(
+1,
+view.clientHeight
+);
+
+
+camera.aspect=
+w/h;
+
 camera.updateProjectionMatrix();
 
-renderer.setSize(w,h,false);
+renderer.setSize(
+w,
+h,
+false
+);
 
 renderTimeline();
+
 }
 
-window.addEventListener("resize",resize);
 
-/* =====================
-   LOOP
-===================== */
+window.addEventListener(
+"resize",
+resize
+);
+
+
+/* =========================================================
+   ANIMATION LOOP
+========================================================= */
 
 function animate(now){
 
-requestAnimationFrame(animate);
+requestAnimationFrame(
+animate
+);
+
 
 orbit.update();
+
 
 if(playing){
 
@@ -1179,9 +2667,13 @@ Math.min(
 
 lastTime=now;
 
+
 currentTime+=dt;
 
-if(currentTime>=duration){
+
+if(
+currentTime>=duration
+){
 
 if(loop){
 
@@ -1190,19 +2682,24 @@ currentTime=0;
 }else{
 
 currentTime=duration;
+
 playing=false;
 
-document.getElementById("play")
+document
+.getElementById("play")
 .textContent="▶";
 
 }
 
 }
 
+
 evaluate();
+
 updateTimeline();
 
 }
+
 
 renderer.render(
 scene,
@@ -1211,14 +2708,24 @@ camera
 
 }
 
+
+/* =========================================================
+   START
+========================================================= */
+
 resize();
 
-selectPart("Torso");
+selectPart(
+"Torso"
+);
 
 renderTimeline();
 
-requestAnimationFrame(animate);
+requestAnimationFrame(
+animate
+);
 
 </script>
+
 </body>
-</html>
+   </html>
