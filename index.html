@@ -2,3144 +2,1705 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width,initial-scale=1.0,user-scalable=no">
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
 <title>MizaxEngine Animator V1</title>
 
 <style>
 *{
-    box-sizing:border-box;
-    user-select:none;
-    -webkit-tap-highlight-color:transparent;
+ box-sizing:border-box;
+ user-select:none;
+ -webkit-tap-highlight-color:transparent;
 }
 
 html,body{
-    margin:0;
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#080808;
-    color:#eee;
-    font-family:Arial,Helvetica,sans-serif;
-}
-
-button,
-input{
-    font-family:inherit;
+ margin:0;
+ width:100%;
+ height:100%;
+ overflow:hidden;
+ background:#080808;
+ color:#eee;
+ font-family:Arial,sans-serif;
 }
 
 button{
-    border-radius:0;
+ background:#171717;
+ color:#ddd;
+ border:1px solid #333;
+ border-radius:0;
+ padding:7px 10px;
+ font-size:11px;
+ white-space:nowrap;
 }
 
-/* =====================================================
-   APP
-===================================================== */
-
-#app{
-    position:fixed;
-    inset:0;
-    display:flex;
-    flex-direction:column;
-    background:#080808;
+button:active{background:#2a2a2a}
+button.active{
+ background:#7b1010;
+ border-color:#d51b1b;
+ color:#fff;
 }
 
-/* =====================================================
-   TOP BAR
-===================================================== */
+#viewports{
+ position:absolute;
+ inset:0;
+ z-index:1;
+}
+
+#viewports canvas{
+ display:block;
+ width:100%;
+ height:100%;
+}
 
 #topbar{
-    height:52px;
-    flex:none;
-    display:flex;
-    align-items:center;
-    gap:5px;
-    padding:6px;
-    background:#101010;
-    border-bottom:1px solid #333;
-    z-index:50;
+ position:absolute;
+ top:0;
+ left:0;
+ right:0;
+ height:48px;
+ background:#0d0d0d;
+ border-bottom:1px solid #292929;
+ z-index:20;
+ display:flex;
+ align-items:center;
+ gap:4px;
+ padding:5px;
+ overflow-x:auto;
 }
 
-.brand{
-    color:#e00000;
-    font-weight:bold;
-    font-size:15px;
-    padding:0 8px;
-    white-space:nowrap;
+.logo{
+ color:#e21b23;
+ font-weight:bold;
+ font-size:13px;
+ margin:0 8px 0 3px;
+ white-space:nowrap;
 }
 
-.topBtn{
-    height:34px;
-    min-width:34px;
-    padding:0 9px;
-    background:#191919;
-    border:1px solid #444;
-    color:#ddd;
-    font-size:12px;
+#playBtn{
+ min-width:58px;
 }
 
-.topBtn:hover{
-    background:#242424;
+#duration{
+ width:55px;
+ background:#111;
+ color:#fff;
+ border:1px solid #333;
+ border-radius:0;
+ padding:7px 5px;
+ font-size:11px;
 }
 
-.topBtn.active{
-    background:#b40000;
-    border-color:#ff3333;
-    color:white;
+#fps{
+ width:45px;
+ background:#111;
+ color:#fff;
+ border:1px solid #333;
+ border-radius:0;
+ padding:7px 4px;
+ font-size:11px;
 }
 
-.spacer{
-    flex:1;
+#rigPanel{
+ position:absolute;
+ top:58px;
+ left:8px;
+ width:190px;
+ max-height:48vh;
+ background:rgba(12,12,12,.94);
+ border:1px solid #292929;
+ z-index:15;
+ overflow:hidden;
 }
 
-/* =====================================================
-   VIEWPORT
-===================================================== */
-
-#viewport{
-    position:relative;
-    flex:1;
-    min-height:80px;
-    overflow:hidden;
-    background:#111;
+.panelTitle{
+ height:30px;
+ display:flex;
+ align-items:center;
+ padding:0 8px;
+ color:#e21b23;
+ font-size:11px;
+ font-weight:bold;
+ border-bottom:1px solid #292929;
 }
 
-#canvasWrap{
-    position:absolute;
-    inset:0;
+.tree{
+ overflow:auto;
+ max-height:calc(48vh - 30px);
 }
 
-#canvasWrap canvas{
-    display:block;
-    width:100%;
-    height:100%;
+.treeRow{
+ height:27px;
+ display:flex;
+ align-items:center;
+ padding-left:10px;
+ font-size:11px;
+ border-bottom:1px solid #171717;
 }
 
-/* =====================================================
-   VIEWPORT TOOL
-===================================================== */
-
-#viewportTools{
-    position:absolute;
-    right:8px;
-    top:8px;
-    display:flex;
-    flex-direction:column;
-    gap:4px;
-    z-index:10;
+.treeRow:active,
+.treeRow.selected{
+ background:#681010;
+ color:#fff;
 }
 
-.vBtn{
-    width:38px;
-    height:34px;
-    background:#151515;
-    border:1px solid #444;
-    color:#ddd;
-    border-radius:0;
+.treeArrow{
+ color:#777;
+ width:15px;
 }
 
-.vBtn.active{
-    background:#a00000;
-    border-color:#ff2222;
+#info{
+ position:absolute;
+ top:calc(58px + 48vh + 7px);
+ left:8px;
+ width:190px;
+ background:rgba(12,12,12,.94);
+ border:1px solid #292929;
+ z-index:15;
+ padding:8px;
+ font:10px monospace;
+ line-height:1.55;
 }
-
-/* =====================================================
-   TIMELINE
-===================================================== */
 
 #timeline{
-    height:310px;
-    min-height:0;
-    flex:none;
-    position:relative;
-    display:flex;
-    flex-direction:column;
-    background:#111318;
-    border-top:2px solid #333;
-    z-index:30;
+ position:absolute;
+ left:0;
+ right:0;
+ bottom:0;
+ height:250px;
+ min-height:90px;
+ background:#0b0b0b;
+ border-top:2px solid #9c1717;
+ z-index:30;
+ display:flex;
+ flex-direction:column;
 }
 
-/* RESIZE HANDLE */
-
-#timelineResize{
-    position:absolute;
-    top:-8px;
-    left:0;
-    width:100%;
-    height:8px;
-    cursor:ns-resize;
-    z-index:100;
+#timelineHandle{
+ height:10px;
+ flex:none;
+ background:#151515;
+ border-bottom:1px solid #333;
+ cursor:ns-resize;
+ position:relative;
 }
 
-#timelineResize::after{
-    content:"";
-    position:absolute;
-    left:50%;
-    top:3px;
-    width:55px;
-    height:2px;
-    transform:translateX(-50%);
-    background:#777;
+#timelineHandle:after{
+ content:"";
+ position:absolute;
+ width:35px;
+ height:3px;
+ background:#666;
+ left:50%;
+ top:3px;
+ transform:translateX(-50%);
 }
 
-#timelineResize:hover::after{
-    background:#e00000;
+#timeControls{
+ height:39px;
+ flex:none;
+ display:flex;
+ align-items:center;
+ gap:4px;
+ padding:4px 6px;
+ border-bottom:1px solid #292929;
+ overflow-x:auto;
 }
 
-/* =====================================================
-   TIMELINE HEADER
-===================================================== */
-
-#timelineHeader{
-    height:86px;
-    flex:none;
-    background:#15171c;
-    border-bottom:1px solid #333;
+#timeReadout{
+ color:#ddd;
+ font:11px monospace;
+ min-width:76px;
+ text-align:center;
 }
-
-#timelineControls{
-    height:43px;
-    display:flex;
-    align-items:center;
-    gap:4px;
-    padding:5px;
-    overflow:hidden;
-}
-
-.tBtn{
-    height:32px;
-    min-width:32px;
-    padding:0 8px;
-    background:#1b1d22;
-    border:1px solid #41444b;
-    color:#ddd;
-    border-radius:0;
-    font-size:12px;
-    flex:none;
-}
-
-.tBtn:hover{
-    background:#292c32;
-}
-
-.tBtn.active{
-    background:#a80000;
-    border-color:#ff3030;
-    color:#fff;
-}
-
-.playBtn{
-    width:42px;
-    font-size:15px;
-}
-
-#durationBox{
-    height:32px;
-    width:70px;
-    background:#1b1d22;
-    border:1px solid #41444b;
-    color:#fff;
-    text-align:center;
-    outline:none;
-}
-
-#durationBox:focus{
-    border-color:#e00000;
-}
-
-.smallLabel{
-    font-size:10px;
-    color:#888;
-    padding-left:3px;
-}
-
-/* =====================================================
-   TIMELINE BODY
-===================================================== */
 
 #timelineBody{
-    flex:1;
-    min-height:0;
-    display:flex;
-    overflow:hidden;
+ flex:1;
+ min-height:0;
+ display:flex;
+ overflow:hidden;
 }
 
-/* LEFT PART LIST */
-
-#trackList{
-    width:180px;
-    min-width:180px;
-    background:#15171c;
-    border-right:2px solid #292c31;
-    overflow-y:auto;
-    overflow-x:hidden;
+#labels{
+ width:135px;
+ min-width:135px;
+ background:#0e0e0e;
+ border-right:1px solid #333;
+ overflow:hidden;
 }
 
-.trackHeader{
-    height:42px;
-    display:flex;
-    align-items:center;
-    padding:0 9px;
-    color:#aaa;
-    font-size:11px;
-    border-bottom:1px solid #292c31;
+.labelHead{
+ height:30px;
+ border-bottom:1px solid #333;
+ display:flex;
+ align-items:center;
+ padding-left:8px;
+ color:#777;
+ font-size:10px;
 }
 
-.trackRow{
-    height:40px;
-    display:flex;
-    align-items:center;
-    padding:0 7px;
-    gap:6px;
-    color:#bbb;
-    border-bottom:1px solid #24272c;
-    font-size:12px;
+.label{
+ height:34px;
+ display:flex;
+ align-items:center;
+ padding-left:8px;
+ border-bottom:1px solid #1d1d1d;
+ font-size:10px;
+ white-space:nowrap;
+ overflow:hidden;
 }
 
-.trackRow.selected{
-    background:#3b1111;
-    color:#fff;
-    border-left:3px solid #e00000;
-    padding-left:4px;
+#trackViewport{
+ flex:1;
+ min-width:0;
+ overflow:auto;
+ position:relative;
 }
 
-.eye{
-    width:22px;
-    text-align:center;
-    color:#888;
-    cursor:pointer;
+#trackInner{
+ position:relative;
+ min-width:900px;
+ height:100%;
 }
-
-.trackName{
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-}
-
-/* =====================================================
-   TIMELINE SCROLL AREA
-===================================================== */
-
-#timelineScroll{
-    flex:1;
-    min-width:0;
-    overflow:auto;
-    position:relative;
-    background:#0f1115;
-}
-
-#timelineContent{
-    position:relative;
-    min-width:900px;
-    height:100%;
-}
-
-/* RULER */
 
 #ruler{
-    position:absolute;
-    left:0;
-    top:0;
-    width:100%;
-    height:42px;
-    background:#17191e;
-    border-bottom:1px solid #34373d;
+ height:30px;
+ position:relative;
+ border-bottom:1px solid #333;
+ background:#111;
 }
 
 .tick{
-    position:absolute;
-    top:0;
-    width:1px;
-    height:42px;
-    background:#363940;
+ position:absolute;
+ top:0;
+ height:30px;
+ border-left:1px solid #343434;
+ color:#777;
+ font:9px monospace;
+ padding:3px 0 0 4px;
 }
 
 .tick.major{
-    background:#70747c;
+ border-color:#555;
+ color:#aaa;
 }
-
-.tickLabel{
-    position:absolute;
-    top:4px;
-    transform:translateX(4px);
-    color:#aeb1b7;
-    font-size:10px;
-    white-space:nowrap;
-}
-
-/* TRACKS */
 
 #tracks{
-    position:absolute;
-    left:0;
-    top:42px;
-    width:100%;
+ position:absolute;
+ top:30px;
+ left:0;
+ right:0;
 }
 
-.trackLane{
-    position:relative;
-    height:40px;
-    border-bottom:1px solid #292c31;
+.track{
+ height:34px;
+ position:relative;
+ border-bottom:1px solid #1d1d1d;
 }
 
-.trackLane::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-    background-image:
-        repeating-linear-gradient(
-            to right,
-            rgba(255,255,255,.045) 0,
-            rgba(255,255,255,.045) 1px,
-            transparent 1px,
-            transparent var(--minorTick)
-        );
+.snapLine{
+ position:absolute;
+ top:0;
+ bottom:0;
+ width:1px;
+ background:#242424;
+ pointer-events:none;
 }
 
-/* =====================================================
-   PLAYHEAD
-===================================================== */
+.kf{
+ position:absolute;
+ top:10px;
+ width:12px;
+ height:12px;
+ background:#777;
+ border:1px solid #aaa;
+ transform:rotate(45deg);
+ margin-left:-6px;
+ cursor:pointer;
+ z-index:5;
+}
+
+.kf.selected{
+ background:#e21b23;
+ border-color:#ff6767;
+ box-shadow:0 0 8px #d51b1b;
+}
 
 #playhead{
-    position:absolute;
-    top:0;
-    width:2px;
-    height:100%;
-    background:#ff2525;
-    z-index:40;
-    pointer-events:none;
+ position:absolute;
+ top:0;
+ bottom:0;
+ width:2px;
+ background:#e21b23;
+ z-index:20;
+ pointer-events:none;
 }
 
-#playheadHandle{
-    position:absolute;
-    top:0;
-    left:50%;
-    transform:translateX(-50%);
-    width:0;
-    height:0;
-    border-left:8px solid transparent;
-    border-right:8px solid transparent;
-    border-top:12px solid #ff2525;
+#playheadHead{
+ position:absolute;
+ top:0;
+ left:-5px;
+ width:12px;
+ height:12px;
+ background:#e21b23;
+ clip-path:polygon(0 0,100% 0,50% 100%);
 }
 
-/* =====================================================
-   KEYFRAMES
-===================================================== */
-
-.keyframe{
-    position:absolute;
-    top:50%;
-    width:12px;
-    height:12px;
-    transform:translate(-50%,-50%) rotate(45deg);
-    background:#d7d7d7;
-    border:2px solid #777;
-    cursor:pointer;
-    z-index:50;
+#contextMenu{
+ position:fixed;
+ display:none;
+ z-index:100;
+ background:#111;
+ border:1px solid #555;
+ width:150px;
+ box-shadow:0 5px 20px #000;
 }
 
-.keyframe:hover{
-    background:#fff;
+.ctxTitle{
+ padding:7px;
+ color:#e21b23;
+ font-size:10px;
+ border-bottom:1px solid #333;
 }
 
-.keyframe.selected{
-    background:#ff2020;
-    border-color:#fff;
-    box-shadow:0 0 8px #e00000;
+.ctxBtn{
+ width:100%;
+ border:0;
+ border-bottom:1px solid #292929;
+ text-align:left;
+ padding:9px;
+ background:#151515;
+ color:#ddd;
 }
 
-.keyframe.copied{
-    outline:2px dashed #ff4444;
-    outline-offset:3px;
+.ctxBtn:active{
+ background:#721313;
 }
 
-/* =====================================================
-   CONTEXT MENU
-===================================================== */
-
-#kfMenu{
-    position:fixed;
-    display:none;
-    min-width:145px;
-    background:#17181c;
-    border:1px solid #555;
-    z-index:500;
-    box-shadow:0 8px 25px rgba(0,0,0,.7);
+#toast{
+ position:absolute;
+ left:50%;
+ bottom:270px;
+ transform:translateX(-50%);
+ background:#111;
+ border:1px solid #e21b23;
+ padding:7px 12px;
+ font-size:10px;
+ z-index:100;
+ display:none;
 }
-
-.menuTitle{
-    padding:8px;
-    font-size:11px;
-    color:#888;
-    border-bottom:1px solid #333;
-}
-
-.menuItem{
-    padding:9px 10px;
-    font-size:12px;
-    color:#ddd;
-    cursor:pointer;
-}
-
-.menuItem:hover{
-    background:#8d0000;
-    color:#fff;
-}
-
-/* =====================================================
-   RESPONSIVE
-===================================================== */
 
 @media(max-width:600px){
-
-    #topbar{
-        height:48px;
-        padding:4px;
-        gap:3px;
-    }
-
-    .brand{
-        font-size:12px;
-        padding:0 4px;
-    }
-
-    .topBtn{
-        height:32px;
-        min-width:30px;
-        padding:0 6px;
-        font-size:10px;
-    }
-
-    #timeline{
-        height:290px;
-    }
-
-    #trackList{
-        width:125px;
-        min-width:125px;
-    }
-
-    .trackRow{
-        font-size:11px;
-    }
-
-    .trackHeader{
-        font-size:10px;
-    }
-
-    #timelineControls{
-        gap:3px;
-        overflow-x:auto;
-    }
-
-    .tBtn{
-        min-width:30px;
-        padding:0 6px;
-        font-size:10px;
-    }
-
-    #durationBox{
-        width:58px;
-    }
+ #rigPanel{
+  width:155px;
+  max-height:35vh;
+ }
+ #info{
+  width:155px;
+  top:calc(58px + 35vh + 5px);
+  font-size:9px;
+ }
+ #labels{
+  width:110px;
+  min-width:110px;
+ }
+ .logo{font-size:11px}
+ #timeline{height:235px}
 }
 </style>
 </head>
 
 <body>
 
-<div id="app">
+<div id="viewports"></div>
 
-    <!-- =================================================
-         TOP BAR
-    ================================================= -->
-
-    <div id="topbar">
-
-        <div class="brand">
-            MIZAXENGINE
-        </div>
-
-        <button class="topBtn" id="newBtn">NEW</button>
-        <button class="topBtn" id="undoBtn">UNDO</button>
-        <button class="topBtn" id="redoBtn">REDO</button>
-
-        <div class="spacer"></div>
-
-        <button class="topBtn" id="copyBtn">COPY</button>
-        <button class="topBtn" id="pasteBtn">PASTE</button>
-
-    </div>
-
-
-    <!-- =================================================
-         3D VIEWPORT
-    ================================================= -->
-
-    <div id="viewport">
-
-        <div id="canvasWrap"></div>
-
-        <div id="viewportTools">
-
-            <button class="vBtn active"
-                    id="moveBtn">
-                MOVE
-            </button>
-
-            <button class="vBtn"
-                    id="rotateBtn">
-                ROT
-            </button>
-
-            <button class="vBtn"
-                    id="cameraBtn">
-                CAM
-            </button>
-
-        </div>
-
-    </div>
-
-
-    <!-- =================================================
-         TIMELINE
-    ================================================= -->
-
-    <div id="timeline">
-
-        <div id="timelineResize"></div>
-
-        <div id="timelineHeader">
-
-            <div id="timelineControls">
-
-                <button class="tBtn"
-                        id="rewindBtn">
-                    |◀
-                </button>
-
-                <button class="tBtn"
-                        id="prevBtn">
-                    ◀
-                </button>
-
-                <button class="tBtn playBtn"
-                        id="playBtn">
-                    ▶
-                </button>
-
-                <button class="tBtn"
-                        id="nextBtn">
-                    ▶|
-                </button>
-
-                <button class="tBtn"
-                        id="loopBtn">
-                    LOOP
-                </button>
-
-                <span class="smallLabel">
-                    Duration
-                </span>
-
-                <input
-                    id="durationBox"
-                    type="number"
-                    min="0.25"
-                    max="60"
-                    step="0.25"
-                    value="2"
-                >
-
-                <button class="tBtn"
-                        id="addKeyBtn">
-                    + KF
-                </button>
-
-                <button class="tBtn"
-                        id="zoomOutBtn">
-                    −
-                </button>
-
-                <button class="tBtn"
-                        id="zoomInBtn">
-                    +
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <div id="timelineBody">
-
-            <div id="trackList">
-
-                <div class="trackHeader">
-                    RIG / PARTS
-                </div>
-
-            </div>
-
-
-            <div id="timelineScroll">
-
-                <div id="timelineContent">
-
-                    <div id="ruler"></div>
-
-                    <div id="tracks"></div>
-
-                    <div id="playhead">
-                        <div id="playheadHandle"></div>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
+<div id="topbar">
+ <div class="logo">MIZAXENGINE</div>
+ <button id="rewind">⏮</button>
+ <button id="prev">◀</button>
+ <button id="playBtn">▶ PLAY</button>
+ <button id="next">▶</button>
+ <button id="loop" class="active">LOOP</button>
+ <button id="copyBtn">COPY</button>
+ <button id="pasteBtn">PASTE</button>
+ <button id="newBtn">NEW</button>
+ <span style="color:#555">│</span>
+ <span style="font-size:9px;color:#777">DURATION</span>
+ <input id="duration" type="number" value="2" min="0.25" step="0.25">
+ <span style="font-size:9px;color:#777">FPS</span>
+ <input id="fps" type="number" value="30" min="1" max="120">
 </div>
 
-
-<!-- =====================================================
-     KEYFRAME MENU
-===================================================== -->
-
-<div id="kfMenu">
-
-    <div class="menuTitle">
-        KEYFRAME
-    </div>
-
-    <div class="menuItem"
-         id="deleteKF">
-        Delete
-    </div>
-
-    <div class="menuItem"
-         id="duplicateKF">
-        Duplicate
-    </div>
-
-    <div class="menuItem"
-         id="typeMove">
-        Type: Move
-    </div>
-
-    <div class="menuItem"
-         id="typeRotate">
-        Type: Rotate
-    </div>
-
-    <div class="menuItem"
-         id="typeScale">
-        Type: Scale
-    </div>
-
+<div id="rigPanel">
+ <div class="panelTitle">RIG / HIERARCHY</div>
+ <div class="tree" id="tree"></div>
 </div>
 
+<div id="info">Select a part...</div>
 
-<!-- =====================================================
-     THREE.JS
-===================================================== -->
+<div id="timeline">
+
+ <div id="timelineHandle"></div>
+
+ <div id="timeControls">
+  <button id="zoomOut">−</button>
+  <button id="zoomIn">+</button>
+  <button id="addKf">KEYFRAME</button>
+  <span id="timeReadout">0.00 / 2.00</span>
+ </div>
+
+ <div id="timelineBody">
+
+  <div id="labels">
+   <div class="labelHead">PARTS</div>
+   <div id="labelRows"></div>
+  </div>
+
+  <div id="trackViewport">
+   <div id="trackInner">
+    <div id="ruler"></div>
+    <div id="tracks"></div>
+    <div id="playhead">
+     <div id="playheadHead"></div>
+    </div>
+   </div>
+  </div>
+
+ </div>
+</div>
+
+<div id="contextMenu">
+ <div class="ctxTitle">KEYFRAME</div>
+ <button class="ctxBtn" id="ctxDuplicate">Duplicate</button>
+ <button class="ctxBtn" id="ctxDelete">Delete</button>
+ <button class="ctxBtn" id="ctxType">Type: Pose</button>
+</div>
+
+<div id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TransformControls.js"></script>
 
-
 <script>
+/* =========================================================
+   MIZAXENGINE V1
+========================================================= */
 
-/* =====================================================
-   GLOBAL
-===================================================== */
+let scene,camera,renderer;
+let orbitControls,transformControls;
+let r6Rig={};
+let pivots={};
+let selectedPart=null;
 
-let scene;
-let camera;
-let renderer;
+let duration=2;
+let fps=30;
+let currentTime=0;
+let playing=false;
+let loop=true;
+let timelineZoom=100;
 
-let orbitControls;
-let transformControls;
+let keyframes=[];
+let selectedKF=null;
+let clipboard=null;
 
-let rigRoot;
-
-let selectedPart = null;
-
-let playing = false;
-let loop = true;
-
-let currentTime = 0;
-let duration = 2;
-
-let zoom = 100;
-
-let copiedKeyframe = null;
-
-let selectedKeyframe = null;
-
-let keyframes = [];
-
-let longPressTimer = null;
-let draggingKeyframe = null;
-
-let timelineHeight = 310;
-
-const parts = [
-    "Torso",
-    "Head",
-    "Left Arm",
-    "Right Arm",
-    "Left Leg",
-    "Right Leg"
+const parts=[
+ "Torso",
+ "Head",
+ "Left Arm",
+ "Right Arm",
+ "Left Leg",
+ "Right Leg"
 ];
 
-const rig = {};
-
-const viewport =
-    document.getElementById("viewport");
-
-const timeline =
-    document.getElementById("timeline");
-
-const timelineContent =
-    document.getElementById("timelineContent");
-
-const timelineScroll =
-    document.getElementById("timelineScroll");
-
-const ruler =
-    document.getElementById("ruler");
-
-const tracks =
-    document.getElementById("tracks");
-
-const trackList =
-    document.getElementById("trackList");
-
-const playhead =
-    document.getElementById("playhead");
-
-const kfMenu =
-    document.getElementById("kfMenu");
+const $=id=>document.getElementById(id);
 
 
-/* =====================================================
+/* =========================================================
    INIT
-===================================================== */
+========================================================= */
 
 function init(){
 
-    scene =
-        new THREE.Scene();
+ scene=new THREE.Scene();
+ scene.background=new THREE.Color(0x1a1a1a);
 
-    scene.background =
-        new THREE.Color(0x101010);
+ camera=new THREE.PerspectiveCamera(
+  50,
+  innerWidth/innerHeight,
+  .1,
+  1000
+ );
 
+ camera.position.set(7,5,9);
 
-    /* CAMERA */
+ renderer=new THREE.WebGLRenderer({
+  antialias:true,
+  alpha:false
+ });
 
-    camera =
-        new THREE.PerspectiveCamera(
-            45,
-            1,
-            0.1,
-            1000
-        );
+ renderer.setPixelRatio(
+  Math.min(devicePixelRatio,2)
+ );
 
+ renderer.setSize(innerWidth,innerHeight);
+ renderer.shadowMap.enabled=true;
+ renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 
-    camera.position.set(
-        7,
-        5,
-        9
-    );
+ $("viewports").appendChild(renderer.domElement);
 
+ orbitControls=new THREE.OrbitControls(
+  camera,
+  renderer.domElement
+ );
 
-    /* RENDERER */
+ orbitControls.enableDamping=true;
+ orbitControls.dampingFactor=.06;
+ orbitControls.target.set(0,1.5,0);
+ orbitControls.minDistance=3;
+ orbitControls.maxDistance=20;
 
-    renderer =
-        new THREE.WebGLRenderer({
-            antialias:true
-        });
+ transformControls=new THREE.TransformControls(
+  camera,
+  renderer.domElement
+ );
 
-    renderer.setPixelRatio(
-        Math.min(
-            window.devicePixelRatio,
-            2
-        )
-    );
+ transformControls.setSize(.75);
+ scene.add(transformControls);
 
-    renderer.outputEncoding =
-        THREE.sRGBEncoding;
+ transformControls.addEventListener(
+  "dragging-changed",
+  e=>orbitControls.enabled=!e.value
+ );
 
-    renderer.shadowMap.enabled = true;
+ transformControls.addEventListener(
+  "change",
+  ()=>updateInfo()
+ );
 
-    document
-        .getElementById("canvasWrap")
-        .appendChild(
-            renderer.domElement
-        );
+ const ambient=new THREE.AmbientLight(0xffffff,.72);
+ scene.add(ambient);
 
+ const light=new THREE.DirectionalLight(0xffffff,.85);
+ light.position.set(5,10,7);
+ light.castShadow=true;
+ scene.add(light);
 
-    /* ORBIT */
+ const grid=new THREE.GridHelper(
+  20,20,0x444444,0x222222
+ );
 
-    orbitControls =
-        new THREE.OrbitControls(
-            camera,
-            renderer.domElement
-        );
+ grid.position.y=-2;
+ scene.add(grid);
 
-    orbitControls.enableDamping = true;
+ buildR6Rig();
 
-    orbitControls.dampingFactor = .07;
+ setupUI();
+ buildTimeline();
 
-    orbitControls.minDistance = 3;
+ window.addEventListener("resize",resize);
 
-    orbitControls.maxDistance = 20;
-
-    orbitControls.target.set(
-        0,
-        2.5,
-        0
-    );
-
-
-    /* TRANSFORM */
-
-    transformControls =
-        new THREE.TransformControls(
-            camera,
-            renderer.domElement
-        );
-
-    transformControls.setMode(
-        "translate"
-    );
-
-    transformControls.setSpace(
-        "local"
-    );
-
-    transformControls.size =
-        .8;
-
-    scene.add(
-        transformControls
-    );
-
-
-    transformControls.addEventListener(
-        "dragging-changed",
-        e => {
-
-            orbitControls.enabled =
-                !e.value;
-
-        }
-    );
-
-
-    transformControls.addEventListener(
-        "change",
-        () => {
-
-            if(selectedPart){
-
-                updatePartPose();
-
-            }
-
-        }
-    );
-
-
-    /* LIGHT */
-
-    scene.add(
-        new THREE.AmbientLight(
-            0xffffff,
-            .75
-        )
-    );
-
-
-    const light =
-        new THREE.DirectionalLight(
-            0xffffff,
-            .9
-        );
-
-    light.position.set(
-        5,
-        10,
-        7
-    );
-
-    light.castShadow = true;
-
-    scene.add(light);
-
-
-    /* BASEPLATE */
-
-    const base =
-        new THREE.Mesh(
-
-            new THREE.BoxGeometry(
-                14,
-                .2,
-                14
-            ),
-
-            new THREE.MeshPhongMaterial({
-                color:0x292929
-            })
-
-        );
-
-    base.position.y =
-        -0.1;
-
-    base.receiveShadow = true;
-
-    scene.add(base);
-
-
-    /* GRID */
-
-    const grid =
-        new THREE.GridHelper(
-            14,
-            14,
-            0x555555,
-            0x292929
-        );
-
-    grid.position.y = 0;
-
-    scene.add(grid);
-
-
-    /* BUILD */
-
-    buildRig();
-
-
-    /* TIMELINE */
-
-    buildTracks();
-
-    buildRuler();
-
-    updatePlayhead();
-
-
-    /* UI */
-
-    setupUI();
-
-
-    /* RESIZE */
-
-    window.addEventListener(
-        "resize",
-        resize
-    );
-
-
-    resize();
-
-    animate();
+ animate();
 }
 
 
-/* =====================================================
+/* =========================================================
    ROUNDED BOX
-===================================================== */
+========================================================= */
 
-function roundedBox(
-    w,
-    h,
-    d,
-    radius=.12
-){
+function roundedBox(w,h,d,r){
 
-    const shape =
-        new THREE.Shape();
+ const s=new THREE.Shape();
 
-    const x =
-        -w / 2;
+ const x=-w/2,y=-h/2;
+ const rr=Math.min(r,w/2,h/2);
 
-    const y =
-        -h / 2;
+ s.moveTo(x+rr,y);
+ s.lineTo(x+w-rr,y);
+ s.quadraticCurveTo(x+w,y,x+w,y+rr);
+ s.lineTo(x+w,y+h-rr);
+ s.quadraticCurveTo(x+w,y+h,x+w-rr,y+h);
+ s.lineTo(x+rr,y+h);
+ s.quadraticCurveTo(x,y+h,x,y+h-rr);
+ s.lineTo(x,y+rr);
+ s.quadraticCurveTo(x,y,x+rr,y);
 
-    shape.moveTo(
-        x + radius,
-        y
-    );
+ const g=new THREE.ExtrudeGeometry(s,{
+  depth:d,
+  bevelEnabled:true,
+  bevelSegments:2,
+  bevelSize:r*.35,
+  bevelThickness:r*.35,
+  curveSegments:4
+ });
 
-    shape.lineTo(
-        x + w - radius,
-        y
-    );
-
-    shape.quadraticCurveTo(
-        x + w,
-        y,
-        x + w,
-        y + radius
-    );
-
-    shape.lineTo(
-        x + w,
-        y + h - radius
-    );
-
-    shape.quadraticCurveTo(
-        x + w,
-        y + h,
-        x + w - radius,
-        y + h
-    );
-
-    shape.lineTo(
-        x + radius,
-        y + h
-    );
-
-    shape.quadraticCurveTo(
-        x,
-        y + h,
-        x,
-        y + h - radius
-    );
-
-    shape.lineTo(
-        x,
-        y + radius
-    );
-
-    shape.quadraticCurveTo(
-        x,
-        y,
-        x + radius,
-        y
-    );
-
-    const geo =
-        new THREE.ExtrudeGeometry(
-            shape,
-            {
-                depth:d,
-                bevelEnabled:true,
-                bevelSegments:2,
-                bevelSize:.07,
-                bevelThickness:.07
-            }
-        );
-
-    geo.center();
-
-    return geo;
+ g.center();
+ return g;
 }
 
 
-/* =====================================================
-   RIG
-===================================================== */
+/* =========================================================
+   FACE
+========================================================= */
 
-function buildRig(){
+function faceTexture(){
 
-    rigRoot =
-        new THREE.Group();
+ const c=document.createElement("canvas");
+ c.width=512;
+ c.height=512;
 
-    rigRoot.name =
-        "R6";
+ const ctx=c.getContext("2d");
+ ctx.clearRect(0,0,512,512);
 
-    scene.add(
-        rigRoot
-    );
+ ctx.fillStyle="#111";
+ ctx.textAlign="center";
+ ctx.textBaseline="middle";
+ ctx.font="bold 150px Arial";
+ ctx.fillText(">v<",256,330);
 
+ const t=new THREE.CanvasTexture(c);
+ t.needsUpdate=true;
 
-    /* MATERIALS */
-
-    const bodyMat =
-        new THREE.MeshPhongMaterial({
-            color:0xcccccc,
-            shininess:15
-        });
-
-    const torsoMat =
-        new THREE.MeshPhongMaterial({
-            color:0x11bce8,
-            shininess:15
-        });
-
-    const legMat =
-        new THREE.MeshPhongMaterial({
-            color:0xe5323c,
-            shininess:15
-        });
-
-
-    /* TORSO */
-
-    const torso =
-        new THREE.Mesh(
-            roundedBox(
-                2,
-                2,
-                1,
-                .12
-            ),
-            torsoMat
-        );
-
-    torso.name =
-        "Torso";
-
-    torso.position.y =
-        3;
-
-    torso.castShadow = true;
-
-    torso.receiveShadow = true;
-
-    rigRoot.add(
-        torso
-    );
-
-    rig["Torso"] =
-        torso;
-
-
-    /* HEAD PIVOT */
-
-    const headPivot =
-        new THREE.Group();
-
-    headPivot.name =
-        "HeadPivot";
-
-    headPivot.position.set(
-        0,
-        1,
-        0
-    );
-
-    torso.add(
-        headPivot
-    );
-
-
-    /* HEAD - SHARP */
-
-    const head =
-        new THREE.Mesh(
-
-            new THREE.BoxGeometry(
-                1.85,
-                1.3,
-                1
-            ),
-
-            bodyMat
-
-        );
-
-    head.name =
-        "Head";
-
-    head.position.y =
-        .65;
-
-    head.castShadow = true;
-
-    head.receiveShadow = true;
-
-    headPivot.add(
-        head
-    );
-
-    rig["Head"] =
-        head;
-
-    rig["HeadPivot"] =
-        headPivot;
-
-
-    /* FACE */
-
-    const faceCanvas =
-        document.createElement(
-            "canvas"
-        );
-
-    faceCanvas.width = 256;
-
-    faceCanvas.height = 128;
-
-    const ctx =
-        faceCanvas.getContext(
-            "2d"
-        );
-
-    ctx.clearRect(
-        0,
-        0,
-        256,
-        128
-    );
-
-    ctx.fillStyle =
-        "rgba(0,0,0,0)";
-
-    ctx.clearRect(
-        0,
-        0,
-        256,
-        128
-    );
-
-    ctx.fillStyle =
-        "#111";
-
-    ctx.font =
-        "bold 72px Arial";
-
-    ctx.textAlign =
-        "center";
-
-    ctx.textBaseline =
-        "middle";
-
-    ctx.fillText(
-        ">v<",
-        128,
-        64
-    );
-
-    const faceTexture =
-        new THREE.CanvasTexture(
-            faceCanvas
-        );
-
-    faceTexture.encoding =
-        THREE.sRGBEncoding;
-
-    const faceMat =
-        new THREE.MeshBasicMaterial({
-            map:faceTexture,
-            transparent:true,
-            depthWrite:false
-        });
-
-    const face =
-        new THREE.Mesh(
-            new THREE.PlaneGeometry(
-                1.5,
-                .65
-            ),
-            faceMat
-        );
-
-    /*
-       Turunkan posisi wajah.
-       Tidak ada background kotak.
-    */
-
-    face.position.set(
-        0,
-        .28,
-        .506
-    );
-
-    headPivot.add(
-        face
-    );
-
-
-    /* ARMS */
-
-    createLimb(
-        "Left Arm",
-        -1,
-        1,
-        bodyMat
-    );
-
-    createLimb(
-        "Right Arm",
-        1,
-        1,
-        bodyMat
-    );
-
-
-    /* LEGS */
-
-    createLeg(
-        "Left Leg",
-        -.5,
-        legMat
-    );
-
-    createLeg(
-        "Right Leg",
-        .5,
-        legMat
-    );
-
-
-    selectPart(
-        torso
-    );
+ return t;
 }
 
 
-/* =====================================================
-   ARM
-===================================================== */
+/* =========================================================
+   R6 RIG
+========================================================= */
+
+function buildR6Rig(){
+
+ const root=new THREE.Group();
+ root.name="R6";
+ scene.add(root);
+
+ const bodyMat=new THREE.MeshPhongMaterial({
+  color:0xcccccc,
+  shininess:20
+ });
+
+ const torsoMat=new THREE.MeshPhongMaterial({
+  color:0x00a2ff,
+  shininess:20
+ });
+
+ const legMat=new THREE.MeshPhongMaterial({
+  color:0xcd2027,
+  shininess:20
+ });
+
+ const headMat=new THREE.MeshPhongMaterial({
+  color:0xffffff,
+  shininess:25
+ });
+
+ const faceMat=new THREE.MeshBasicMaterial({
+  map:faceTexture(),
+  transparent:true,
+  alphaTest:.01,
+  depthWrite:false,
+  side:THREE.DoubleSide
+ });
+
+ const torsoGeo=roundedBox(2,2,1,.16);
+ const armGeo=roundedBox(1,2,1,.16);
+ const legGeo=roundedBox(1,2,1,.16);
+ const headGeo=new THREE.BoxGeometry(1.2,1.2,1.2);
+
+ /* TORSO */
+
+ const torso=new THREE.Mesh(torsoGeo,torsoMat);
+ torso.name="Torso";
+ torso.castShadow=true;
+ torso.receiveShadow=true;
+ root.add(torso);
+
+ r6Rig.Torso=torso;
+ pivots.Torso=torso;
+
+ /* HEAD */
+
+ const headPivot=new THREE.Group();
+ headPivot.name="HeadPivot";
+ headPivot.position.set(0,1,0);
+ torso.add(headPivot);
+
+ const head=new THREE.Mesh(headGeo,headMat);
+ head.name="Head";
+ head.position.set(0,.6,0);
+ head.castShadow=true;
+ head.receiveShadow=true;
+ headPivot.add(head);
+
+ const face=new THREE.Mesh(
+  new THREE.PlaneGeometry(.82,.48),
+  faceMat
+ );
+
+ face.position.set(0,.20,.606);
+ head.add(face);
+
+ r6Rig.Head=head;
+ pivots.Head=headPivot;
+
+ /* ARMS */
+
+ createLimb(
+  "Left Arm",
+  -1.5,
+  1,
+  armGeo,
+  bodyMat,
+  "LeftArmPivot"
+ );
+
+ createLimb(
+  "Right Arm",
+  1.5,
+  1,
+  armGeo,
+  bodyMat,
+  "RightArmPivot"
+ );
+
+ /* LEGS */
+
+ createLimb(
+  "Left Leg",
+  -.5,
+  -1,
+  legGeo,
+  legMat,
+  "LeftLegPivot"
+ );
+
+ createLimb(
+  "Right Leg",
+  .5,
+  -1,
+  legGeo,
+  legMat,
+  "RightLegPivot"
+ );
+
+ buildTree();
+ selectPart(torso);
+}
+
 
 function createLimb(
-    name,
-    x,
-    y,
-    material
+ name,x,y,geo,mat,pivotName
 ){
 
-    const pivot =
-        new THREE.Group();
+ const pivot=new THREE.Group();
+ pivot.name=pivotName;
+ pivot.position.set(x,y,0);
+ r6Rig.Torso.add(pivot);
 
-    pivot.name =
-        name.replace(
-            " ",
-            ""
-        ) + "Pivot";
+ const mesh=new THREE.Mesh(geo,mat);
+ mesh.name=name;
+ mesh.position.set(0,-1,0);
+ mesh.castShadow=true;
+ mesh.receiveShadow=true;
 
-    pivot.position.set(
-        x * 1.5,
-        1,
-        0
-    );
+ pivot.add(mesh);
 
-    rig["Torso"].add(
-        pivot
-    );
-
-
-    const mesh =
-        new THREE.Mesh(
-
-            roundedBox(
-                1,
-                2,
-                1,
-                .12
-            ),
-
-            material
-
-        );
-
-    mesh.name =
-        name;
-
-    mesh.position.y =
-        -1;
-
-    mesh.castShadow = true;
-
-    mesh.receiveShadow = true;
-
-    pivot.add(
-        mesh
-    );
-
-    rig[name] =
-        mesh;
-
-    rig[
-        name.replace(
-            " ",
-            ""
-        ) + "Pivot"
-    ] =
-        pivot;
+ r6Rig[name]=mesh;
+ pivots[name]=pivot;
 }
 
 
-/* =====================================================
-   LEG
-===================================================== */
+/* =========================================================
+   TREE
+========================================================= */
 
-function createLeg(
-    name,
-    x,
-    material
-){
+function buildTree(){
 
-    const pivot =
-        new THREE.Group();
+ $("tree").innerHTML="";
 
-    pivot.name =
-        name.replace(
-            " ",
-            ""
-        ) + "Pivot";
+ parts.forEach(name=>{
 
-    pivot.position.set(
-        x,
-        -1,
-        0
-    );
+  const row=document.createElement("div");
+  row.className="treeRow";
+  row.dataset.name=name;
 
-    rig["Torso"].add(
-        pivot
-    );
+  row.innerHTML=
+   '<span class="treeArrow">▸</span>'+
+   '<span>'+name+'</span>';
 
+  row.onclick=()=>selectPart(r6Rig[name]);
 
-    const mesh =
-        new THREE.Mesh(
-
-            roundedBox(
-                1,
-                2,
-                1,
-                .12
-            ),
-
-            material
-
-        );
-
-    mesh.name =
-        name;
-
-    mesh.position.y =
-        -1;
-
-    mesh.castShadow = true;
-
-    mesh.receiveShadow = true;
-
-    pivot.add(
-        mesh
-    );
-
-    rig[name] =
-        mesh;
-
-    rig[
-        name.replace(
-            " ",
-            ""
-        ) + "Pivot"
-    ] =
-        pivot;
+  $("tree").appendChild(row);
+ });
 }
 
-
-/* =====================================================
-   GET PIVOT
-===================================================== */
-
-function getPivot(part){
-
-    if(part === rig["Torso"])
-        return part;
-
-    if(part === rig["Head"])
-        return rig["HeadPivot"];
-
-    if(part === rig["Left Arm"])
-        return rig["LeftArmPivot"];
-
-    if(part === rig["Right Arm"])
-        return rig["RightArmPivot"];
-
-    if(part === rig["Left Leg"])
-        return rig["LeftLegPivot"];
-
-    if(part === rig["Right Leg"])
-        return rig["RightLegPivot"];
-
-    return part;
-}
-
-
-/* =====================================================
-   SELECT PART
-===================================================== */
 
 function selectPart(part){
 
-    selectedPart =
-        part;
+ selectedPart=part;
 
-    const target =
-        getPivot(part);
+ const target=
+  pivots[part.name]||part;
 
-    transformControls.attach(
-        target
+ transformControls.attach(target);
+
+ document.querySelectorAll(".treeRow")
+ .forEach(x=>{
+  x.classList.toggle(
+   "selected",
+   x.dataset.name===part.name
+  );
+ });
+
+ updateInfo();
+}
+
+
+function updateInfo(){
+
+ if(!selectedPart)return;
+
+ const t=pivots[selectedPart.name]||selectedPart;
+
+ $("info").innerHTML=
+  "<b style='color:#e21b23'>"+selectedPart.name+"</b><br>"+
+  "POS "+
+  t.position.x.toFixed(2)+" / "+
+  t.position.y.toFixed(2)+" / "+
+  t.position.z.toFixed(2)+"<br>"+
+  "ROT "+
+  THREE.MathUtils.radToDeg(t.rotation.x).toFixed(1)+"° / "+
+  THREE.MathUtils.radToDeg(t.rotation.y).toFixed(1)+"° / "+
+  THREE.MathUtils.radToDeg(t.rotation.z).toFixed(1)+"°";
+}
+
+
+/* =========================================================
+   TIMELINE
+========================================================= */
+
+function buildTimeline(){
+
+ $("labelRows").innerHTML="";
+ $("tracks").innerHTML="";
+ $("ruler").innerHTML="";
+
+ parts.forEach(name=>{
+
+  const label=document.createElement("div");
+  label.className="label";
+  label.textContent=name;
+  $("labelRows").appendChild(label);
+
+  const track=document.createElement("div");
+  track.className="track";
+  track.dataset.part=name;
+  $("tracks").appendChild(track);
+ });
+
+ drawTimeline();
+}
+
+
+function pixelsPerSecond(){
+ return timelineZoom;
+}
+
+
+function timeToX(t){
+ return t*pixelsPerSecond();
+}
+
+
+function xToTime(x){
+
+ let t=x/pixelsPerSecond();
+
+ const step=1/fps;
+
+ t=Math.round(t/step)*step;
+
+ return Math.max(
+  0,
+  Math.min(duration,t)
+ );
+}
+
+
+function drawTimeline(){
+
+ const width=Math.max(
+  900,
+  duration*pixelsPerSecond()+100
+ );
+
+ $("trackInner").style.width=width+"px";
+
+ $("ruler").innerHTML="";
+
+ const step=1/fps;
+
+ const visibleStep=
+  fps>=60 ? .25 :
+  fps>=30 ? .25 :
+  .5;
+
+ for(
+  let t=0;
+  t<=duration+.001;
+  t+=visibleStep
+ ){
+
+  const tick=document.createElement("div");
+
+  tick.className=
+   "tick "+(
+    Math.abs(t%1)<.001?
+    "major":""
+   );
+
+  tick.style.left=timeToX(t)+"px";
+  tick.textContent=t.toFixed(2);
+
+  $("ruler").appendChild(tick);
+
+  const line=document.createElement("div");
+
+  line.className="snapLine";
+  line.style.left=timeToX(t)+"px";
+
+  document.querySelectorAll(".track")
+   .forEach(track=>{
+    track.appendChild(
+     line.cloneNode()
     );
+   });
+ }
 
-    document
-        .querySelectorAll(
-            ".trackRow"
-        )
-        .forEach(row => {
-
-            row.classList.toggle(
-                "selected",
-                row.dataset.part ===
-                part.name
-            );
-
-        });
+ renderKeyframes();
+ updatePlayhead();
 }
 
-
-/* =====================================================
-   TIMELINE TRACKS
-===================================================== */
-
-function buildTracks(){
-
-    trackList
-        .querySelectorAll(
-            ".trackRow"
-        )
-        .forEach(
-            e => e.remove()
-        );
-
-    tracks.innerHTML = "";
-
-    parts.forEach(
-        name => {
-
-            const row =
-                document.createElement(
-                    "div"
-                );
-
-            row.className =
-                "trackRow";
-
-            row.dataset.part =
-                name;
-
-            row.innerHTML = `
-                <div class="eye">●</div>
-                <div class="trackName">
-                    ${name}
-                </div>
-            `;
-
-            row.onclick =
-                () => selectPart(
-                    rig[name]
-                );
-
-            trackList.appendChild(
-                row
-            );
-
-
-            const lane =
-                document.createElement(
-                    "div"
-                );
-
-            lane.className =
-                "trackLane";
-
-            lane.dataset.part =
-                name;
-
-            tracks.appendChild(
-                lane
-            );
-        }
-    );
-}
-
-
-/* =====================================================
-   RULER
-===================================================== */
-
-function buildRuler(){
-
-    ruler.innerHTML = "";
-
-    /*
-       Cada 0.05 detik = satu garis kecil.
-       Setiap 0.25 detik = garis besar.
-    */
-
-    const step =
-        0.05;
-
-    const pxPerSecond =
-        zoom;
-
-    const total =
-        Math.ceil(
-            duration / step
-        );
-
-    timelineContent.style.width =
-        Math.max(
-            900,
-            duration *
-            pxPerSecond +
-            200
-        ) + "px";
-
-    for(
-        let i=0;
-        i<=total;
-        i++
-    ){
-
-        const time =
-            i * step;
-
-        if(time > duration)
-            break;
-
-        const x =
-            time *
-            pxPerSecond;
-
-        const tick =
-            document.createElement(
-                "div"
-            );
-
-        tick.className =
-            "tick" +
-            (
-                i % 5 === 0
-                ? " major"
-                : ""
-            );
-
-        tick.style.left =
-            x + "px";
-
-        ruler.appendChild(
-            tick
-        );
-
-
-        if(i % 5 === 0){
-
-            const label =
-                document.createElement(
-                    "div"
-                );
-
-            label.className =
-                "tickLabel";
-
-            label.style.left =
-                x + "px";
-
-            label.textContent =
-                time.toFixed(2);
-
-            ruler.appendChild(
-                label
-            );
-        }
-    }
-
-
-    timelineContent.style.setProperty(
-        "--minorTick",
-        (step * pxPerSecond) +
-        "px"
-    );
-}
-
-
-/* =====================================================
-   SNAP
-===================================================== */
-
-function snapTime(time){
-
-    const step =
-        .05;
-
-    time =
-        Math.max(
-            0,
-            Math.min(
-                duration,
-                time
-            )
-        );
-
-    return Math.round(
-        time / step
-    ) * step;
-}
-
-
-/* =====================================================
-   KEYFRAME POSITION
-===================================================== */
-
-function timeToX(time){
-
-    return time * zoom;
-}
-
-
-/* =====================================================
-   ADD KEYFRAME
-===================================================== */
-
-function addKeyframe(
-    partName,
-    time=currentTime,
-    type="Move"
-){
-
-    time =
-        snapTime(time);
-
-    const existing =
-        keyframes.find(
-            k =>
-                k.part === partName &&
-                Math.abs(
-                    k.time-time
-                ) < .001
-        );
-
-    if(existing){
-
-        selectedKeyframe =
-            existing;
-
-        renderKeyframes();
-
-        return;
-    }
-
-
-    const pivot =
-        getPivot(
-            rig[partName]
-        );
-
-
-    const kf = {
-
-        id:
-            Date.now() +
-            Math.random(),
-
-        part:
-            partName,
-
-        time:
-            time,
-
-        type:
-            type,
-
-        position:
-            pivot.position.clone(),
-
-        quaternion:
-            pivot.quaternion.clone(),
-
-        scale:
-            pivot.scale.clone()
-
-    };
-
-
-    keyframes.push(
-        kf
-    );
-
-    selectedKeyframe =
-        kf;
-
-    renderKeyframes();
-}
-
-
-/* =====================================================
-   RENDER KEYFRAMES
-===================================================== */
 
 function renderKeyframes(){
 
-    document
-        .querySelectorAll(
-            ".keyframe"
-        )
-        .forEach(
-            e => e.remove()
-        );
+ document.querySelectorAll(".kf")
+  .forEach(x=>x.remove());
 
+ keyframes.forEach((kf,index)=>{
 
-    keyframes.forEach(
-        kf => {
+  const track=document.querySelector(
+   '.track[data-part="'+kf.part+'"]'
+  );
 
-            const lane =
-                document.querySelector(
-                    `.trackLane[data-part="${kf.part}"]`
-                );
+  if(!track)return;
 
-            if(!lane)
-                return;
+  const el=document.createElement("div");
 
+  el.className="kf";
 
-            const el =
-                document.createElement(
-                    "div"
-                );
+  if(selectedKF===kf)
+   el.classList.add("selected");
 
-            el.className =
-                "keyframe";
+  el.style.left=timeToX(kf.time)+"px";
 
+  el.dataset.index=index;
 
-            if(
-                selectedKeyframe &&
-                selectedKeyframe.id ===
-                kf.id
-            ){
-
-                el.classList.add(
-                    "selected"
-                );
-
-            }
-
-
-            el.style.left =
-                timeToX(
-                    kf.time
-                ) + "px";
-
-
-            el.title =
-                `${kf.part} • ${kf.time.toFixed(2)} • ${kf.type}`;
-
-
-            /* NORMAL TAP */
-
-            el.addEventListener(
-                "pointerdown",
-                e => {
-
-                    e.stopPropagation();
-
-                    longPressTimer =
-                        setTimeout(
-                            () => {
-
-                                selectedKeyframe =
-                                    kf;
-
-                                showKFMenu(
-                                    e.clientX,
-                                    e.clientY,
-                                    kf
-                                );
-
-                            },
-                            550
-                        );
-
-
-                    draggingKeyframe =
-                        kf;
-
-                    el.setPointerCapture(
-                        e.pointerId
-                    );
-
-                }
-            );
-
-
-            el.addEventListener(
-                "pointerup",
-                e => {
-
-                    clearTimeout(
-                        longPressTimer
-                    );
-
-                    if(
-                        draggingKeyframe ===
-                        kf
-                    ){
-
-                        selectedKeyframe =
-                            kf;
-
-                        renderKeyframes();
-
-                    }
-
-                    draggingKeyframe =
-                        null;
-
-                }
-            );
-
-
-            el.addEventListener(
-                "pointermove",
-                e => {
-
-                    if(
-                        draggingKeyframe !==
-                        kf
-                    )
-                        return;
-
-                    clearTimeout(
-                        longPressTimer
-                    );
-
-                    /*
-                       Geser keyframe.
-                       Timeline TIDAK ikut bergerak.
-                    */
-
-                    const rect =
-                        timelineContent
-                            .getBoundingClientRect();
-
-                    let x =
-                        e.clientX -
-                        rect.left;
-
-                    kf.time =
-                        snapTime(
-                            x / zoom
-                        );
-
-                    renderKeyframes();
-
-                    updatePlayhead();
-
-                }
-            );
-
-
-            lane.appendChild(
-                el
-            );
-        }
-    );
-}
-
-
-/* =====================================================
-   CONTEXT MENU
-===================================================== */
-
-function showKFMenu(
-    x,
-    y,
-    kf
-){
-
-    selectedKeyframe =
-        kf;
-
-    kfMenu.style.left =
-        Math.min(
-            x,
-            window.innerWidth -
-            155
-        ) + "px";
-
-    kfMenu.style.top =
-        Math.min(
-            y,
-            window.innerHeight -
-            210
-        ) + "px";
-
-    kfMenu.style.display =
-        "block";
-
+  el.addEventListener(
+   "click",
+   e=>{
+    e.stopPropagation();
+    selectedKF=kf;
+    currentTime=kf.time;
     renderKeyframes();
+    updatePlayhead();
+   }
+  );
+
+  let holdTimer;
+
+  el.addEventListener(
+   "pointerdown",
+   e=>{
+
+    e.stopPropagation();
+
+    holdTimer=setTimeout(()=>{
+     selectedKF=kf;
+     showContext(
+      e.clientX,
+      e.clientY
+     );
+    },500);
+
+    el.setPointerCapture(e.pointerId);
+   }
+  );
+
+  el.addEventListener(
+   "pointerup",
+   e=>{
+    clearTimeout(holdTimer);
+   }
+  );
+
+  el.addEventListener(
+   "pointermove",
+   e=>{
+
+    if(
+     selectedKF!==kf ||
+     e.pressure===0
+    )return;
+
+    clearTimeout(holdTimer);
+
+    const rect=$("trackInner")
+     .getBoundingClientRect();
+
+    const x=e.clientX-
+     rect.left+
+     $("trackViewport").scrollLeft;
+
+    kf.time=xToTime(x);
+
+    currentTime=kf.time;
+
+    updatePlayhead();
+    renderKeyframes();
+   }
+  );
+
+  track.appendChild(el);
+ });
 }
 
 
-function hideKFMenu(){
+/* =========================================================
+   ADD KEYFRAME
+========================================================= */
 
-    kfMenu.style.display =
-        "none";
+function addKeyframe(){
+
+ if(!selectedPart)return;
+
+ const t=xToTime(currentTime);
+
+ const part=selectedPart.name;
+
+ const target=pivots[part]||selectedPart;
+
+ const kf={
+  part:part,
+  time:t,
+  type:"Pose",
+  position:{
+   x:target.position.x,
+   y:target.position.y,
+   z:target.position.z
+  },
+  rotation:{
+   x:target.rotation.x,
+   y:target.rotation.y,
+   z:target.rotation.z
+  },
+  scale:{
+   x:target.scale.x,
+   y:target.scale.y,
+   z:target.scale.z
+  }
+ };
+
+ const existing=keyframes.find(
+  x=>x.part===part &&
+  Math.abs(x.time-t)<.0001
+ );
+
+ if(existing){
+
+  Object.assign(existing,kf);
+  selectedKF=existing;
+
+ }else{
+
+  keyframes.push(kf);
+  selectedKF=kf;
+
+ }
+
+ keyframes.sort((a,b)=>a.time-b.time);
+
+ renderKeyframes();
+ showToast("Keyframe added");
+}
+
+
+/* =========================================================
+   APPLY KEYFRAME
+========================================================= */
+
+function applyKeyframe(kf){
+
+ const target=pivots[kf.part];
+
+ if(!target)return;
+
+ target.position.set(
+  kf.position.x,
+  kf.position.y,
+  kf.position.z
+ );
+
+ target.rotation.set(
+  kf.rotation.x,
+  kf.rotation.y,
+  kf.rotation.z
+ );
+
+ target.scale.set(
+  kf.scale.x,
+  kf.scale.y,
+  kf.scale.z
+ );
+}
+
+
+/* =========================================================
+   PLAYBACK
+========================================================= */
+
+function updatePlayhead(){
+
+ const x=timeToX(currentTime);
+
+ $("playhead").style.left=x+"px";
+
+ $("timeReadout").textContent=
+  currentTime.toFixed(2)+
+  " / "+
+  duration.toFixed(2);
+}
+
+
+function animatePlayback(){
+
+ if(playing){
+
+  currentTime+=1/60;
+
+  if(currentTime>=duration){
+
+   if(loop){
+    currentTime=0;
+   }else{
+    currentTime=duration;
+    playing=false;
+    $("playBtn").textContent="▶ PLAY";
+   }
+  }
+
+  applyNearestAnimation();
+  updatePlayhead();
+ }
+
+ requestAnimationFrame(animatePlayback);
+}
+
+
+function applyNearestAnimation(){
+
+ if(!keyframes.length)return;
+
+ for(const part of parts){
+
+  const list=keyframes
+   .filter(k=>k.part===part)
+   .sort((a,b)=>a.time-b.time);
+
+  if(!list.length)continue;
+
+  let a=list[0];
+  let b=list[list.length-1];
+
+  for(let i=0;i<list.length-1;i++){
+
+   if(
+    currentTime>=list[i].time &&
+    currentTime<=list[i+1].time
+   ){
+
+    a=list[i];
+    b=list[i+1];
+    break;
+   }
+  }
+
+  const span=b.time-a.time;
+
+  let alpha=
+   span<=0?0:
+   (currentTime-a.time)/span;
+
+  alpha=Math.max(0,Math.min(1,alpha));
+
+  const target=pivots[part];
+
+  if(!target)continue;
+
+  target.position.x=
+   a.position.x+
+   (b.position.x-a.position.x)*alpha;
+
+  target.position.y=
+   a.position.y+
+   (b.position.y-a.position.y)*alpha;
+
+  target.position.z=
+   a.position.z+
+   (b.position.z-a.position.z)*alpha;
+
+  target.rotation.x=
+   a.rotation.x+
+   (b.rotation.x-a.rotation.x)*alpha;
+
+  target.rotation.y=
+   a.rotation.y+
+   (b.rotation.y-a.rotation.y)*alpha;
+
+  target.rotation.z=
+   a.rotation.z+
+   (b.rotation.z-a.rotation.z)*alpha;
+
+  target.scale.x=
+   a.scale.x+
+   (b.scale.x-a.scale.x)*alpha;
+
+  target.scale.y=
+   a.scale.y+
+   (b.scale.y-a.scale.y)*alpha;
+
+  target.scale.z=
+   a.scale.z+
+   (b.scale.z-a.scale.z)*alpha;
+ }
+}
+
+
+/* =========================================================
+   PLAYHEAD CLICK
+========================================================= */
+
+$("trackViewport").addEventListener(
+ "pointerdown",
+ e=>{
+
+  if(
+   e.target.classList.contains("kf")
+  )return;
+
+  const rect=$("trackInner")
+   .getBoundingClientRect();
+
+  const x=
+   e.clientX-
+   rect.left+
+   $("trackViewport").scrollLeft;
+
+  currentTime=xToTime(x);
+
+  updatePlayhead();
+ }
+);
+
+
+/* =========================================================
+   COPY / PASTE
+========================================================= */
+
+function copyKeyframe(){
+
+ if(!selectedKF){
+  showToast("Select a keyframe first");
+  return;
+ }
+
+ clipboard=JSON.parse(
+  JSON.stringify(selectedKF)
+ );
+
+ showToast("Copied");
+}
+
+
+function pasteKeyframe(){
+
+ if(!clipboard){
+  showToast("Nothing copied");
+  return;
+ }
+
+ const kf=JSON.parse(
+  JSON.stringify(clipboard)
+ );
+
+ kf.time=xToTime(currentTime);
+
+ keyframes.push(kf);
+
+ keyframes.sort(
+  (a,b)=>a.time-b.time
+ );
+
+ selectedKF=kf;
+
+ renderKeyframes();
+
+ showToast("Pasted");
+}
+
+
+/* =========================================================
+   CONTEXT MENU
+========================================================= */
+
+function showContext(x,y){
+
+ $("contextMenu").style.display="block";
+
+ const w=150;
+ const h=120;
+
+ $("contextMenu").style.left=
+  Math.min(x,innerWidth-w-5)+"px";
+
+ $("contextMenu").style.top=
+  Math.min(y,innerHeight-h-5)+"px";
+}
+
+
+function hideContext(){
+ $("contextMenu").style.display="none";
 }
 
 
 document.addEventListener(
-    "pointerdown",
-    e => {
-
-        if(
-            !kfMenu.contains(e.target)
-        ){
-
-            hideKFMenu();
-
-        }
-
-    }
+ "pointerdown",
+ e=>{
+  if(!e.target.closest("#contextMenu"))
+   hideContext();
+ }
 );
 
 
-/* DELETE */
+$("ctxDelete").onclick=()=>{
 
-document.getElementById(
-    "deleteKF"
-).onclick = () => {
+ if(selectedKF){
 
-    if(!selectedKeyframe)
-        return;
+  keyframes=
+   keyframes.filter(
+    x=>x!==selectedKF
+   );
 
-    keyframes =
-        keyframes.filter(
-            k =>
-                k.id !==
-                selectedKeyframe.id
-        );
+  selectedKF=null;
 
-    selectedKeyframe =
-        null;
+  renderKeyframes();
+  showToast("Deleted");
+ }
 
-    hideKFMenu();
-
-    renderKeyframes();
+ hideContext();
 };
 
 
-/* DUPLICATE */
+$("ctxDuplicate").onclick=()=>{
 
-document.getElementById(
-    "duplicateKF"
-).onclick = () => {
+ if(selectedKF){
 
-    if(!selectedKeyframe)
-        return;
+  const copy=
+   JSON.parse(
+    JSON.stringify(selectedKF)
+   );
 
-    const k =
-        selectedKeyframe;
+  copy.time=xToTime(
+   selectedKF.time+1/fps
+  );
 
-    let newTime =
-        snapTime(
-            k.time + .25
-        );
+  keyframes.push(copy);
+  keyframes.sort(
+   (a,b)=>a.time-b.time
+  );
 
-    if(
-        newTime >
-        duration
-    )
-        newTime =
-            k.time;
+  selectedKF=copy;
+  renderKeyframes();
+  showToast("Duplicated");
+ }
 
-    const copy = {
-
-        id:
-            Date.now() +
-            Math.random(),
-
-        part:
-            k.part,
-
-        time:
-            newTime,
-
-        type:
-            k.type,
-
-        position:
-            k.position.clone(),
-
-        quaternion:
-            k.quaternion.clone(),
-
-        scale:
-            k.scale.clone()
-
-    };
-
-    keyframes.push(
-        copy
-    );
-
-    selectedKeyframe =
-        copy;
-
-    hideKFMenu();
-
-    renderKeyframes();
+ hideContext();
 };
 
 
-/* CHANGE TYPE */
+$("ctxType").onclick=()=>{
 
-function changeKFType(type){
+ if(selectedKF){
 
-    if(!selectedKeyframe)
-        return;
+  selectedKF.type=
+   selectedKF.type==="Pose"?
+   "Move":"Pose";
 
-    selectedKeyframe.type =
-        type;
+  showToast(
+   "Type: "+selectedKF.type
+  );
+ }
 
-    hideKFMenu();
-
-    renderKeyframes();
-}
-
-document.getElementById(
-    "typeMove"
-).onclick =
-    () => changeKFType("Move");
-
-document.getElementById(
-    "typeRotate"
-).onclick =
-    () => changeKFType("Rotate");
-
-document.getElementById(
-    "typeScale"
-).onclick =
-    () => changeKFType("Scale");
-
-
-/* =====================================================
-   PLAYHEAD
-===================================================== */
-
-function updatePlayhead(){
-
-    playhead.style.left =
-        timeToX(
-            currentTime
-        ) + "px";
-
-    const time =
-        snapTime(
-            currentTime
-        );
-
-    document.title =
-        `MizaxEngine • ${time.toFixed(2)}s`;
-}
-
-
-/* CLICK TIMELINE */
-
-timelineScroll.addEventListener(
-    "pointerdown",
-    e => {
-
-        if(
-            e.target.classList.contains(
-                "keyframe"
-            )
-        )
-            return;
-
-
-        const rect =
-            timelineContent
-                .getBoundingClientRect();
-
-        let x =
-            e.clientX -
-            rect.left;
-
-        currentTime =
-            snapTime(
-                x / zoom
-            );
-
-        updatePlayhead();
-
-        applyAnimation(
-            currentTime
-        );
-    }
-);
-
-
-/* =====================================================
-   PLAY
-===================================================== */
-
-function togglePlay(){
-
-    playing =
-        !playing;
-
-    document.getElementById(
-        "playBtn"
-    ).textContent =
-        playing ? "Ⅱ" : "▶";
-
-}
-
-
-/* =====================================================
-   ANIMATION
-===================================================== */
-
-let lastTime =
-    performance.now();
-
-function animationTick(){
-
-    const now =
-        performance.now();
-
-    const dt =
-        (now-lastTime)/1000;
-
-    lastTime =
-        now;
-
-    if(playing){
-
-        currentTime +=
-            dt;
-
-        if(
-            currentTime >=
-            duration
-        ){
-
-            if(loop){
-
-                currentTime =
-                    0;
-
-            }else{
-
-                currentTime =
-                    duration;
-
-                playing =
-                    false;
-
-                document.getElementById(
-                    "playBtn"
-                ).textContent =
-                    "▶";
-
-            }
-        }
-
-        applyAnimation(
-            currentTime
-        );
-
-        updatePlayhead();
-    }
-}
-
-
-/* =====================================================
-   APPLY ANIMATION
-===================================================== */
-
-function applyAnimation(time){
-
-    parts.forEach(
-        partName => {
-
-            const list =
-                keyframes
-                    .filter(
-                        k =>
-                            k.part ===
-                            partName
-                    )
-                    .sort(
-                        (a,b) =>
-                            a.time-b.time
-                    );
-
-            if(!list.length)
-                return;
-
-
-            let before =
-                null;
-
-            let after =
-                null;
-
-            for(
-                const k of list
-            ){
-
-                if(
-                    k.time <=
-                    time
-                )
-                    before = k;
-
-                if(
-                    k.time >=
-                    time
-                ){
-
-                    after = k;
-
-                    break;
-
-                }
-            }
-
-
-            const pivot =
-                getPivot(
-                    rig[partName]
-                );
-
-
-            if(
-                before &&
-                after &&
-                before !== after
-            ){
-
-                const range =
-                    after.time -
-                    before.time;
-
-                const t =
-                    range === 0
-                    ? 0
-                    : (
-                        time -
-                        before.time
-                    ) / range;
-
-
-                pivot.position.lerpVectors(
-                    before.position,
-                    after.position,
-                    t
-                );
-
-
-                THREE.Quaternion
-                    .slerp(
-                        before.quaternion,
-                        after.quaternion,
-                        pivot.quaternion,
-                        t
-                    );
-
-
-                pivot.scale.lerpVectors(
-                    before.scale,
-                    after.scale,
-                    t
-                );
-
-            }
-
-            else if(before){
-
-                pivot.position.copy(
-                    before.position
-                );
-
-                pivot.quaternion.copy(
-                    before.quaternion
-                );
-
-                pivot.scale.copy(
-                    before.scale
-                );
-
-            }
-
-            else if(after){
-
-                pivot.position.copy(
-                    after.position
-                );
-
-                pivot.quaternion.copy(
-                    after.quaternion
-                );
-
-                pivot.scale.copy(
-                    after.scale
-                );
-            }
-        }
-    );
-}
-
-
-/* =====================================================
-   UPDATE POSE
-===================================================== */
-
-function updatePartPose(){
-
-    /*
-       Jangan otomatis bikin KF saat
-       sekadar drag kamera.
-    */
-
-    if(
-        selectedPart &&
-        playing
-    )
-        return;
-}
-
-
-/* =====================================================
-   COPY / PASTE
-===================================================== */
-
-document.getElementById(
-    "copyBtn"
-).onclick = () => {
-
-    if(!selectedKeyframe)
-        return;
-
-    copiedKeyframe = {
-
-        part:
-            selectedKeyframe.part,
-
-        type:
-            selectedKeyframe.type,
-
-        position:
-            selectedKeyframe.position.clone(),
-
-        quaternion:
-            selectedKeyframe.quaternion.clone(),
-
-        scale:
-            selectedKeyframe.scale.clone()
-
-    };
-
-    selectedKeyframe =
-        selectedKeyframe;
-
-    document.getElementById(
-        "copyBtn"
-    ).classList.add(
-        "active"
-    );
-
+ hideContext();
 };
 
 
-document.getElementById(
-    "pasteBtn"
-).onclick = () => {
-
-    if(!copiedKeyframe)
-        return;
-
-    const k = {
-
-        id:
-            Date.now() +
-            Math.random(),
-
-        part:
-            copiedKeyframe.part,
-
-        time:
-            snapTime(
-                currentTime
-            ),
-
-        type:
-            copiedKeyframe.type,
-
-        position:
-            copiedKeyframe.position.clone(),
-
-        quaternion:
-            copiedKeyframe.quaternion.clone(),
-
-        scale:
-            copiedKeyframe.scale.clone()
-
-    };
-
-    keyframes.push(
-        k
-    );
-
-    selectedKeyframe =
-        k;
-
-    renderKeyframes();
-};
-
-
-/* =====================================================
-   ADD KF
-===================================================== */
-
-document.getElementById(
-    "addKeyBtn"
-).onclick = () => {
-
-    if(!selectedPart)
-        return;
-
-    addKeyframe(
-        selectedPart.name,
-        currentTime,
-        "Move"
-    );
-};
-
-
-/* =====================================================
-   PLAY CONTROLS
-===================================================== */
-
-document.getElementById(
-    "playBtn"
-).onclick =
-    togglePlay;
-
-
-document.getElementById(
-    "rewindBtn"
-).onclick = () => {
-
-    currentTime =
-        0;
-
-    applyAnimation(
-        currentTime
-    );
-
-    updatePlayhead();
-};
-
-
-document.getElementById(
-    "prevBtn"
-).onclick = () => {
-
-    currentTime =
-        snapTime(
-            currentTime -
-            .05
-        );
-
-    applyAnimation(
-        currentTime
-    );
-
-    updatePlayhead();
-};
-
-
-document.getElementById(
-    "nextBtn"
-).onclick = () => {
-
-    currentTime =
-        snapTime(
-            currentTime +
-            .05
-        );
-
-    applyAnimation(
-        currentTime
-    );
-
-    updatePlayhead();
-};
-
-
-document.getElementById(
-    "loopBtn"
-).onclick = e => {
-
-    loop =
-        !loop;
-
-    e.target.classList.toggle(
-        "active",
-        loop
-    );
-};
-
-
-/* =====================================================
-   DURATION
-===================================================== */
-
-document.getElementById(
-    "durationBox"
-).addEventListener(
-    "change",
-    e => {
-
-        let value =
-            parseFloat(
-                e.target.value
-            );
-
-        if(
-            !Number.isFinite(value)
-        )
-            value = 2;
-
-        value =
-            Math.max(
-                .25,
-                Math.min(
-                    60,
-                    value
-                )
-            );
-
-        duration =
-            value;
-
-        if(
-            currentTime >
-            duration
-        )
-            currentTime =
-                duration;
-
-        buildRuler();
-
-        renderKeyframes();
-
-        updatePlayhead();
-    }
-);
-
-
-/* =====================================================
-   ZOOM
-===================================================== */
-
-document.getElementById(
-    "zoomInBtn"
-).onclick = () => {
-
-    zoom =
-        Math.min(
-            400,
-            zoom + 25
-        );
-
-    buildRuler();
-
-    renderKeyframes();
-
-    updatePlayhead();
-};
-
-
-document.getElementById(
-    "zoomOutBtn"
-).onclick = () => {
-
-    zoom =
-        Math.max(
-            30,
-            zoom - 25
-        );
-
-    buildRuler();
-
-    renderKeyframes();
-
-    updatePlayhead();
-};
-
-
-/* =====================================================
+/* =========================================================
    TIMELINE RESIZE
-===================================================== */
+========================================================= */
 
-const resizeHandle =
-    document.getElementById(
-        "timelineResize"
-    );
+let resizing=false;
+let startY=0;
+let startH=0;
 
-let resizingTimeline =
-    false;
+$("timelineHandle").addEventListener(
+ "pointerdown",
+ e=>{
 
-let resizeStartY =
-    0;
+  resizing=true;
+  startY=e.clientY;
+  startH=$("timeline").offsetHeight;
 
-let resizeStartHeight =
-    0;
+  $("timelineHandle")
+   .setPointerCapture(e.pointerId);
+ }
+);
 
+$("timelineHandle").addEventListener(
+ "pointermove",
+ e=>{
 
-resizeHandle.addEventListener(
-    "pointerdown",
-    e => {
+  if(!resizing)return;
 
-        resizingTimeline =
-            true;
+  const h=
+   startH+
+   (startY-e.clientY);
 
-        resizeStartY =
-            e.clientY;
+  $("timeline").style.height=
+   Math.max(
+    90,
+    Math.min(innerHeight-50,h)
+   )+"px";
+ }
+);
 
-        resizeStartHeight =
-            timeline.offsetHeight;
-
-        resizeHandle.setPointerCapture(
-            e.pointerId
-        );
-
-        e.preventDefault();
-    }
+$("timelineHandle").addEventListener(
+ "pointerup",
+ ()=>{
+  resizing=false;
+ }
 );
 
 
-resizeHandle.addEventListener(
-    "pointermove",
-    e => {
+/* =========================================================
+   UI
+========================================================= */
 
-        if(
-            !resizingTimeline
-        )
-            return;
+$("playBtn").onclick=()=>{
 
-        const delta =
-            resizeStartY -
-            e.clientY;
+ playing=!playing;
 
-        timelineHeight =
-            Math.max(
-                0,
-                Math.min(
-                    window.innerHeight -
-                    100,
-                    resizeStartHeight +
-                    delta
-                )
-            );
-
-        timeline.style.height =
-            timelineHeight + "px";
-
-        resize();
-
-    }
-);
-
-
-resizeHandle.addEventListener(
-    "pointerup",
-    () => {
-
-        resizingTimeline =
-            false;
-
-    }
-);
-
-
-/* =====================================================
-   CAMERA BUTTON
-===================================================== */
-
-document.getElementById(
-    "cameraBtn"
-).onclick = () => {
-
-    camera.position.set(
-        7,
-        5,
-        9
-    );
-
-    orbitControls.target.set(
-        0,
-        2.5,
-        0
-    );
-
-    orbitControls.update();
+ $("playBtn").textContent=
+  playing?"❚❚ PAUSE":"▶ PLAY";
 };
 
 
-/* =====================================================
-   TRANSFORM MODE
-===================================================== */
-
-document.getElementById(
-    "moveBtn"
-).onclick = e => {
-
-    transformControls.setMode(
-        "translate"
-    );
-
-    setViewportActive(
-        e.target
-    );
+$("rewind").onclick=()=>{
+ currentTime=0;
+ playing=false;
+ $("playBtn").textContent="▶ PLAY";
+ updatePlayhead();
 };
 
 
-document.getElementById(
-    "rotateBtn"
-).onclick = e => {
-
-    transformControls.setMode(
-        "rotate"
-    );
-
-    setViewportActive(
-        e.target
-    );
+$("prev").onclick=()=>{
+ currentTime=xToTime(
+  currentTime-1/fps
+ );
+ updatePlayhead();
 };
 
 
-function setViewportActive(
-    btn
-){
-
-    document
-        .querySelectorAll(
-            ".vBtn"
-        )
-        .forEach(
-            b =>
-                b.classList.remove(
-                    "active"
-                )
-        );
-
-    btn.classList.add(
-        "active"
-    );
-}
-
-
-/* =====================================================
-   NEW
-===================================================== */
-
-document.getElementById(
-    "newBtn"
-).onclick = () => {
-
-    keyframes = [];
-
-    selectedKeyframe =
-        null;
-
-    currentTime =
-        0;
-
-    duration =
-        2;
-
-    document.getElementById(
-        "durationBox"
-    ).value = 2;
-
-    resetRig();
-
-    buildRuler();
-
-    renderKeyframes();
-
-    updatePlayhead();
+$("next").onclick=()=>{
+ currentTime=xToTime(
+  currentTime+1/fps
+ );
+ updatePlayhead();
 };
 
 
-/* =====================================================
-   RESET
-===================================================== */
+$("loop").onclick=()=>{
+
+ loop=!loop;
+
+ $("loop").classList.toggle(
+  "active",
+  loop
+ );
+};
+
+
+$("addKf").onclick=addKeyframe;
+
+$("copyBtn").onclick=copyKeyframe;
+$("pasteBtn").onclick=pasteKeyframe;
+
+
+$("zoomIn").onclick=()=>{
+
+ timelineZoom=Math.min(
+  400,
+  timelineZoom+25
+ );
+
+ drawTimeline();
+};
+
+
+$("zoomOut").onclick=()=>{
+
+ timelineZoom=Math.max(
+  40,
+  timelineZoom-25
+ );
+
+ drawTimeline();
+};
+
+
+$("duration").onchange=e=>{
+
+ duration=Math.max(
+  .25,
+  Number(e.target.value)||2
+ );
+
+ if(currentTime>duration)
+  currentTime=duration;
+
+ drawTimeline();
+};
+
+
+$("fps").onchange=e=>{
+
+ fps=Math.max(
+  1,
+  Number(e.target.value)||30
+ );
+
+ drawTimeline();
+};
+
+
+$("newBtn").onclick=()=>{
+
+ keyframes=[];
+ selectedKF=null;
+ currentTime=0;
+ playing=false;
+
+ $("playBtn").textContent="▶ PLAY";
+
+ resetRig();
+ drawTimeline();
+
+ showToast("New animation");
+};
+
 
 function resetRig(){
 
-    parts.forEach(
-        name => {
+ parts.forEach(name=>{
 
-            const p =
-                getPivot(
-                    rig[name]
-                );
+  const t=pivots[name];
 
-            p.rotation.set(
-                0,
-                0,
-                0
-            );
+  if(!t)return;
 
-            p.scale.set(
-                1,
-                1,
-                1
-            );
+  if(name==="Torso"){
+   t.position.set(0,0,0);
+  }
 
-        }
-    );
-
-
-    rig["Torso"].position.set(
-        0,
-        3,
-        0
-    );
-
-
-    rig["HeadPivot"].position.set(
-        0,
-        1,
-        0
-    );
-
-    rig["LeftArmPivot"].position.set(
-        -1.5,
-        1,
-        0
-    );
-
-    rig["RightArmPivot"].position.set(
-        1.5,
-        1,
-        0
-    );
-
-    rig["LeftLegPivot"].position.set(
-        -.5,
-        -1,
-        0
-    );
-
-    rig["RightLegPivot"].position.set(
-        .5,
-        -1,
-        0
-    );
+  t.rotation.set(0,0,0);
+  t.scale.set(1,1,1);
+ });
 }
 
 
-/* =====================================================
-   UNDO / REDO
-===================================================== */
-
-document.getElementById(
-    "undoBtn"
-).onclick = () => {
-
-    if(keyframes.length){
-
-        keyframes.pop();
-
-        renderKeyframes();
-
-    }
-};
-
-
-document.getElementById(
-    "redoBtn"
-).onclick = () => {
-
-    /* reserved for V1.1 */
-};
-
-
-/* =====================================================
-   RESIZE VIEWPORT
-===================================================== */
+/* =========================================================
+   CAMERA / RESIZE
+========================================================= */
 
 function resize(){
 
-    const w =
-        viewport.clientWidth;
+ camera.aspect=
+  innerWidth/innerHeight;
 
-    const h =
-        viewport.clientHeight;
+ camera.updateProjectionMatrix();
 
-    if(
-        w <= 0 ||
-        h <= 0
-    )
-        return;
-
-    camera.aspect =
-        w / h;
-
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(
-        w,
-        h,
-        false
-    );
+ renderer.setSize(
+  innerWidth,
+  innerHeight
+);
 }
 
 
-/* =====================================================
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer;
+
+function showToast(msg){
+
+ $("toast").textContent=msg;
+ $("toast").style.display="block";
+
+ clearTimeout(toastTimer);
+
+ toastTimer=setTimeout(()=>{
+  $("toast").style.display="none";
+ },900);
+}
+
+
+/* =========================================================
    RENDER
-===================================================== */
+========================================================= */
 
 function animate(){
 
-    requestAnimationFrame(
-        animate
-    );
+ requestAnimationFrame(animate);
 
-    animationTick();
+ orbitControls.update();
 
-    orbitControls.update();
-
-    renderer.render(
-        scene,
-        camera
-    );
+ renderer.render(
+  scene,
+  camera
+ );
 }
 
 
-/* =====================================================
+/* =========================================================
    START
-===================================================== */
+========================================================= */
 
-window.onload =
-    init;
+window.onload=()=>{
+
+ init();
+
+ animatePlayback();
+};
 
 </script>
-
 </body>
 </html>
