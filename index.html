@@ -3,515 +3,221 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-<title>MizaxEngine Animator V1</title>
+
+<title>MizaxEngine Animator - R6 Rig Editor</title>
 
 <style>
 *{
- box-sizing:border-box;
- user-select:none;
- -webkit-tap-highlight-color:transparent;
+    box-sizing:border-box;
+    user-select:none;
+    -webkit-tap-highlight-color:transparent;
 }
 
 html,body{
- margin:0;
- width:100%;
- height:100%;
- overflow:hidden;
- background:#080808;
- color:#eee;
- font-family:Arial,sans-serif;
-}
-
-button{
- background:#171717;
- color:#ddd;
- border:1px solid #333;
- border-radius:0;
- padding:7px 10px;
- font-size:11px;
- white-space:nowrap;
-}
-
-button:active{background:#2a2a2a}
-button.active{
- background:#7b1010;
- border-color:#d51b1b;
- color:#fff;
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#1a1a1a;
+    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+    color:#e0e0e0;
 }
 
 #viewports{
- position:absolute;
- inset:0;
- z-index:1;
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
 }
 
-#viewports canvas{
- display:block;
- width:100%;
- height:100%;
+#ui-container{
+    position:absolute;
+    top:10px;
+    left:10px;
+    width:320px;
+    max-width:calc(100vw - 20px);
+    background:rgba(30,30,30,.88);
+    backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:8px;
+    padding:15px;
+    box-shadow:0 4px 20px rgba(0,0,0,.5);
+    z-index:100;
 }
 
-#topbar{
- position:absolute;
- top:0;
- left:0;
- right:0;
- height:48px;
- background:#0d0d0d;
- border-bottom:1px solid #292929;
- z-index:20;
- display:flex;
- align-items:center;
- gap:4px;
- padding:5px;
- overflow-x:auto;
+h2{
+    margin:0 0 15px;
+    font-size:16px;
+    color:#4CAF50;
+    border-bottom:1px solid rgba(255,255,255,.1);
+    padding-bottom:8px;
 }
 
-.logo{
- color:#e21b23;
- font-weight:bold;
- font-size:13px;
- margin:0 8px 0 3px;
- white-space:nowrap;
+.section{
+    margin-bottom:15px;
 }
 
-#playBtn{
- min-width:58px;
+label{
+    font-size:12px;
+    display:block;
+    margin-bottom:5px;
+    color:#aaa;
 }
 
-#duration{
- width:55px;
- background:#111;
- color:#fff;
- border:1px solid #333;
- border-radius:0;
- padding:7px 5px;
- font-size:11px;
+button{
+    background:#333;
+    color:#fff;
+    border:1px solid #555;
+    padding:6px 12px;
+    border-radius:4px;
+    cursor:pointer;
+    font-size:12px;
+    margin-right:5px;
+    margin-bottom:5px;
 }
 
-#fps{
- width:45px;
- background:#111;
- color:#fff;
- border:1px solid #333;
- border-radius:0;
- padding:7px 4px;
- font-size:11px;
+button:hover{
+    background:#444;
+    border-color:#777;
 }
 
-#rigPanel{
- position:absolute;
- top:58px;
- left:8px;
- width:190px;
- max-height:48vh;
- background:rgba(12,12,12,.94);
- border:1px solid #292929;
- z-index:15;
- overflow:hidden;
+button.active{
+    background:#2e7d32;
+    border-color:#4CAF50;
 }
 
-.panelTitle{
- height:30px;
- display:flex;
- align-items:center;
- padding:0 8px;
- color:#e21b23;
- font-size:11px;
- font-weight:bold;
- border-bottom:1px solid #292929;
+#hierarchy-tree{
+    max-height:200px;
+    overflow-y:auto;
+    background:rgba(0,0,0,.3);
+    border:1px solid rgba(255,255,255,.05);
+    border-radius:4px;
+    padding:5px;
 }
 
-.tree{
- overflow:auto;
- max-height:calc(48vh - 30px);
+.tree-item{
+    padding:4px 8px;
+    cursor:pointer;
+    border-radius:3px;
+    font-size:12px;
+    display:flex;
+    align-items:center;
 }
 
-.treeRow{
- height:27px;
- display:flex;
- align-items:center;
- padding-left:10px;
- font-size:11px;
- border-bottom:1px solid #171717;
+.tree-item:hover{
+    background:rgba(255,255,255,.1);
 }
 
-.treeRow:active,
-.treeRow.selected{
- background:#681010;
- color:#fff;
+.tree-item.selected{
+    background:#2e7d32;
+    color:white;
 }
 
-.treeArrow{
- color:#777;
- width:15px;
-}
-
-#info{
- position:absolute;
- top:calc(58px + 48vh + 7px);
- left:8px;
- width:190px;
- background:rgba(12,12,12,.94);
- border:1px solid #292929;
- z-index:15;
- padding:8px;
- font:10px monospace;
- line-height:1.55;
-}
-
-#timeline{
- position:absolute;
- left:0;
- right:0;
- bottom:0;
- height:250px;
- min-height:90px;
- background:#0b0b0b;
- border-top:2px solid #9c1717;
- z-index:30;
- display:flex;
- flex-direction:column;
-}
-
-#timelineHandle{
- height:10px;
- flex:none;
- background:#151515;
- border-bottom:1px solid #333;
- cursor:ns-resize;
- position:relative;
-}
-
-#timelineHandle:after{
- content:"";
- position:absolute;
- width:35px;
- height:3px;
- background:#666;
- left:50%;
- top:3px;
- transform:translateX(-50%);
-}
-
-#timeControls{
- height:39px;
- flex:none;
- display:flex;
- align-items:center;
- gap:4px;
- padding:4px 6px;
- border-bottom:1px solid #292929;
- overflow-x:auto;
-}
-
-#timeReadout{
- color:#ddd;
- font:11px monospace;
- min-width:76px;
- text-align:center;
-}
-
-#timelineBody{
- flex:1;
- min-height:0;
- display:flex;
- overflow:hidden;
-}
-
-#labels{
- width:135px;
- min-width:135px;
- background:#0e0e0e;
- border-right:1px solid #333;
- overflow:hidden;
-}
-
-.labelHead{
- height:30px;
- border-bottom:1px solid #333;
- display:flex;
- align-items:center;
- padding-left:8px;
- color:#777;
- font-size:10px;
-}
-
-.label{
- height:34px;
- display:flex;
- align-items:center;
- padding-left:8px;
- border-bottom:1px solid #1d1d1d;
- font-size:10px;
- white-space:nowrap;
- overflow:hidden;
-}
-
-#trackViewport{
- flex:1;
- min-width:0;
- overflow:auto;
- position:relative;
-}
-
-#trackInner{
- position:relative;
- min-width:900px;
- height:100%;
-}
-
-#ruler{
- height:30px;
- position:relative;
- border-bottom:1px solid #333;
- background:#111;
-}
-
-.tick{
- position:absolute;
- top:0;
- height:30px;
- border-left:1px solid #343434;
- color:#777;
- font:9px monospace;
- padding:3px 0 0 4px;
-}
-
-.tick.major{
- border-color:#555;
- color:#aaa;
-}
-
-#tracks{
- position:absolute;
- top:30px;
- left:0;
- right:0;
-}
-
-.track{
- height:34px;
- position:relative;
- border-bottom:1px solid #1d1d1d;
-}
-
-.snapLine{
- position:absolute;
- top:0;
- bottom:0;
- width:1px;
- background:#242424;
- pointer-events:none;
-}
-
-.kf{
- position:absolute;
- top:10px;
- width:12px;
- height:12px;
- background:#777;
- border:1px solid #aaa;
- transform:rotate(45deg);
- margin-left:-6px;
- cursor:pointer;
- z-index:5;
-}
-
-.kf.selected{
- background:#e21b23;
- border-color:#ff6767;
- box-shadow:0 0 8px #d51b1b;
-}
-
-#playhead{
- position:absolute;
- top:0;
- bottom:0;
- width:2px;
- background:#e21b23;
- z-index:20;
- pointer-events:none;
-}
-
-#playheadHead{
- position:absolute;
- top:0;
- left:-5px;
- width:12px;
- height:12px;
- background:#e21b23;
- clip-path:polygon(0 0,100% 0,50% 100%);
-}
-
-#contextMenu{
- position:fixed;
- display:none;
- z-index:100;
- background:#111;
- border:1px solid #555;
- width:150px;
- box-shadow:0 5px 20px #000;
-}
-
-.ctxTitle{
- padding:7px;
- color:#e21b23;
- font-size:10px;
- border-bottom:1px solid #333;
-}
-
-.ctxBtn{
- width:100%;
- border:0;
- border-bottom:1px solid #292929;
- text-align:left;
- padding:9px;
- background:#151515;
- color:#ddd;
-}
-
-.ctxBtn:active{
- background:#721313;
-}
-
-#toast{
- position:absolute;
- left:50%;
- bottom:270px;
- transform:translateX(-50%);
- background:#111;
- border:1px solid #e21b23;
- padding:7px 12px;
- font-size:10px;
- z-index:100;
- display:none;
+.info-panel{
+    font-size:11px;
+    background:rgba(0,0,0,.2);
+    padding:8px;
+    border-radius:4px;
+    font-family:monospace;
+    line-height:1.5;
 }
 
 @media(max-width:600px){
- #rigPanel{
-  width:155px;
-  max-height:35vh;
- }
- #info{
-  width:155px;
-  top:calc(58px + 35vh + 5px);
-  font-size:9px;
- }
- #labels{
-  width:110px;
-  min-width:110px;
- }
- .logo{font-size:11px}
- #timeline{height:235px}
+
+    #ui-container{
+        width:260px;
+        padding:10px;
+    }
+
+    button{
+        padding:6px 8px;
+        font-size:11px;
+    }
 }
 </style>
 </head>
 
 <body>
 
+<div id="ui-container">
+
+    <h2>MizaxEngine Animator</h2>
+
+    <div class="section">
+
+        <label>Transform Tools</label>
+
+        <button id="btn-translate" class="active">
+            Move (G)
+        </button>
+
+        <button id="btn-rotate">
+            Rotate (R)
+        </button>
+
+        <button id="btn-scale">
+            Scale (S)
+        </button>
+
+        <button id="btn-reset">
+            Reset Transform
+        </button>
+
+    </div>
+
+    <div class="section">
+
+        <label>Hierarchy / Parts</label>
+
+        <div id="hierarchy-tree"></div>
+
+    </div>
+
+    <div class="section">
+
+        <label>Selected Part Data (Local Transform)</label>
+
+        <div id="transform-info" class="info-panel">
+            Select a part...
+        </div>
+
+    </div>
+
+</div>
+
 <div id="viewports"></div>
 
-<div id="topbar">
- <div class="logo">MIZAXENGINE</div>
- <button id="rewind">⏮</button>
- <button id="prev">◀</button>
- <button id="playBtn">▶ PLAY</button>
- <button id="next">▶</button>
- <button id="loop" class="active">LOOP</button>
- <button id="copyBtn">COPY</button>
- <button id="pasteBtn">PASTE</button>
- <button id="newBtn">NEW</button>
- <span style="color:#555">│</span>
- <span style="font-size:9px;color:#777">DURATION</span>
- <input id="duration" type="number" value="2" min="0.25" step="0.25">
- <span style="font-size:9px;color:#777">FPS</span>
- <input id="fps" type="number" value="30" min="1" max="120">
-</div>
 
-<div id="rigPanel">
- <div class="panelTitle">RIG / HIERARCHY</div>
- <div class="tree" id="tree"></div>
-</div>
-
-<div id="info">Select a part...</div>
-
-<div id="timeline">
-
- <div id="timelineHandle"></div>
-
- <div id="timeControls">
-  <button id="zoomOut">−</button>
-  <button id="zoomIn">+</button>
-  <button id="addKf">KEYFRAME</button>
-  <span id="timeReadout">0.00 / 2.00</span>
- </div>
-
- <div id="timelineBody">
-
-  <div id="labels">
-   <div class="labelHead">PARTS</div>
-   <div id="labelRows"></div>
-  </div>
-
-  <div id="trackViewport">
-   <div id="trackInner">
-    <div id="ruler"></div>
-    <div id="tracks"></div>
-    <div id="playhead">
-     <div id="playheadHead"></div>
-    </div>
-   </div>
-  </div>
-
- </div>
-</div>
-
-<div id="contextMenu">
- <div class="ctxTitle">KEYFRAME</div>
- <button class="ctxBtn" id="ctxDuplicate">Duplicate</button>
- <button class="ctxBtn" id="ctxDelete">Delete</button>
- <button class="ctxBtn" id="ctxType">Type: Pose</button>
-</div>
-
-<div id="toast"></div>
+<!-- THREE.JS -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TransformControls.js"></script>
 
+
 <script>
+
 /* =========================================================
-   MIZAXENGINE V1
+   VARIABLES
 ========================================================= */
 
-let scene,camera,renderer;
-let orbitControls,transformControls;
-let r6Rig={};
-let pivots={};
-let selectedPart=null;
+let scene;
+let camera;
+let renderer;
 
-let duration=2;
-let fps=30;
-let currentTime=0;
-let playing=false;
-let loop=true;
-let timelineZoom=100;
+let orbitControls;
+let transformControls;
 
-let keyframes=[];
-let selectedKF=null;
-let clipboard=null;
+let r6Rig = {};
+let selectedPart = null;
 
-const parts=[
- "Torso",
- "Head",
- "Left Arm",
- "Right Arm",
- "Left Leg",
- "Right Leg"
-];
+const treeContainer =
+    document.getElementById("hierarchy-tree");
 
-const $=id=>document.getElementById(id);
+const transformInfo =
+    document.getElementById("transform-info");
 
 
 /* =========================================================
@@ -520,1156 +226,1301 @@ const $=id=>document.getElementById(id);
 
 function init(){
 
- scene=new THREE.Scene();
- scene.background=new THREE.Color(0x1a1a1a);
+    /* =========================
+       SCENE
+    ========================= */
 
- camera=new THREE.PerspectiveCamera(
-  50,
-  innerWidth/innerHeight,
-  .1,
-  1000
- );
+    scene = new THREE.Scene();
 
- camera.position.set(7,5,9);
+    scene.background =
+        new THREE.Color(0x1a1a1a);
 
- renderer=new THREE.WebGLRenderer({
-  antialias:true,
-  alpha:false
- });
 
- renderer.setPixelRatio(
-  Math.min(devicePixelRatio,2)
- );
+    /* =========================
+       CAMERA
+    ========================= */
 
- renderer.setSize(innerWidth,innerHeight);
- renderer.shadowMap.enabled=true;
- renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+    camera =
+        new THREE.PerspectiveCamera(
+            50,
+            window.innerWidth /
+            window.innerHeight,
+            0.1,
+            1000
+        );
 
- $("viewports").appendChild(renderer.domElement);
+    camera.position.set(
+        7,
+        5,
+        9
+    );
 
- orbitControls=new THREE.OrbitControls(
-  camera,
-  renderer.domElement
- );
 
- orbitControls.enableDamping=true;
- orbitControls.dampingFactor=.06;
- orbitControls.target.set(0,1.5,0);
- orbitControls.minDistance=3;
- orbitControls.maxDistance=20;
+    /* =========================
+       RENDERER
+    ========================= */
 
- transformControls=new THREE.TransformControls(
-  camera,
-  renderer.domElement
- );
+    renderer =
+        new THREE.WebGLRenderer({
+            antialias:true,
+            alpha:false
+        });
 
- transformControls.setSize(.75);
- scene.add(transformControls);
+    renderer.setPixelRatio(
+        Math.min(
+            window.devicePixelRatio,
+            2
+        )
+    );
 
- transformControls.addEventListener(
-  "dragging-changed",
-  e=>orbitControls.enabled=!e.value
- );
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
 
- transformControls.addEventListener(
-  "change",
-  ()=>updateInfo()
- );
+    renderer.shadowMap.enabled = true;
 
- const ambient=new THREE.AmbientLight(0xffffff,.72);
- scene.add(ambient);
+    renderer.shadowMap.type =
+        THREE.PCFSoftShadowMap;
 
- const light=new THREE.DirectionalLight(0xffffff,.85);
- light.position.set(5,10,7);
- light.castShadow=true;
- scene.add(light);
+    renderer.outputEncoding =
+        THREE.sRGBEncoding;
 
- const grid=new THREE.GridHelper(
-  20,20,0x444444,0x222222
- );
+    document
+        .getElementById("viewports")
+        .appendChild(
+            renderer.domElement
+        );
 
- grid.position.y=-2;
- scene.add(grid);
 
- buildR6Rig();
+    /* =========================
+       CAMERA CONTROLS
+    ========================= */
 
- setupUI();
- buildTimeline();
+    orbitControls =
+        new THREE.OrbitControls(
+            camera,
+            renderer.domElement
+        );
 
- window.addEventListener("resize",resize);
+    orbitControls.enableDamping = true;
 
- animate();
+    orbitControls.dampingFactor =
+        0.06;
+
+    orbitControls.target.set(
+        0,
+        1.5,
+        0
+    );
+
+    orbitControls.minDistance = 3;
+
+    orbitControls.maxDistance = 20;
+
+    orbitControls.enableRotate = true;
+
+    orbitControls.enableZoom = true;
+
+    orbitControls.enablePan = true;
+
+    orbitControls.update();
+
+
+    /* =========================
+       TRANSFORM CONTROLS
+    ========================= */
+
+    transformControls =
+        new THREE.TransformControls(
+            camera,
+            renderer.domElement
+        );
+
+    transformControls.size =
+        0.75;
+
+    scene.add(
+        transformControls
+    );
+
+
+    transformControls.addEventListener(
+        "dragging-changed",
+        function(event){
+
+            orbitControls.enabled =
+                !event.value;
+
+        }
+    );
+
+
+    transformControls.addEventListener(
+        "change",
+        function(){
+
+            if(selectedPart){
+                updateTransformInfo();
+            }
+
+        }
+    );
+
+
+    /* =========================
+       LIGHT
+    ========================= */
+
+    const ambientLight =
+        new THREE.AmbientLight(
+            0xffffff,
+            0.72
+        );
+
+    scene.add(
+        ambientLight
+    );
+
+
+    const directionalLight =
+        new THREE.DirectionalLight(
+            0xffffff,
+            0.85
+        );
+
+    directionalLight.position.set(
+        5,
+        10,
+        7
+    );
+
+    directionalLight.castShadow =
+        true;
+
+    scene.add(
+        directionalLight
+    );
+
+
+    /* =========================
+       BASEPLATE
+    ========================= */
+
+    const gridHelper =
+        new THREE.GridHelper(
+            20,
+            20,
+            0x444444,
+            0x222222
+        );
+
+    /*
+       Kaki bawah tepat di Y = -2.
+       Jadi baseplate juga Y = -2.
+       Tidak ada kaki yang menembus
+       atau melewati baseplate.
+    */
+
+    gridHelper.position.y = -2;
+
+    scene.add(
+        gridHelper
+    );
+
+
+    /* =========================
+       BUILD RIG
+    ========================= */
+
+    buildR6Rig();
+
+
+    /* =========================
+       UI
+    ========================= */
+
+    setupUI();
+
+
+    /* =========================
+       RESIZE
+    ========================= */
+
+    window.addEventListener(
+        "resize",
+        onWindowResize
+    );
+
+
+    animate();
 }
 
 
 /* =========================================================
-   ROUNDED BOX
+   ROUNDED BOX GEOMETRY
 ========================================================= */
 
-function roundedBox(w,h,d,r){
+function roundedBox(
+    width,
+    height,
+    depth,
+    radius
+){
 
- const s=new THREE.Shape();
+    const shape =
+        new THREE.Shape();
 
- const x=-w/2,y=-h/2;
- const rr=Math.min(r,w/2,h/2);
+    const x =
+        -width / 2;
 
- s.moveTo(x+rr,y);
- s.lineTo(x+w-rr,y);
- s.quadraticCurveTo(x+w,y,x+w,y+rr);
- s.lineTo(x+w,y+h-rr);
- s.quadraticCurveTo(x+w,y+h,x+w-rr,y+h);
- s.lineTo(x+rr,y+h);
- s.quadraticCurveTo(x,y+h,x,y+h-rr);
- s.lineTo(x,y+rr);
- s.quadraticCurveTo(x,y,x+rr,y);
+    const y =
+        -height / 2;
 
- const g=new THREE.ExtrudeGeometry(s,{
-  depth:d,
-  bevelEnabled:true,
-  bevelSegments:2,
-  bevelSize:r*.35,
-  bevelThickness:r*.35,
-  curveSegments:4
- });
+    const w =
+        width;
 
- g.center();
- return g;
+    const h =
+        height;
+
+    const r =
+        Math.min(
+            radius,
+            width / 2,
+            height / 2
+        );
+
+
+    shape.moveTo(
+        x + r,
+        y
+    );
+
+    shape.lineTo(
+        x + w - r,
+        y
+    );
+
+    shape.quadraticCurveTo(
+        x + w,
+        y,
+        x + w,
+        y + r
+    );
+
+    shape.lineTo(
+        x + w,
+        y + h - r
+    );
+
+    shape.quadraticCurveTo(
+        x + w,
+        y + h,
+        x + w - r,
+        y + h
+    );
+
+    shape.lineTo(
+        x + r,
+        y + h
+    );
+
+    shape.quadraticCurveTo(
+        x,
+        y + h,
+        x,
+        y + h - r
+    );
+
+    shape.lineTo(
+        x,
+        y + r
+    );
+
+    shape.quadraticCurveTo(
+        x,
+        y,
+        x + r,
+        y
+    );
+
+
+    const geometry =
+        new THREE.ExtrudeGeometry(
+            shape,
+            {
+                depth:depth,
+                bevelEnabled:true,
+                bevelSegments:2,
+                bevelSize:radius * 0.35,
+                bevelThickness:radius * 0.35,
+                curveSegments:4
+            }
+        );
+
+
+    geometry.center();
+
+    return geometry;
 }
 
 
 /* =========================================================
-   FACE
+   FACE TEXTURE
 ========================================================= */
 
-function faceTexture(){
+function createFaceTexture(){
 
- const c=document.createElement("canvas");
- c.width=512;
- c.height=512;
+    /*
+       Canvas transparan.
+       TIDAK ADA background putih.
 
- const ctx=c.getContext("2d");
- ctx.clearRect(0,0,512,512);
+       Jadi yang terlihat hanya:
+       >v<
+    */
 
- ctx.fillStyle="#111";
- ctx.textAlign="center";
- ctx.textBaseline="middle";
- ctx.font="bold 150px Arial";
- ctx.fillText(">v<",256,330);
+    const canvas =
+        document.createElement(
+            "canvas"
+        );
 
- const t=new THREE.CanvasTexture(c);
- t.needsUpdate=true;
+    canvas.width = 512;
 
- return t;
+    canvas.height = 512;
+
+    const ctx =
+        canvas.getContext("2d");
+
+
+    ctx.clearRect(
+        0,
+        0,
+        512,
+        512
+    );
+
+
+    ctx.fillStyle =
+        "#111111";
+
+    ctx.textAlign =
+        "center";
+
+    ctx.textBaseline =
+        "middle";
+
+    ctx.font =
+        "bold 150px Arial";
+
+
+    /*
+       Wajah dibuat sedikit
+       lebih rendah dari tengah.
+    */
+
+    ctx.fillText(
+        ">v<",
+        256,
+        330
+    );
+
+
+    const texture =
+        new THREE.CanvasTexture(
+            canvas
+        );
+
+    texture.encoding =
+        THREE.sRGBEncoding;
+
+    texture.needsUpdate =
+        true;
+
+    return texture;
 }
 
 
 /* =========================================================
-   R6 RIG
+   BUILD R6
 ========================================================= */
 
 function buildR6Rig(){
 
- const root=new THREE.Group();
- root.name="R6";
- scene.add(root);
+    /* =========================
+       ROOT
+    ========================= */
 
- const bodyMat=new THREE.MeshPhongMaterial({
-  color:0xcccccc,
-  shininess:20
- });
+    const rigRoot =
+        new THREE.Group();
 
- const torsoMat=new THREE.MeshPhongMaterial({
-  color:0x00a2ff,
-  shininess:20
- });
+    rigRoot.name =
+        "r6Rig";
 
- const legMat=new THREE.MeshPhongMaterial({
-  color:0xcd2027,
-  shininess:20
- });
-
- const headMat=new THREE.MeshPhongMaterial({
-  color:0xffffff,
-  shininess:25
- });
-
- const faceMat=new THREE.MeshBasicMaterial({
-  map:faceTexture(),
-  transparent:true,
-  alphaTest:.01,
-  depthWrite:false,
-  side:THREE.DoubleSide
- });
-
- const torsoGeo=roundedBox(2,2,1,.16);
- const armGeo=roundedBox(1,2,1,.16);
- const legGeo=roundedBox(1,2,1,.16);
- const headGeo=new THREE.BoxGeometry(1.2,1.2,1.2);
-
- /* TORSO */
-
- const torso=new THREE.Mesh(torsoGeo,torsoMat);
- torso.name="Torso";
- torso.castShadow=true;
- torso.receiveShadow=true;
- root.add(torso);
-
- r6Rig.Torso=torso;
- pivots.Torso=torso;
-
- /* HEAD */
-
- const headPivot=new THREE.Group();
- headPivot.name="HeadPivot";
- headPivot.position.set(0,1,0);
- torso.add(headPivot);
-
- const head=new THREE.Mesh(headGeo,headMat);
- head.name="Head";
- head.position.set(0,.6,0);
- head.castShadow=true;
- head.receiveShadow=true;
- headPivot.add(head);
-
- const face=new THREE.Mesh(
-  new THREE.PlaneGeometry(.82,.48),
-  faceMat
- );
-
- face.position.set(0,.20,.606);
- head.add(face);
-
- r6Rig.Head=head;
- pivots.Head=headPivot;
-
- /* ARMS */
-
- createLimb(
-  "Left Arm",
-  -1.5,
-  1,
-  armGeo,
-  bodyMat,
-  "LeftArmPivot"
- );
-
- createLimb(
-  "Right Arm",
-  1.5,
-  1,
-  armGeo,
-  bodyMat,
-  "RightArmPivot"
- );
-
- /* LEGS */
-
- createLimb(
-  "Left Leg",
-  -.5,
-  -1,
-  legGeo,
-  legMat,
-  "LeftLegPivot"
- );
-
- createLimb(
-  "Right Leg",
-  .5,
-  -1,
-  legGeo,
-  legMat,
-  "RightLegPivot"
- );
-
- buildTree();
- selectPart(torso);
-}
+    scene.add(
+        rigRoot
+    );
 
 
-function createLimb(
- name,x,y,geo,mat,pivotName
-){
+    /* =========================
+       MATERIAL
+    ========================= */
 
- const pivot=new THREE.Group();
- pivot.name=pivotName;
- pivot.position.set(x,y,0);
- r6Rig.Torso.add(pivot);
+    const faceTexture =
+        createFaceTexture();
 
- const mesh=new THREE.Mesh(geo,mat);
- mesh.name=name;
- mesh.position.set(0,-1,0);
- mesh.castShadow=true;
- mesh.receiveShadow=true;
 
- pivot.add(mesh);
+    const headMaterial =
+        new THREE.MeshPhongMaterial({
 
- r6Rig[name]=mesh;
- pivots[name]=pivot;
+            color:0xffffff,
+
+            shininess:25
+
+        });
+
+
+    const bodyMaterial =
+        new THREE.MeshPhongMaterial({
+
+            color:0xcccccc,
+
+            shininess:20
+
+        });
+
+
+    const torsoMaterial =
+        new THREE.MeshPhongMaterial({
+
+            color:0x00a2ff,
+
+            shininess:20
+
+        });
+
+
+    const legMaterial =
+        new THREE.MeshPhongMaterial({
+
+            color:0xcd2027,
+
+            shininess:20
+
+        });
+
+
+    const faceMaterial =
+        new THREE.MeshBasicMaterial({
+
+            map:faceTexture,
+
+            transparent:true,
+
+            alphaTest:0.01,
+
+            depthWrite:false,
+
+            side:THREE.DoubleSide
+
+        });
+
+
+    /* =========================
+       GEOMETRY
+    ========================= */
+
+    /*
+       Body rounded.
+    */
+
+    const torsoGeo =
+        roundedBox(
+            2,
+            2,
+            1,
+            0.16
+        );
+
+
+    const armGeo =
+        roundedBox(
+            1,
+            2,
+            1,
+            0.16
+        );
+
+
+    const legGeo =
+        roundedBox(
+            1,
+            2,
+            1,
+            0.16
+        );
+
+
+    /*
+       HEAD BENAR-BENAR KOTAK TAJAM.
+       Tidak rounded.
+    */
+
+    const headGeo =
+        new THREE.BoxGeometry(
+            1.2,
+            1.2,
+            1.2
+        );
+
+
+    /* =====================================================
+       TORSO
+    ===================================================== */
+
+    const torsoMesh =
+        new THREE.Mesh(
+            torsoGeo,
+            torsoMaterial
+        );
+
+    torsoMesh.name =
+        "Torso";
+
+    torsoMesh.castShadow =
+        true;
+
+    torsoMesh.receiveShadow =
+        true;
+
+    rigRoot.add(
+        torsoMesh
+    );
+
+    r6Rig["Torso"] =
+        torsoMesh;
+
+
+    /* =====================================================
+       HEAD PIVOT
+    ===================================================== */
+
+    const headPivot =
+        new THREE.Group();
+
+    headPivot.name =
+        "HeadPivot";
+
+    headPivot.position.set(
+        0,
+        1,
+        0
+    );
+
+    torsoMesh.add(
+        headPivot
+    );
+
+
+    /* =====================================================
+       HEAD
+    ===================================================== */
+
+    const headMesh =
+        new THREE.Mesh(
+            headGeo,
+            headMaterial
+        );
+
+    headMesh.name =
+        "Head";
+
+    /*
+       Head tetap tepat di atas torso.
+    */
+
+    headMesh.position.set(
+        0,
+        0.6,
+        0
+    );
+
+    headMesh.castShadow =
+        true;
+
+    headMesh.receiveShadow =
+        true;
+
+    headPivot.add(
+        headMesh
+    );
+
+    r6Rig["Head"] =
+        headMesh;
+
+    r6Rig["HeadPivot"] =
+        headPivot;
+
+
+    /* =====================================================
+       FACE
+    ===================================================== */
+
+    const facePlane =
+        new THREE.Mesh(
+            new THREE.PlaneGeometry(
+                0.82,
+                0.48
+            ),
+            faceMaterial
+        );
+
+    /*
+       Z positif = bagian depan kepala.
+
+       Y = 0.20
+       membuat wajah turun ke bawah,
+       bukan naik ke atas.
+    */
+
+    facePlane.position.set(
+        0,
+        0.20,
+        0.606
+    );
+
+    facePlane.name =
+        "Face";
+
+    headMesh.add(
+        facePlane
+    );
+
+
+    /* =====================================================
+       LEFT ARM
+    ===================================================== */
+
+    const leftArmPivot =
+        new THREE.Group();
+
+    leftArmPivot.name =
+        "LeftArmPivot";
+
+    leftArmPivot.position.set(
+        -1.5,
+        1,
+        0
+    );
+
+    torsoMesh.add(
+        leftArmPivot
+    );
+
+
+    const leftArmMesh =
+        new THREE.Mesh(
+            armGeo,
+            bodyMaterial
+        );
+
+    leftArmMesh.name =
+        "Left Arm";
+
+    leftArmMesh.position.set(
+        0,
+        -1,
+        0
+    );
+
+    leftArmMesh.castShadow =
+        true;
+
+    leftArmMesh.receiveShadow =
+        true;
+
+    leftArmPivot.add(
+        leftArmMesh
+    );
+
+    r6Rig["Left Arm"] =
+        leftArmMesh;
+
+    r6Rig["LeftArmPivot"] =
+        leftArmPivot;
+
+
+    /* =====================================================
+       RIGHT ARM
+    ===================================================== */
+
+    const rightArmPivot =
+        new THREE.Group();
+
+    rightArmPivot.name =
+        "RightArmPivot";
+
+    rightArmPivot.position.set(
+        1.5,
+        1,
+        0
+    );
+
+    torsoMesh.add(
+        rightArmPivot
+    );
+
+
+    const rightArmMesh =
+        new THREE.Mesh(
+            armGeo,
+            bodyMaterial
+        );
+
+    rightArmMesh.name =
+        "Right Arm";
+
+    rightArmMesh.position.set(
+        0,
+        -1,
+        0
+    );
+
+    rightArmMesh.castShadow =
+        true;
+
+    rightArmMesh.receiveShadow =
+        true;
+
+    rightArmPivot.add(
+        rightArmMesh
+    );
+
+    r6Rig["Right Arm"] =
+        rightArmMesh;
+
+    r6Rig["RightArmPivot"] =
+        rightArmPivot;
+
+
+    /* =====================================================
+       LEFT LEG
+    ===================================================== */
+
+    const leftLegPivot =
+        new THREE.Group();
+
+    leftLegPivot.name =
+        "LeftLegPivot";
+
+    leftLegPivot.position.set(
+        -0.5,
+        -1,
+        0
+    );
+
+    torsoMesh.add(
+        leftLegPivot
+    );
+
+
+    const leftLegMesh =
+        new THREE.Mesh(
+            legGeo,
+            legMaterial
+        );
+
+    leftLegMesh.name =
+        "Left Leg";
+
+    leftLegMesh.position.set(
+        0,
+        -1,
+        0
+    );
+
+    leftLegMesh.castShadow =
+        true;
+
+    leftLegMesh.receiveShadow =
+        true;
+
+    leftLegPivot.add(
+        leftLegMesh
+    );
+
+    r6Rig["Left Leg"] =
+        leftLegMesh;
+
+    r6Rig["LeftLegPivot"] =
+        leftLegPivot;
+
+
+    /* =====================================================
+       RIGHT LEG
+    ===================================================== */
+
+    const rightLegPivot =
+        new THREE.Group();
+
+    rightLegPivot.name =
+        "RightLegPivot";
+
+    rightLegPivot.position.set(
+        0.5,
+        -1,
+        0
+    );
+
+    torsoMesh.add(
+        rightLegPivot
+    );
+
+
+    const rightLegMesh =
+        new THREE.Mesh(
+            legGeo,
+            legMaterial
+        );
+
+    rightLegMesh.name =
+        "Right Leg";
+
+    rightLegMesh.position.set(
+        0,
+        -1,
+        0
+    );
+
+    rightLegMesh.castShadow =
+        true;
+
+    rightLegMesh.receiveShadow =
+        true;
+
+    rightLegPivot.add(
+        rightLegMesh
+    );
+
+    r6Rig["Right Leg"] =
+        rightLegMesh;
+
+    r6Rig["RightLegPivot"] =
+        rightLegPivot;
+
+
+    /* =========================
+       HIERARCHY
+    ========================= */
+
+    populateHierarchyTree();
+
+
+    /* =========================
+       DEFAULT
+    ========================= */
+
+    selectPart(
+        torsoMesh
+    );
 }
 
 
 /* =========================================================
-   TREE
+   SELECT PART
 ========================================================= */
-
-function buildTree(){
-
- $("tree").innerHTML="";
-
- parts.forEach(name=>{
-
-  const row=document.createElement("div");
-  row.className="treeRow";
-  row.dataset.name=name;
-
-  row.innerHTML=
-   '<span class="treeArrow">▸</span>'+
-   '<span>'+name+'</span>';
-
-  row.onclick=()=>selectPart(r6Rig[name]);
-
-  $("tree").appendChild(row);
- });
-}
-
 
 function selectPart(part){
 
- selectedPart=part;
+    selectedPart =
+        part;
 
- const target=
-  pivots[part.name]||part;
-
- transformControls.attach(target);
-
- document.querySelectorAll(".treeRow")
- .forEach(x=>{
-  x.classList.toggle(
-   "selected",
-   x.dataset.name===part.name
-  );
- });
-
- updateInfo();
-}
+    let targetTransform =
+        part;
 
 
-function updateInfo(){
+    if(part.name === "Head")
+        targetTransform =
+            r6Rig["HeadPivot"];
 
- if(!selectedPart)return;
+    else if(part.name === "Left Arm")
+        targetTransform =
+            r6Rig["LeftArmPivot"];
 
- const t=pivots[selectedPart.name]||selectedPart;
+    else if(part.name === "Right Arm")
+        targetTransform =
+            r6Rig["RightArmPivot"];
 
- $("info").innerHTML=
-  "<b style='color:#e21b23'>"+selectedPart.name+"</b><br>"+
-  "POS "+
-  t.position.x.toFixed(2)+" / "+
-  t.position.y.toFixed(2)+" / "+
-  t.position.z.toFixed(2)+"<br>"+
-  "ROT "+
-  THREE.MathUtils.radToDeg(t.rotation.x).toFixed(1)+"° / "+
-  THREE.MathUtils.radToDeg(t.rotation.y).toFixed(1)+"° / "+
-  THREE.MathUtils.radToDeg(t.rotation.z).toFixed(1)+"°";
-}
+    else if(part.name === "Left Leg")
+        targetTransform =
+            r6Rig["LeftLegPivot"];
 
-
-/* =========================================================
-   TIMELINE
-========================================================= */
-
-function buildTimeline(){
-
- $("labelRows").innerHTML="";
- $("tracks").innerHTML="";
- $("ruler").innerHTML="";
-
- parts.forEach(name=>{
-
-  const label=document.createElement("div");
-  label.className="label";
-  label.textContent=name;
-  $("labelRows").appendChild(label);
-
-  const track=document.createElement("div");
-  track.className="track";
-  track.dataset.part=name;
-  $("tracks").appendChild(track);
- });
-
- drawTimeline();
-}
+    else if(part.name === "Right Leg")
+        targetTransform =
+            r6Rig["RightLegPivot"];
 
 
-function pixelsPerSecond(){
- return timelineZoom;
-}
-
-
-function timeToX(t){
- return t*pixelsPerSecond();
-}
-
-
-function xToTime(x){
-
- let t=x/pixelsPerSecond();
-
- const step=1/fps;
-
- t=Math.round(t/step)*step;
-
- return Math.max(
-  0,
-  Math.min(duration,t)
- );
-}
-
-
-function drawTimeline(){
-
- const width=Math.max(
-  900,
-  duration*pixelsPerSecond()+100
- );
-
- $("trackInner").style.width=width+"px";
-
- $("ruler").innerHTML="";
-
- const step=1/fps;
-
- const visibleStep=
-  fps>=60 ? .25 :
-  fps>=30 ? .25 :
-  .5;
-
- for(
-  let t=0;
-  t<=duration+.001;
-  t+=visibleStep
- ){
-
-  const tick=document.createElement("div");
-
-  tick.className=
-   "tick "+(
-    Math.abs(t%1)<.001?
-    "major":""
-   );
-
-  tick.style.left=timeToX(t)+"px";
-  tick.textContent=t.toFixed(2);
-
-  $("ruler").appendChild(tick);
-
-  const line=document.createElement("div");
-
-  line.className="snapLine";
-  line.style.left=timeToX(t)+"px";
-
-  document.querySelectorAll(".track")
-   .forEach(track=>{
-    track.appendChild(
-     line.cloneNode()
+    transformControls.attach(
+        targetTransform
     );
-   });
- }
-
- renderKeyframes();
- updatePlayhead();
-}
 
 
-function renderKeyframes(){
+    document
+        .querySelectorAll(
+            ".tree-item"
+        )
+        .forEach(
+            function(el){
 
- document.querySelectorAll(".kf")
-  .forEach(x=>x.remove());
+                el.classList.remove(
+                    "selected"
+                );
 
- keyframes.forEach((kf,index)=>{
+                if(
+                    el.dataset.name ===
+                    part.name
+                ){
 
-  const track=document.querySelector(
-   '.track[data-part="'+kf.part+'"]'
-  );
+                    el.classList.add(
+                        "selected"
+                    );
 
-  if(!track)return;
+                }
 
-  const el=document.createElement("div");
+            }
+        );
 
-  el.className="kf";
 
-  if(selectedKF===kf)
-   el.classList.add("selected");
-
-  el.style.left=timeToX(kf.time)+"px";
-
-  el.dataset.index=index;
-
-  el.addEventListener(
-   "click",
-   e=>{
-    e.stopPropagation();
-    selectedKF=kf;
-    currentTime=kf.time;
-    renderKeyframes();
-    updatePlayhead();
-   }
-  );
-
-  let holdTimer;
-
-  el.addEventListener(
-   "pointerdown",
-   e=>{
-
-    e.stopPropagation();
-
-    holdTimer=setTimeout(()=>{
-     selectedKF=kf;
-     showContext(
-      e.clientX,
-      e.clientY
-     );
-    },500);
-
-    el.setPointerCapture(e.pointerId);
-   }
-  );
-
-  el.addEventListener(
-   "pointerup",
-   e=>{
-    clearTimeout(holdTimer);
-   }
-  );
-
-  el.addEventListener(
-   "pointermove",
-   e=>{
-
-    if(
-     selectedKF!==kf ||
-     e.pressure===0
-    )return;
-
-    clearTimeout(holdTimer);
-
-    const rect=$("trackInner")
-     .getBoundingClientRect();
-
-    const x=e.clientX-
-     rect.left+
-     $("trackViewport").scrollLeft;
-
-    kf.time=xToTime(x);
-
-    currentTime=kf.time;
-
-    updatePlayhead();
-    renderKeyframes();
-   }
-  );
-
-  track.appendChild(el);
- });
+    updateTransformInfo();
 }
 
 
 /* =========================================================
-   ADD KEYFRAME
+   HIERARCHY
 ========================================================= */
 
-function addKeyframe(){
+function populateHierarchyTree(){
 
- if(!selectedPart)return;
+    const parts = [
 
- const t=xToTime(currentTime);
+        "Torso",
+        "Head",
+        "Left Arm",
+        "Right Arm",
+        "Left Leg",
+        "Right Leg"
 
- const part=selectedPart.name;
+    ];
 
- const target=pivots[part]||selectedPart;
 
- const kf={
-  part:part,
-  time:t,
-  type:"Pose",
-  position:{
-   x:target.position.x,
-   y:target.position.y,
-   z:target.position.z
-  },
-  rotation:{
-   x:target.rotation.x,
-   y:target.rotation.y,
-   z:target.rotation.z
-  },
-  scale:{
-   x:target.scale.x,
-   y:target.scale.y,
-   z:target.scale.z
-  }
- };
+    treeContainer.innerHTML = "";
 
- const existing=keyframes.find(
-  x=>x.part===part &&
-  Math.abs(x.time-t)<.0001
- );
 
- if(existing){
+    parts.forEach(
+        function(name){
 
-  Object.assign(existing,kf);
-  selectedKF=existing;
+            const item =
+                document.createElement(
+                    "div"
+                );
 
- }else{
+            item.className =
+                "tree-item";
 
-  keyframes.push(kf);
-  selectedKF=kf;
+            item.innerText =
+                name;
 
- }
+            item.dataset.name =
+                name;
 
- keyframes.sort((a,b)=>a.time-b.time);
+            item.onclick =
+                function(){
 
- renderKeyframes();
- showToast("Keyframe added");
+                    selectPart(
+                        r6Rig[name]
+                    );
+
+                };
+
+
+            treeContainer.appendChild(
+                item
+            );
+
+        }
+    );
 }
 
 
 /* =========================================================
-   APPLY KEYFRAME
+   TRANSFORM INFO
 ========================================================= */
 
-function applyKeyframe(kf){
+function updateTransformInfo(){
 
- const target=pivots[kf.part];
+    if(!selectedPart)
+        return;
 
- if(!target)return;
 
- target.position.set(
-  kf.position.x,
-  kf.position.y,
-  kf.position.z
- );
+    let target =
+        selectedPart;
 
- target.rotation.set(
-  kf.rotation.x,
-  kf.rotation.y,
-  kf.rotation.z
- );
 
- target.scale.set(
-  kf.scale.x,
-  kf.scale.y,
-  kf.scale.z
- );
+    if(selectedPart.name === "Head")
+        target =
+            r6Rig["HeadPivot"];
+
+    else if(
+        selectedPart.name === "Left Arm"
+    )
+        target =
+            r6Rig["LeftArmPivot"];
+
+    else if(
+        selectedPart.name === "Right Arm"
+    )
+        target =
+            r6Rig["RightArmPivot"];
+
+    else if(
+        selectedPart.name === "Left Leg"
+    )
+        target =
+            r6Rig["LeftLegPivot"];
+
+    else if(
+        selectedPart.name === "Right Leg"
+    )
+        target =
+            r6Rig["RightLegPivot"];
+
+
+    const p =
+        target.position;
+
+    const r =
+        target.rotation;
+
+    const s =
+        target.scale;
+
+
+    transformInfo.innerHTML = `
+
+        <b>Part:</b>
+        ${selectedPart.name}
+        <br>
+
+        <b>Pos:</b>
+        X:${p.x.toFixed(2)}
+        Y:${p.y.toFixed(2)}
+        Z:${p.z.toFixed(2)}
+
+        <br>
+
+        <b>Rot:</b>
+        X:${THREE.MathUtils.radToDeg(r.x).toFixed(1)}°
+        Y:${THREE.MathUtils.radToDeg(r.y).toFixed(1)}°
+        Z:${THREE.MathUtils.radToDeg(r.z).toFixed(1)}°
+
+        <br>
+
+        <b>Scale:</b>
+        X:${s.x.toFixed(2)}
+        Y:${s.y.toFixed(2)}
+        Z:${s.z.toFixed(2)}
+
+    `;
 }
-
-
-/* =========================================================
-   PLAYBACK
-========================================================= */
-
-function updatePlayhead(){
-
- const x=timeToX(currentTime);
-
- $("playhead").style.left=x+"px";
-
- $("timeReadout").textContent=
-  currentTime.toFixed(2)+
-  " / "+
-  duration.toFixed(2);
-}
-
-
-function animatePlayback(){
-
- if(playing){
-
-  currentTime+=1/60;
-
-  if(currentTime>=duration){
-
-   if(loop){
-    currentTime=0;
-   }else{
-    currentTime=duration;
-    playing=false;
-    $("playBtn").textContent="▶ PLAY";
-   }
-  }
-
-  applyNearestAnimation();
-  updatePlayhead();
- }
-
- requestAnimationFrame(animatePlayback);
-}
-
-
-function applyNearestAnimation(){
-
- if(!keyframes.length)return;
-
- for(const part of parts){
-
-  const list=keyframes
-   .filter(k=>k.part===part)
-   .sort((a,b)=>a.time-b.time);
-
-  if(!list.length)continue;
-
-  let a=list[0];
-  let b=list[list.length-1];
-
-  for(let i=0;i<list.length-1;i++){
-
-   if(
-    currentTime>=list[i].time &&
-    currentTime<=list[i+1].time
-   ){
-
-    a=list[i];
-    b=list[i+1];
-    break;
-   }
-  }
-
-  const span=b.time-a.time;
-
-  let alpha=
-   span<=0?0:
-   (currentTime-a.time)/span;
-
-  alpha=Math.max(0,Math.min(1,alpha));
-
-  const target=pivots[part];
-
-  if(!target)continue;
-
-  target.position.x=
-   a.position.x+
-   (b.position.x-a.position.x)*alpha;
-
-  target.position.y=
-   a.position.y+
-   (b.position.y-a.position.y)*alpha;
-
-  target.position.z=
-   a.position.z+
-   (b.position.z-a.position.z)*alpha;
-
-  target.rotation.x=
-   a.rotation.x+
-   (b.rotation.x-a.rotation.x)*alpha;
-
-  target.rotation.y=
-   a.rotation.y+
-   (b.rotation.y-a.rotation.y)*alpha;
-
-  target.rotation.z=
-   a.rotation.z+
-   (b.rotation.z-a.rotation.z)*alpha;
-
-  target.scale.x=
-   a.scale.x+
-   (b.scale.x-a.scale.x)*alpha;
-
-  target.scale.y=
-   a.scale.y+
-   (b.scale.y-a.scale.y)*alpha;
-
-  target.scale.z=
-   a.scale.z+
-   (b.scale.z-a.scale.z)*alpha;
- }
-}
-
-
-/* =========================================================
-   PLAYHEAD CLICK
-========================================================= */
-
-$("trackViewport").addEventListener(
- "pointerdown",
- e=>{
-
-  if(
-   e.target.classList.contains("kf")
-  )return;
-
-  const rect=$("trackInner")
-   .getBoundingClientRect();
-
-  const x=
-   e.clientX-
-   rect.left+
-   $("trackViewport").scrollLeft;
-
-  currentTime=xToTime(x);
-
-  updatePlayhead();
- }
-);
-
-
-/* =========================================================
-   COPY / PASTE
-========================================================= */
-
-function copyKeyframe(){
-
- if(!selectedKF){
-  showToast("Select a keyframe first");
-  return;
- }
-
- clipboard=JSON.parse(
-  JSON.stringify(selectedKF)
- );
-
- showToast("Copied");
-}
-
-
-function pasteKeyframe(){
-
- if(!clipboard){
-  showToast("Nothing copied");
-  return;
- }
-
- const kf=JSON.parse(
-  JSON.stringify(clipboard)
- );
-
- kf.time=xToTime(currentTime);
-
- keyframes.push(kf);
-
- keyframes.sort(
-  (a,b)=>a.time-b.time
- );
-
- selectedKF=kf;
-
- renderKeyframes();
-
- showToast("Pasted");
-}
-
-
-/* =========================================================
-   CONTEXT MENU
-========================================================= */
-
-function showContext(x,y){
-
- $("contextMenu").style.display="block";
-
- const w=150;
- const h=120;
-
- $("contextMenu").style.left=
-  Math.min(x,innerWidth-w-5)+"px";
-
- $("contextMenu").style.top=
-  Math.min(y,innerHeight-h-5)+"px";
-}
-
-
-function hideContext(){
- $("contextMenu").style.display="none";
-}
-
-
-document.addEventListener(
- "pointerdown",
- e=>{
-  if(!e.target.closest("#contextMenu"))
-   hideContext();
- }
-);
-
-
-$("ctxDelete").onclick=()=>{
-
- if(selectedKF){
-
-  keyframes=
-   keyframes.filter(
-    x=>x!==selectedKF
-   );
-
-  selectedKF=null;
-
-  renderKeyframes();
-  showToast("Deleted");
- }
-
- hideContext();
-};
-
-
-$("ctxDuplicate").onclick=()=>{
-
- if(selectedKF){
-
-  const copy=
-   JSON.parse(
-    JSON.stringify(selectedKF)
-   );
-
-  copy.time=xToTime(
-   selectedKF.time+1/fps
-  );
-
-  keyframes.push(copy);
-  keyframes.sort(
-   (a,b)=>a.time-b.time
-  );
-
-  selectedKF=copy;
-  renderKeyframes();
-  showToast("Duplicated");
- }
-
- hideContext();
-};
-
-
-$("ctxType").onclick=()=>{
-
- if(selectedKF){
-
-  selectedKF.type=
-   selectedKF.type==="Pose"?
-   "Move":"Pose";
-
-  showToast(
-   "Type: "+selectedKF.type
-  );
- }
-
- hideContext();
-};
-
-
-/* =========================================================
-   TIMELINE RESIZE
-========================================================= */
-
-let resizing=false;
-let startY=0;
-let startH=0;
-
-$("timelineHandle").addEventListener(
- "pointerdown",
- e=>{
-
-  resizing=true;
-  startY=e.clientY;
-  startH=$("timeline").offsetHeight;
-
-  $("timelineHandle")
-   .setPointerCapture(e.pointerId);
- }
-);
-
-$("timelineHandle").addEventListener(
- "pointermove",
- e=>{
-
-  if(!resizing)return;
-
-  const h=
-   startH+
-   (startY-e.clientY);
-
-  $("timeline").style.height=
-   Math.max(
-    90,
-    Math.min(innerHeight-50,h)
-   )+"px";
- }
-);
-
-$("timelineHandle").addEventListener(
- "pointerup",
- ()=>{
-  resizing=false;
- }
-);
 
 
 /* =========================================================
    UI
 ========================================================= */
 
-$("playBtn").onclick=()=>{
+function setupUI(){
 
- playing=!playing;
+    document
+        .getElementById(
+            "btn-translate"
+        )
+        .onclick =
+        function(e){
 
- $("playBtn").textContent=
-  playing?"❚❚ PAUSE":"▶ PLAY";
-};
+            transformControls.setMode(
+                "translate"
+            );
 
+            setActiveTool(
+                e.target
+            );
 
-$("rewind").onclick=()=>{
- currentTime=0;
- playing=false;
- $("playBtn").textContent="▶ PLAY";
- updatePlayhead();
-};
-
-
-$("prev").onclick=()=>{
- currentTime=xToTime(
-  currentTime-1/fps
- );
- updatePlayhead();
-};
+        };
 
 
-$("next").onclick=()=>{
- currentTime=xToTime(
-  currentTime+1/fps
- );
- updatePlayhead();
-};
+    document
+        .getElementById(
+            "btn-rotate"
+        )
+        .onclick =
+        function(e){
+
+            transformControls.setMode(
+                "rotate"
+            );
+
+            setActiveTool(
+                e.target
+            );
+
+        };
 
 
-$("loop").onclick=()=>{
+    document
+        .getElementById(
+            "btn-scale"
+        )
+        .onclick =
+        function(e){
 
- loop=!loop;
+            transformControls.setMode(
+                "scale"
+            );
 
- $("loop").classList.toggle(
-  "active",
-  loop
- );
-};
+            setActiveTool(
+                e.target
+            );
 
-
-$("addKf").onclick=addKeyframe;
-
-$("copyBtn").onclick=copyKeyframe;
-$("pasteBtn").onclick=pasteKeyframe;
-
-
-$("zoomIn").onclick=()=>{
-
- timelineZoom=Math.min(
-  400,
-  timelineZoom+25
- );
-
- drawTimeline();
-};
+        };
 
 
-$("zoomOut").onclick=()=>{
+    document
+        .getElementById(
+            "btn-reset"
+        )
+        .onclick =
+        function(){
 
- timelineZoom=Math.max(
-  40,
-  timelineZoom-25
- );
-
- drawTimeline();
-};
-
-
-$("duration").onchange=e=>{
-
- duration=Math.max(
-  .25,
-  Number(e.target.value)||2
- );
-
- if(currentTime>duration)
-  currentTime=duration;
-
- drawTimeline();
-};
+            if(!selectedPart)
+                return;
 
 
-$("fps").onchange=e=>{
-
- fps=Math.max(
-  1,
-  Number(e.target.value)||30
- );
-
- drawTimeline();
-};
+            let target =
+                selectedPart;
 
 
-$("newBtn").onclick=()=>{
+            if(
+                selectedPart.name ===
+                "Head"
+            )
+                target =
+                    r6Rig["HeadPivot"];
 
- keyframes=[];
- selectedKF=null;
- currentTime=0;
- playing=false;
+            else if(
+                selectedPart.name ===
+                "Left Arm"
+            )
+                target =
+                    r6Rig["LeftArmPivot"];
 
- $("playBtn").textContent="▶ PLAY";
+            else if(
+                selectedPart.name ===
+                "Right Arm"
+            )
+                target =
+                    r6Rig["RightArmPivot"];
 
- resetRig();
- drawTimeline();
+            else if(
+                selectedPart.name ===
+                "Left Leg"
+            )
+                target =
+                    r6Rig["LeftLegPivot"];
 
- showToast("New animation");
-};
+            else if(
+                selectedPart.name ===
+                "Right Leg"
+            )
+                target =
+                    r6Rig["RightLegPivot"];
 
 
-function resetRig(){
+            target.rotation.set(
+                0,
+                0,
+                0
+            );
 
- parts.forEach(name=>{
+            target.scale.set(
+                1,
+                1,
+                1
+            );
 
-  const t=pivots[name];
 
-  if(!t)return;
+            if(
+                target ===
+                r6Rig["Torso"]
+            ){
 
-  if(name==="Torso"){
-   t.position.set(0,0,0);
-  }
+                target.position.set(
+                    0,
+                    0,
+                    0
+                );
 
-  t.rotation.set(0,0,0);
-  t.scale.set(1,1,1);
- });
+            }
+
+
+            updateTransformInfo();
+
+        };
 }
 
 
 /* =========================================================
-   CAMERA / RESIZE
+   ACTIVE TOOL
 ========================================================= */
 
-function resize(){
+function setActiveTool(btn){
 
- camera.aspect=
-  innerWidth/innerHeight;
+    document
+        .querySelectorAll(
+            ".section button"
+        )
+        .forEach(
+            function(b){
 
- camera.updateProjectionMatrix();
+                b.classList.remove(
+                    "active"
+                );
 
- renderer.setSize(
-  innerWidth,
-  innerHeight
-);
+            }
+        );
+
+
+    btn.classList.add(
+        "active"
+    );
 }
 
 
 /* =========================================================
-   TOAST
+   RESIZE
 ========================================================= */
 
-let toastTimer;
+function onWindowResize(){
 
-function showToast(msg){
+    camera.aspect =
+        window.innerWidth /
+        window.innerHeight;
 
- $("toast").textContent=msg;
- $("toast").style.display="block";
+    camera.updateProjectionMatrix();
 
- clearTimeout(toastTimer);
 
- toastTimer=setTimeout(()=>{
-  $("toast").style.display="none";
- },900);
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
 }
 
 
@@ -1679,14 +1530,18 @@ function showToast(msg){
 
 function animate(){
 
- requestAnimationFrame(animate);
+    requestAnimationFrame(
+        animate
+    );
 
- orbitControls.update();
 
- renderer.render(
-  scene,
-  camera
- );
+    orbitControls.update();
+
+
+    renderer.render(
+        scene,
+        camera
+    );
 }
 
 
@@ -1694,13 +1549,10 @@ function animate(){
    START
 ========================================================= */
 
-window.onload=()=>{
-
- init();
-
- animatePlayback();
-};
+window.onload =
+    init;
 
 </script>
+
 </body>
 </html>
