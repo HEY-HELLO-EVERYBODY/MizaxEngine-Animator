@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-
-<title>MizaxEngine Animator</title>
+<title>MizaxEngine Animator V1</title>
 
 <style>
-
 *{
 box-sizing:border-box;
 user-select:none;
+-webkit-user-select:none;
 -webkit-tap-highlight-color:transparent
 }
 
@@ -19,209 +18,283 @@ margin:0;
 width:100%;
 height:100%;
 overflow:hidden;
-background:#080808;
-color:#eee;
-font-family:Arial
+background:#090a0d;
+color:#ddd;
+font-family:Arial,Segoe UI,sans-serif
 }
 
 button{
-border:1px solid #444;
-background:#151515;
+border:0;
 color:#ddd;
+background:#24272d;
 border-radius:7px;
-font-weight:bold
+padding:8px 12px;
+font-size:13px
 }
 
-button.active{
-background:#777;
-color:#fff;
-border-color:#aaa
+button:active{
+background:#343941
 }
 
-#app{
-height:100%;
+#viewport{
+position:absolute;
+inset:0;
+z-index:0
+}
+
+#topbar{
+position:absolute;
+left:0;
+right:0;
+top:0;
+height:48px;
+background:rgba(18,20,24,.96);
+border-bottom:1px solid #30343b;
+display:flex;
+align-items:center;
+gap:6px;
+padding:5px 8px;
+z-index:20
+}
+
+.logo{
+font-weight:bold;
+color:#4caf50;
+font-size:15px;
+margin-right:8px
+}
+
+.topBtn{
+min-width:38px;
+height:34px;
+padding:4px 10px
+}
+
+#timelinePanel{
+position:absolute;
+left:0;
+right:0;
+bottom:0;
+height:330px;
+min-height:100px;
+max-height:75vh;
+background:#15181d;
+border-top:1px solid #383d45;
+z-index:30;
 display:flex;
 flex-direction:column
 }
 
-#top{
-height:50px;
-display:flex;
-gap:5px;
-padding:5px;
-background:#101010;
-overflow:auto
-}
-
-.tool{
-height:40px;
-min-width:64px;
-padding:0 10px;
-flex-shrink:0
-}
-
-#page{
-height:32px;
-display:flex;
-background:#0d0d0d;
-border-bottom:1px solid #292929
-}
-
-.page{
-flex:1;
-border:0;
-border-radius:0;
-background:#111;
-color:#777;
-font-size:10px
-}
-
-.page.active{
-background:#292929;
-color:#fff
-}
-
-#work{
-position:relative;
-flex:1;
-min-height:0
-}
-
-#view{
-position:absolute;
-inset:0;
+#resizeHandle{
+height:9px;
+flex:none;
+background:#20242a;
+border-top:1px solid #3b4048;
+border-bottom:1px solid #0b0c0f;
+cursor:ns-resize;
 touch-action:none
 }
 
-#view canvas{
+#resizeHandle:after{
+content:"";
 display:block;
-width:100%;
-height:100%
+width:42px;
+height:3px;
+border-radius:3px;
+background:#777;
+margin:3px auto
 }
 
-#parts{
-position:absolute;
-left:5px;
-top:5px;
-z-index:5;
+#timelineToolbar{
+height:52px;
+flex:none;
 display:flex;
-flex-direction:column;
-gap:4px
+align-items:center;
+gap:6px;
+padding:6px 9px;
+border-bottom:1px solid #30343b
 }
 
-.part{
-width:92px;
-height:30px;
-font-size:9px;
-background:#111c
+#timelineToolbar button{
+height:35px;
+min-width:35px
 }
 
-.part.active{
-background:#777
+#playBtn{
+font-size:18px;
+background:#303641
 }
 
-#panel{
-position:absolute;
-right:5px;
-top:5px;
-z-index:5;
-background:#111d;
-border:1px solid #333;
-border-radius:7px;
-padding:7px;
-font-size:9px
+#timeReadout{
+font-family:monospace;
+font-size:13px;
+color:#aaa;
+margin-left:8px;
+white-space:nowrap
 }
 
-#timelinePanel{
-height:205px;
-display:flex;
-flex-direction:column;
-background:#090909;
-border-top:1px solid #333
+#copyBtn,#pasteBtn{
+font-size:12px
 }
 
-#controls{
-height:40px;
-display:flex;
-gap:5px;
-padding:4px
+#loopBtn.active{
+background:#276c39;
+color:#fff
 }
 
-.ctrl{
-height:32px;
-min-width:42px
-}
-
-#readout{
-min-width:110px;
-text-align:center;
-padding-top:9px;
-font-size:10px
+#zoomLabel{
+margin-left:auto;
+font-size:11px;
+color:#888
 }
 
 #timeline{
 flex:1;
-overflow:auto;
-position:relative;
-touch-action:pan-x
+min-height:0;
+display:flex;
+overflow:hidden
 }
 
-#inner{
-position:relative;
-min-height:100%;
-width:500px
+#tracks{
+width:180px;
+min-width:140px;
+background:#191c22;
+border-right:1px solid #30343b;
+overflow:hidden
 }
 
-#ruler{
-height:25px;
-background:#111;
-position:relative
-}
-
-.tick{
-position:absolute;
-height:25px;
-width:1px;
-background:#333
-}
-
-.tick span{
-font-size:8px;
-color:#888;
-position:absolute;
-left:3px;
-top:5px;
-white-space:nowrap
+#trackHeader{
+height:43px;
+border-bottom:1px solid #30343b;
+display:flex;
+align-items:center;
+padding:0 10px;
+font-weight:bold;
+color:#aaa
 }
 
 .track{
-height:27px;
-border-bottom:1px solid #191919;
+height:43px;
+border-bottom:1px solid #292d34;
+display:flex;
+align-items:center;
+padding:0 9px;
+gap:7px;
+font-size:13px;
 position:relative
 }
 
-.label{
-position:sticky;
-left:0;
-z-index:4;
-width:92px;
-height:27px;
-background:#111;
-color:#888;
-font-size:8px;
-padding:9px 5px;
-border-right:1px solid #333
+.track.selected{
+background:#22272f
 }
 
-.key{
+.eye{
+width:15px;
+color:#7e8792;
+text-align:center
+}
+
+.folder{
+color:#65b6e8
+}
+
+.partName{
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis
+}
+
+#timelineScroll{
+flex:1;
+min-width:0;
+overflow:auto;
+position:relative;
+background:#101318
+}
+
+#timelineContent{
+position:relative;
+height:100%
+}
+
+#ruler{
+height:43px;
+position:relative;
+background:#1b1f25;
+border-bottom:1px solid #353a42;
+overflow:hidden
+}
+
+.rulerMajor{
 position:absolute;
-top:8px;
-width:11px;
-height:11px;
-background:#aaa;
-transform:translateX(-5px) rotate(45deg);
-border:1px solid #fff;
-z-index:3
+top:0;
+bottom:0;
+border-left:1px solid #555b64;
+pointer-events:none
+}
+
+.rulerMinor{
+position:absolute;
+bottom:0;
+height:8px;
+border-left:1px solid #3d4249;
+pointer-events:none
+}
+
+.rulerText{
+position:absolute;
+top:7px;
+transform:translateX(4px);
+font-size:11px;
+color:#a9afb7;
+white-space:nowrap
+}
+
+#tracksArea{
+position:absolute;
+left:0;
+right:0;
+top:43px;
+bottom:0
+}
+
+.trackLine{
+height:43px;
+border-bottom:1px solid #282c33;
+position:relative
+}
+
+.gridLine{
+position:absolute;
+top:0;
+bottom:0;
+border-left:1px solid #292e35;
+pointer-events:none
+}
+
+.gridLine.major{
+border-left-color:#3a3f47
+}
+
+.keyframe{
+position:absolute;
+top:13px;
+width:16px;
+height:16px;
+transform:translateX(-8px) rotate(45deg);
+background:#aeb4bd;
+border:2px solid #15181d;
+z-index:8;
+touch-action:none
+}
+
+.keyframe.selected{
+background:#2495ff;
+box-shadow:0 0 0 2px #74c3ff,0 0 12px rgba(36,149,255,.7)
+}
+
+.keyframe:hover{
+background:#65b8ff
 }
 
 #playhead{
@@ -229,285 +302,335 @@ position:absolute;
 top:0;
 bottom:0;
 width:2px;
-background:#fff;
-z-index:8;
+background:#2998ff;
+z-index:15;
 pointer-events:none
 }
 
-#end{
-position:absolute;
-top:0;
-bottom:0;
-width:20px;
-z-index:9;
-touch-action:none
-}
-
-#end:before{
-content:"]";
-font-size:18px;
-position:absolute;
-left:0;
-color:#fff
-}
-
-#end:after{
+#playhead:before{
 content:"";
 position:absolute;
-left:9px;
 top:0;
-bottom:0;
-width:1px;
-background:#aaa
+left:-7px;
+width:16px;
+height:13px;
+background:#2998ff;
+clip-path:polygon(0 0,100% 0,50% 100%)
 }
 
-#popup{
-display:none;
+#contextMenu{
 position:fixed;
-z-index:50;
-background:#161616;
-border:1px solid #666;
-border-radius:9px;
-padding:5px;
-box-shadow:0 5px 25px #000
+display:none;
+z-index:100;
+background:#20242b;
+border:1px solid #454b54;
+border-radius:8px;
+box-shadow:0 8px 30px #000;
+padding:6px;
+width:190px
 }
 
-#popup button{
+#contextMenu button{
 display:block;
-width:110px;
-height:30px;
-margin:3px;
-font-size:10px
+width:100%;
+text-align:left;
+background:transparent;
+border-radius:5px
 }
 
-#transformInfo{
+#contextMenu button:hover{
+background:#303640
+}
+
+.menuTitle{
+font-size:11px;
+color:#7f8791;
+padding:5px 8px;
+border-bottom:1px solid #383d45;
+margin-bottom:4px
+}
+
+#typeMenu{
+display:none;
+padding-top:4px
+}
+
+.typeBtn{
+font-size:11px
+}
+
+#rigInfo{
 position:absolute;
-bottom:8px;
-left:50%;
-transform:translateX(-50%);
-background:#111d;
-border:1px solid #444;
-border-radius:7px;
-padding:5px 10px;
-font-size:9px;
+top:58px;
+right:10px;
+background:rgba(15,17,21,.72);
+border:1px solid #30343b;
+border-radius:8px;
+padding:7px 10px;
+font-size:11px;
+color:#9299a3;
 z-index:10
 }
 
+@media(max-width:600px){
+
+#topbar{
+height:44px
+}
+
+.logo{
+font-size:12px
+}
+
+.topBtn{
+height:32px;
+min-width:32px;
+padding:3px 7px
+}
+
+#timelinePanel{
+height:300px
+}
+
+#tracks{
+width:145px;
+min-width:145px
+}
+
+#timelineToolbar{
+height:48px;
+padding:5px
+}
+
+#timelineToolbar button{
+height:34px;
+min-width:34px;
+padding:4px 8px
+}
+
+#timeReadout{
+font-size:11px
+}
+
+#rigInfo{
+top:52px;
+right:6px
+}
+}
 </style>
 </head>
 
 <body>
 
-<div id="app">
+<div id="viewport"></div>
 
-<div id="top">
-
-<button class="tool active" id="modeBtn">
-MOVE
-</button>
-
-<button class="tool active" id="dirBtn">
-FIXED
-</button>
-
-<button class="tool active" id="playMode">
-LOOP
-</button>
-
-<button class="tool" id="cameraBtn">
-CAM
-</button>
-
-<button class="tool" id="undoBtn">
-UNDO
-</button>
-
-<button class="tool" id="redoBtn">
-REDO
-</button>
-
+<div id="topbar">
+<div class="logo">MizaxEngine</div>
+<button class="topBtn" id="newBtn">NEW</button>
+<button class="topBtn" id="undoBtn">↶</button>
+<button class="topBtn" id="redoBtn">↷</button>
+<button class="topBtn" id="cameraReset">CAM</button>
 </div>
 
-
-<div id="page">
-
-<button class="page active" data-page="animate">
-ANIMATE
-</button>
-
-<button class="page" data-page="transform">
-TRANSFORM
-</button>
-
-<button class="page" data-page="rig">
-RIG
-</button>
-
-<button class="page" data-page="camera">
-CAMERA
-</button>
-
-</div>
-
-
-<div id="work">
-
-<div id="view"></div>
-
-
-<div id="parts">
-
-<button class="part" data-part="Head">
-HEAD
-</button>
-
-<button class="part active" data-part="Torso">
-TORSO
-</button>
-
-<button class="part" data-part="Left Arm">
-L ARM
-</button>
-
-<button class="part" data-part="Right Arm">
-R ARM
-</button>
-
-<button class="part" data-part="Left Leg">
-L LEG
-</button>
-
-<button class="part" data-part="Right Leg">
-R LEG
-</button>
-
-</div>
-
-
-<div id="panel">
-
-R6<br>
-MIZAX RIG
-
-</div>
-
-
-<div id="transformInfo">
-MOVE • FIXED
-</div>
-
-</div>
-
+<div id="rigInfo">R6 • 30 FPS</div>
 
 <div id="timelinePanel">
 
-<div id="controls">
+<div id="resizeHandle"></div>
 
-<button class="ctrl" id="prev">
-◀
-</button>
+<div id="timelineToolbar">
 
-<button class="ctrl" id="play">
-▶
-</button>
+<button id="rewindBtn">⏮</button>
+<button id="prevBtn">◀</button>
+<button id="playBtn">▶</button>
+<button id="nextBtn">▶</button>
+<button id="loopBtn" class="active">LOOP</button>
 
-<button class="ctrl" id="next">
-▶|
-</button>
+<button id="copyBtn">COPY</button>
+<button id="pasteBtn">PASTE</button>
 
-<div id="readout">
-0.00 / 2.00
+<div id="timeReadout">0.00 / 2.00</div>
+
+<div id="zoomLabel">100%</div>
+<button id="zoomOut">−</button>
+<button id="zoomIn">+</button>
+
 </div>
-
-</div>
-
 
 <div id="timeline">
 
-<div id="inner">
+<div id="tracks">
+
+<div id="trackHeader">R6 Rig</div>
+
+<div class="track" data-part="Torso">
+<span class="eye">●</span>
+<span class="folder">▣</span>
+<span class="partName">Torso</span>
+</div>
+
+<div class="track" data-part="Right Arm">
+<span class="eye">●</span>
+<span class="folder">□</span>
+<span class="partName">Right Arm</span>
+</div>
+
+<div class="track" data-part="Left Arm">
+<span class="eye">●</span>
+<span class="folder">□</span>
+<span class="partName">Left Arm</span>
+</div>
+
+<div class="track" data-part="Right Leg">
+<span class="eye">●</span>
+<span class="folder">□</span>
+<span class="partName">Right Leg</span>
+</div>
+
+<div class="track" data-part="Left Leg">
+<span class="eye">●</span>
+<span class="folder">□</span>
+<span class="partName">Left Leg</span>
+</div>
+
+<div class="track" data-part="Head">
+<span class="eye">●</span>
+<span class="folder">□</span>
+<span class="partName">Head</span>
+</div>
+
+</div>
+
+<div id="timelineScroll">
+<div id="timelineContent">
 
 <div id="ruler"></div>
 
-<div id="tracks"></div>
+<div id="tracksArea">
+
+<div class="trackLine"></div>
+<div class="trackLine"></div>
+<div class="trackLine"></div>
+<div class="trackLine"></div>
+<div class="trackLine"></div>
+<div class="trackLine"></div>
+
+</div>
 
 <div id="playhead"></div>
 
-<div id="end"></div>
+</div>
+</div>
 
+</div>
+</div>
+
+<div id="contextMenu">
+
+<div class="menuTitle" id="menuTitle">KEYFRAME</div>
+
+<button id="deleteKF">Delete Keyframe</button>
+<button id="duplicateKF">Duplicate Keyframe</button>
+<button id="copyKF">Copy Keyframe</button>
+
+<button id="typeToggle">Keyframe Type ▸</button>
+
+<div id="typeMenu">
+<button class="typeBtn" data-type="Linear">Linear</button>
+<button class="typeBtn" data-type="Constant">Constant</button>
+<button class="typeBtn" data-type="Smooth">Smooth</button>
 </div>
 
 </div>
 
-</div>
 
-</div>
-
-
-<div id="popup">
-
-<button id="kfMove">
-KF MOVE
-</button>
-
-<button id="kfCopy">
-DUPLICATE
-</button>
-
-<button id="kfDelete">
-DELETE
-</button>
-
-</div>
-
-
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TransformControls.js"></script>
-
 
 <script>
 
 /* =========================================================
-   SCENE
+   MIZAXENGINE ANIMATOR V1
 ========================================================= */
 
-const view =
-document.getElementById("view");
+let scene;
+let camera;
+let renderer;
+let orbit;
+let transform;
 
-const scene =
-new THREE.Scene();
+let rigRoot;
+let rig={};
+let pivots={};
 
-scene.background =
-new THREE.Color(0x090909);
+let selectedPart=null;
+let selectedKF=null;
+
+let playing=false;
+let loop=true;
+
+let currentTime=0;
+let duration=2;
+
+let fps=30;
+
+let zoom=1;
+let pixelsPerSecond=260;
+
+let copiedKF=null;
+
+let dragKF=null;
+let draggingPlayhead=false;
+
+let lastFrame=performance.now();
+
+
+const timelineScroll=document.getElementById("timelineScroll");
+const timelineContent=document.getElementById("timelineContent");
+const ruler=document.getElementById("ruler");
+const tracksArea=document.getElementById("tracksArea");
+const playhead=document.getElementById("playhead");
+const timeReadout=document.getElementById("timeReadout");
+const zoomLabel=document.getElementById("zoomLabel");
+const contextMenu=document.getElementById("contextMenu");
 
 
 /* =========================================================
-   CAMERA
+   KEYFRAME DATA
 ========================================================= */
 
-const camera =
-new THREE.PerspectiveCamera(
-45,
-1,
-.05,
-100
-);
-
-camera.position.set(
-7,
-5,
-9
-);
+const keyframes={
+Torso:[],
+"Right Arm":[],
+"Left Arm":[],
+"Right Leg":[],
+"Left Leg":[],
+Head:[]
+};
 
 
 /* =========================================================
-   RENDERER
+   INIT
 ========================================================= */
 
-const renderer =
-new THREE.WebGLRenderer({
+function init(){
+
+scene=new THREE.Scene();
+scene.background=new THREE.Color(0x090a0d);
+
+
+camera=new THREE.PerspectiveCamera(
+50,
+innerWidth/innerHeight,
+0.1,
+1000
+);
+
+camera.position.set(7,5,9);
+
+
+renderer=new THREE.WebGLRenderer({
 antialias:true
 });
 
@@ -515,2126 +638,109 @@ renderer.setPixelRatio(
 Math.min(devicePixelRatio,2)
 );
 
-renderer.setSize(
-view.clientWidth,
-view.clientHeight
-);
+renderer.setSize(innerWidth,innerHeight);
 
-renderer.outputEncoding =
-THREE.sRGBEncoding;
+renderer.outputEncoding=THREE.sRGBEncoding;
 
-view.appendChild(
+renderer.shadowMap.enabled=true;
+
+document
+.getElementById("viewport")
+.appendChild(renderer.domElement);
+
+
+/* CAMERA */
+
+orbit=new THREE.OrbitControls(
+camera,
 renderer.domElement
 );
 
+orbit.enableDamping=true;
+orbit.dampingFactor=.06;
 
-/* =========================================================
-   LIGHT
-========================================================= */
+orbit.target.set(
+0,
+2,
+0
+);
+
+orbit.minDistance=3;
+orbit.maxDistance=18;
+
+orbit.update();
+
+
+/* LIGHT */
 
 scene.add(
-new THREE.HemisphereLight(
+new THREE.AmbientLight(
 0xffffff,
-0x333333,
-1.5
-));
+.75
+)
+);
 
-const dl =
+const light=
 new THREE.DirectionalLight(
 0xffffff,
-1
+.9
 );
 
-dl.position.set(
-5,
-8,
-7
+light.position.set(5,10,7);
+light.castShadow=true;
+
+scene.add(light);
+
+
+/* BASEPLATE */
+
+const baseGeo=
+new THREE.BoxGeometry(
+16,.2,16
 );
 
-scene.add(dl);
+const baseMat=
+new THREE.MeshPhongMaterial({
+color:0x25282d
+});
+
+const base=
+new THREE.Mesh(
+baseGeo,
+baseMat
+);
+
+base.position.y=-.1;
+base.receiveShadow=true;
+
+scene.add(base);
 
 
-/* =========================================================
-   GRID
-========================================================= */
+/* GRID */
 
-const grid =
+const grid=
 new THREE.GridHelper(
-30,
-30,
-0x444444,
-0x191919
+16,
+16,
+0x464b53,
+0x25292f
 );
+
+grid.position.y=.01;
 
 scene.add(grid);
 
 
-/* =========================================================
-   ORBIT
-========================================================= */
+/* RIG */
 
-const orbit =
-new THREE.OrbitControls(
-camera,
-renderer.domElement
-);
+buildRig();
 
-orbit.target.set(
-0,
-3,
-0
-);
 
-orbit.enableDamping =
-true;
+/* EVENTS */
 
-
-/* =========================================================
-   GIZMO
-========================================================= */
-
-const gizmo =
-new THREE.TransformControls(
-camera,
-renderer.domElement
-);
-
-gizmo.setSize(.8);
-
-scene.add(gizmo);
-
-
-/* =========================================================
-   STATES
-========================================================= */
-
-let cameraLocked=false;
-
-let selected="Torso";
-
-let transformMode="translate";
-
-let directionMode="world";
-
-
-/* =========================================================
-   MATERIAL
-========================================================= */
-
-const gray =
-new THREE.MeshStandardMaterial({
-
-color:0x888888,
-
-roughness:.72
-
-});
-
-
-const darkGray =
-new THREE.MeshStandardMaterial({
-
-color:0x777777,
-
-roughness:.72
-
-});
-
-
-/* =========================================================
-   ROUNDED BOX
-========================================================= */
-
-function roundedBox(
-w,
-h,
-d,
-r=.08
-){
-
-const shape =
-new THREE.Shape();
-
-const x=-w/2;
-const y=-h/2;
-
-
-shape.moveTo(
-x+r,
-y
-);
-
-shape.lineTo(
-x+w-r,
-y
-);
-
-shape.quadraticCurveTo(
-x+w,
-y,
-x+w,
-y+r
-);
-
-shape.lineTo(
-x+w,
-y+h-r
-);
-
-shape.quadraticCurveTo(
-x+w,
-y+h,
-x+w-r,
-y+h
-);
-
-shape.lineTo(
-x+r,
-y+h
-);
-
-shape.quadraticCurveTo(
-x,
-y+h,
-x,
-y+h-r
-);
-
-shape.lineTo(
-x,
-y+r
-);
-
-shape.quadraticCurveTo(
-x,
-y,
-x+r,
-y
-);
-
-
-const g =
-new THREE.ExtrudeGeometry(
-shape,
-{
-
-depth:d,
-
-bevelEnabled:true,
-
-bevelSegments:4,
-
-bevelSize:r*.4,
-
-bevelThickness:r*.4,
-
-curveSegments:8
-
-});
-
-
-g.center();
-
-return g;
-}
-
-
-/* =========================================================
-   SHARP HEAD
-========================================================= */
-
-function sharpBox(
-w,
-h,
-d
-){
-
-return new THREE.BoxGeometry(
-w,
-h,
-d
-);
-
-}
-
-
-/* =========================================================
-   FACE
-========================================================= */
-
-function makeFace(){
-
-const canvas =
-document.createElement(
-"canvas"
-);
-
-canvas.width=512;
-canvas.height=256;
-
-const ctx =
-canvas.getContext("2d");
-
-ctx.clearRect(
-0,
-0,
-512,
-256
-);
-
-ctx.fillStyle="#222";
-
-ctx.font=
-"bold 180px Arial";
-
-ctx.textAlign="center";
-ctx.textBaseline="middle";
-
-ctx.fillText(
-">o<",
-256,
-128
-);
-
-
-const tex =
-new THREE.CanvasTexture(
-canvas
-);
-
-tex.needsUpdate=true;
-
-
-const mat =
-new THREE.MeshBasicMaterial({
-
-map:tex,
-
-transparent:true,
-
-depthWrite:false
-
-});
-
-
-const face =
-new THREE.Mesh(
-
-new THREE.PlaneGeometry(
-1.65,
-.85
-),
-
-mat
-
-);
-
-face.name="Face";
-
-
-/*
-   HEAD DEPTH = 1.1
-   FRONT = +0.55
-
-   Slightly forward to avoid Z-fighting.
-*/
-
-face.position.set(
-0,
-.30,
-.556
-);
-
-return face;
-}
-
-
-/* =========================================================
-   R6 ROOT
-========================================================= */
-
-const root =
-new THREE.Group();
-
-root.name="R6";
-
-scene.add(root);
-
-
-/* =========================================================
-   PART STORAGE
-========================================================= */
-
-const parts={};
-
-const pivots={};
-
-
-/* =========================================================
-   CREATE PIVOT
-========================================================= */
-
-function createPivot(
-name,
-position
-){
-
-const pivot =
-new THREE.Group();
-
-pivot.name=name;
-
-pivot.position.copy(
-position
-);
-
-
-/*
-   VERY IMPORTANT:
-
-   This pivot is EDITOR ONLY.
-
-   It is NOT a Roblox body part.
-   It will NOT be exported as a Joint.
-*/
-
-pivot.userData.editorOnly=true;
-
-pivots[name]=pivot;
-
-return pivot;
-}
-
-
-/* =========================================================
-   TORSO
-========================================================= */
-
-const torso =
-new THREE.Group();
-
-torso.name="Torso";
-
-torso.position.set(
-0,
-3.3,
-0
-);
-
-root.add(torso);
-
-parts.Torso=torso;
-
-
-const torsoMesh =
-new THREE.Mesh(
-roundedBox(
-2,
-2.2,
-1,
-.10
-),
-gray
-);
-
-torsoMesh.name="TorsoMesh";
-
-torsoMesh.position.set(
-0,
-0,
-0
-);
-
-torso.add(torsoMesh);
-
-
-/* =========================================================
-   HEAD PIVOT
-========================================================= */
-
-const headPivot =
-createPivot(
-"HeadJoint",
-new THREE.Vector3(
-0,
-1.1,
-0
-)
-);
-
-torso.add(headPivot);
-
-
-/* =========================================================
-   HEAD
-   1.95 × 1.30 × 1.10
-========================================================= */
-
-const head =
-new THREE.Group();
-
-head.name="Head";
-
-headPivot.add(head);
-
-parts.Head=head;
-
-
-const headMesh =
-new THREE.Mesh(
-sharpBox(
-1.95,
-1.30,
-1.10
-),
-gray
-);
-
-headMesh.name="HeadMesh";
-
-headMesh.position.y=.65;
-
-head.add(headMesh);
-
-
-/* FACE */
-
-head.add(
-makeFace()
-);
-
-
-/* =========================================================
-   LEFT SHOULDER PIVOT
-========================================================= */
-
-const leftShoulder =
-createPivot(
-"LeftShoulder",
-new THREE.Vector3(
--1,
-1.1,
-0
-)
-);
-
-torso.add(
-leftShoulder
-);
-
-
-/* =========================================================
-   LEFT ARM
-   1 × 2.2 × 1
-========================================================= */
-
-const leftArm =
-new THREE.Group();
-
-leftArm.name="Left Arm";
-
-leftShoulder.add(
-leftArm
-);
-
-parts["Left Arm"]=
-leftArm;
-
-
-const leftArmMesh =
-new THREE.Mesh(
-roundedBox(
-1,
-2.2,
-1,
-.08
-),
-darkGray
-);
-
-leftArmMesh.name=
-"Left Arm Mesh";
-
-leftArmMesh.position.y=
--1.1;
-
-leftArm.add(
-leftArmMesh
-);
-
-
-/* =========================================================
-   RIGHT SHOULDER PIVOT
-========================================================= */
-
-const rightShoulder =
-createPivot(
-"RightShoulder",
-new THREE.Vector3(
-1,
-1.1,
-0
-)
-);
-
-torso.add(
-rightShoulder
-);
-
-
-/* =========================================================
-   RIGHT ARM
-   1 × 2.2 × 1
-========================================================= */
-
-const rightArm =
-new THREE.Group();
-
-rightArm.name="Right Arm";
-
-rightShoulder.add(
-rightArm
-);
-
-parts["Right Arm"]=
-rightArm;
-
-
-const rightArmMesh =
-new THREE.Mesh(
-roundedBox(
-1,
-2.2,
-1,
-.08
-),
-darkGray
-);
-
-rightArmMesh.name=
-"Right Arm Mesh";
-
-rightArmMesh.position.y=
--1.1;
-
-rightArm.add(
-rightArmMesh
-);
-
-
-/* =========================================================
-   LEFT HIP
-========================================================= */
-
-const leftHip =
-createPivot(
-"LeftHip",
-new THREE.Vector3(
--.5,
--1.1,
-0
-)
-);
-
-torso.add(
-leftHip
-);
-
-
-/* =========================================================
-   LEFT LEG
-   1 × 2.2 × 1
-========================================================= */
-
-const leftLeg =
-new THREE.Group();
-
-leftLeg.name="Left Leg";
-
-leftHip.add(
-leftLeg
-);
-
-parts["Left Leg"]=
-leftLeg;
-
-
-const leftLegMesh =
-new THREE.Mesh(
-roundedBox(
-1,
-2.2,
-1,
-.08
-),
-darkGray
-);
-
-leftLegMesh.name=
-"Left Leg Mesh";
-
-leftLegMesh.position.y=
--1.1;
-
-leftLeg.add(
-leftLegMesh
-);
-
-
-/* =========================================================
-   RIGHT HIP
-========================================================= */
-
-const rightHip =
-createPivot(
-"RightHip",
-new THREE.Vector3(
-.5,
--1.1,
-0
-)
-);
-
-torso.add(
-rightHip
-);
-
-
-/* =========================================================
-   RIGHT LEG
-   1 × 2.2 × 1
-========================================================= */
-
-const rightLeg =
-new THREE.Group();
-
-rightLeg.name="Right Leg";
-
-rightHip.add(
-rightLeg
-);
-
-parts["Right Leg"]=
-rightLeg;
-
-
-const rightLegMesh =
-new THREE.Mesh(
-roundedBox(
-1,
-2.2,
-1,
-.08
-),
-darkGray
-);
-
-rightLegMesh.name=
-"Right Leg Mesh";
-
-rightLegMesh.position.y=
--1.1;
-
-rightLeg.add(
-rightLegMesh
-);
-
-
-/* =========================================================
-   SELECT
-========================================================= */
-
-function selectPart(n){
-
-selected=n;
-
-document
-.querySelectorAll(".part")
-.forEach(b=>{
-
-b.classList.toggle(
-"active",
-b.dataset.part===n
-);
-
-});
-
-
-gizmo.attach(
-parts[n]
-);
-
-}
-
-
-document
-.querySelectorAll(".part")
-.forEach(b=>{
-
-b.onpointerdown=e=>{
-
-e.stopPropagation();
-
-selectPart(
-b.dataset.part
-);
-
-};
-
-});
-
-
-gizmo.attach(
-parts.Torso
-);
-
-
-/* =========================================================
-   MOVE / ROTATE
-========================================================= */
-
-document
-.getElementById("modeBtn")
-.onclick=()=>{
-
-transformMode=
-transformMode==="translate"
-?"rotate"
-:"translate";
-
-gizmo.setMode(
-transformMode
-);
-
-document
-.getElementById("modeBtn")
-.textContent=
-transformMode==="translate"
-?"MOVE"
-:"ROTATE";
-
-document
-.getElementById("transformInfo")
-.textContent=
-(transformMode==="translate"
-?"MOVE"
-:"ROTATE")
-+" • "+
-(directionMode==="world"
-?"FIXED"
-:"LOCAL");
-
-};
-
-
-/* =========================================================
-   FIXED / LOCAL
-========================================================= */
-
-document
-.getElementById("dirBtn")
-.onclick=()=>{
-
-directionMode=
-directionMode==="world"
-?"local"
-:"world";
-
-gizmo.setSpace(
-directionMode
-);
-
-document
-.getElementById("dirBtn")
-.textContent=
-directionMode==="world"
-?"FIXED"
-:"LOCAL";
-
-document
-.getElementById("transformInfo")
-.textContent=
-(transformMode==="translate"
-?"MOVE"
-:"ROTATE")
-+" • "+
-(directionMode==="world"
-?"FIXED"
-:"LOCAL");
-
-};
-
-
-/* =========================================================
-   CAMERA
-========================================================= */
-
-document
-.getElementById("cameraBtn")
-.onclick=()=>{
-
-cameraLocked=!cameraLocked;
-
-orbit.enabled=
-!cameraLocked;
-
-document
-.getElementById("cameraBtn")
-.textContent=
-cameraLocked
-?"CAM 🔒"
-:"CAM";
-
-};
-
-
-/* =========================================================
-   LOOP
-========================================================= */
-
-let loop=true;
-
-document
-.getElementById("playMode")
-.onclick=()=>{
-
-loop=!loop;
-
-document
-.getElementById("playMode")
-.textContent=
-loop
-?"LOOP"
-:"ONCE";
-
-};
-
-
-/* =========================================================
-   KEYFRAMES
-========================================================= */
-
-const tracks={};
-
-Object.keys(parts)
-.forEach(n=>{
-tracks[n]=[];
-});
-
-
-let currentTime=0;
-
-let duration=2;
-
-let playing=false;
-
-
-/* =========================================================
-   CAPTURE
-========================================================= */
-
-function capturePart(name){
-
-const p=
-parts[name];
-
-return {
-
-position:
-p.position.clone(),
-
-quaternion:
-p.quaternion.clone()
-
-};
-
-}
-
-
-/* =========================================================
-   APPLY
-========================================================= */
-
-function applyPart(
-name,
-data
-){
-
-const p=
-parts[name];
-
-p.position.copy(
-data.position
-);
-
-p.quaternion.copy(
-data.quaternion
-);
-
-}
-
-
-/* =========================================================
-   STATE
-========================================================= */
-
-function saveState(){
-
-const state={};
-
-Object.keys(parts)
-.forEach(n=>{
-
-state[n]=
-capturePart(n);
-
-});
-
-return state;
-}
-
-
-function restore(state){
-
-Object.keys(state)
-.forEach(n=>{
-
-applyPart(
-n,
-state[n]
-);
-
-});
-
-}
-
-
-/* =========================================================
-   UNDO
-========================================================= */
-
-const undoStack=[];
-const redoStack=[];
-
-
-function history(){
-
-undoStack.push(
-saveState()
-);
-
-if(undoStack.length>30)
-undoStack.shift();
-
-redoStack.length=0;
-
-}
-
-
-/* =========================================================
-   ADD KEY
-========================================================= */
-
-function addKey(
-name,
-time
-){
-
-const data=
-capturePart(name);
-
-let list=
-tracks[name];
-
-let k=
-list.find(
-x=>Math.abs(
-x.time-time
-)<.03
-);
-
-if(k){
-
-k.data=data;
-
-}else{
-
-list.push({
-
-time:time,
-
-data:data
-
-});
-
-}
-
-list.sort(
-(a,b)=>a.time-b.time
-);
-
-renderTimeline();
-
-}
-
-
-/* =========================================================
-   GIZMO EVENTS
-========================================================= */
-
-gizmo.addEventListener(
-"dragging-changed",
-e=>{
-
-orbit.enabled=
-!e.value&&!cameraLocked;
-
-if(e.value){
-
-history();
-
-}
-
-});
-
-
-gizmo.addEventListener(
-"objectChange",
-()=>{
-
-if(!playing){
-
-addKey(
-selected,
-currentTime
-);
-
-}
-
-});
-
-
-/* =========================================================
-   EVALUATION
-========================================================= */
-
-function evaluatePart(
-name,
-time
-){
-
-const list=
-tracks[name];
-
-if(!list.length)
-return;
-
-
-if(list.length===1){
-
-applyPart(
-name,
-list[0].data
-);
-
-return;
-
-}
-
-
-if(time<=list[0].time){
-
-applyPart(
-name,
-list[0].data
-);
-
-return;
-
-}
-
-
-if(
-time>=
-list[list.length-1].time
-){
-
-applyPart(
-name,
-list[list.length-1].data
-);
-
-return;
-
-}
-
-
-let a=list[0];
-let b=list[1];
-
-
-for(
-let i=0;
-i<list.length-1;
-i++
-){
-
-if(
-time>=list[i].time&&
-time<=list[i+1].time
-){
-
-a=list[i];
-
-b=list[i+1];
-
-break;
-
-}
-
-}
-
-
-let t=
-(time-a.time)/
-Math.max(
-.00001,
-b.time-a.time
-);
-
-
-/*
-   Smooth interpolation
-*/
-
-t=
-t*t*(3-2*t);
-
-
-const p=
-parts[name];
-
-
-p.position.lerpVectors(
-a.data.position,
-b.data.position,
-t
-);
-
-
-p.quaternion.slerpQuaternions(
-a.data.quaternion,
-b.data.quaternion,
-t
-);
-
-}
-
-
-function evaluate(){
-
-Object.keys(parts)
-.forEach(n=>{
-
-evaluatePart(
-n,
-currentTime
-);
-
-});
-
-}
-
-
-/* =========================================================
-   TIMELINE
-========================================================= */
-
-const timeline=
-document.getElementById(
-"timeline"
-);
-
-const inner=
-document.getElementById(
-"inner"
-);
-
-const ruler=
-document.getElementById(
-"ruler"
-);
-
-const tracksEl=
-document.getElementById(
-"tracks"
-);
-
-const playhead=
-document.getElementById(
-"playhead"
-);
-
-const end=
-document.getElementById(
-"end"
-);
-
-const readout=
-document.getElementById(
-"readout"
-);
-
-const PX=130;
-
-const OFFSET=92;
-
-
-function renderTimeline(){
-
-ruler.innerHTML="";
-
-tracksEl.innerHTML="";
-
-
-inner.style.width=
-Math.max(
-timeline.clientWidth,
-OFFSET+
-duration*PX+
-100
-)+"px";
-
-
-for(
-let t=0;
-t<=duration+.001;
-t+=.25
-){
-
-const tick=
-document.createElement(
-"div"
-);
-
-tick.className="tick";
-
-tick.style.left=
-OFFSET+
-t*PX+
-"px";
-
-
-if(
-Math.abs(t%0.5)<.001
-){
-
-const s=
-document.createElement(
-"span"
-);
-
-s.textContent=
-t.toFixed(1)+"s";
-
-tick.appendChild(s);
-
-}
-
-ruler.appendChild(tick);
-
-}
-
-
-Object.keys(parts)
-.forEach(name=>{
-
-const row=
-document.createElement(
-"div"
-);
-
-row.className="track";
-
-
-const label=
-document.createElement(
-"div"
-);
-
-label.className="label";
-
-label.textContent=name;
-
-row.appendChild(
-label
-);
-
-
-tracks[name].forEach(k=>{
-
-const key=
-document.createElement(
-"div"
-);
-
-key.className="key";
-
-key.style.left=
-OFFSET+
-k.time*PX+
-"px";
-
-
-let holdTimer;
-
-
-key.addEventListener(
-"pointerdown",
-e=>{
-
-e.stopPropagation();
-
-holdTimer=
-setTimeout(()=>{
-
-openKeyMenu(
-e.clientX,
-e.clientY,
-name,
-k
-);
-
-},500);
-
-});
-
-
-key.addEventListener(
-"pointerup",
-()=>clearTimeout(
-holdTimer
-)
-);
-
-
-key.addEventListener(
-"pointercancel",
-()=>clearTimeout(
-holdTimer
-)
-);
-
-
-row.appendChild(
-key
-);
-
-});
-
-
-tracksEl.appendChild(
-row
-);
-
-});
-
-
-updateTimeline();
-
-}
-
-
-/* =========================================================
-   UPDATE TIMELINE
-========================================================= */
-
-function updateTimeline(){
-
-playhead.style.left=
-OFFSET+
-currentTime*PX+
-"px";
-
-end.style.left=
-OFFSET+
-duration*PX+
-"px";
-
-readout.textContent=
-currentTime.toFixed(2)+
-" / "+
-duration.toFixed(2);
-
-}
-
-
-/* =========================================================
-   KEY MENU
-========================================================= */
-
-let movingKey=null;
-
-
-function openKeyMenu(
-x,
-y,
-name,
-k
-){
-
-const popup=
-document.getElementById(
-"popup"
-);
-
-popup.style.display=
-"block";
-
-popup.style.left=
-Math.min(
-x,
-innerWidth-125
-)+"px";
-
-popup.style.top=
-Math.min(
-y,
-innerHeight-120
-)+"px";
-
-popup.dataset.name=name;
-
-popup._key=k;
-
-}
-
-
-document.addEventListener(
-"pointerdown",
-e=>{
-
-const popup=
-document.getElementById(
-"popup"
-);
-
-if(
-popup.style.display==="block"&&
-!popup.contains(e.target)
-){
-
-popup.style.display=
-"none";
-
-}
-
-});
-
-
-/* MOVE KEY */
-
-document
-.getElementById("kfMove")
-.onclick=()=>{
-
-const popup=
-document.getElementById(
-"popup"
-);
-
-movingKey={
-
-name:
-popup.dataset.name,
-
-key:
-popup._key
-
-};
-
-popup.style.display=
-"none";
-
-};
-
-
-/* DUPLICATE */
-
-document
-.getElementById("kfCopy")
-.onclick=()=>{
-
-const popup=
-document.getElementById(
-"popup"
-);
-
-const name=
-popup.dataset.name;
-
-const k=
-popup._key;
-
-
-const copy={
-
-time:
-Math.min(
-duration,
-k.time+.25
-),
-
-data:{
-
-position:
-k.data.position.clone(),
-
-quaternion:
-k.data.quaternion.clone()
-
-}
-
-};
-
-
-tracks[name].push(
-copy
-);
-
-tracks[name].sort(
-(a,b)=>a.time-b.time
-);
-
-popup.style.display=
-"none";
-
-renderTimeline();
-
-};
-
-
-/* DELETE */
-
-document
-.getElementById("kfDelete")
-.onclick=()=>{
-
-const popup=
-document.getElementById(
-"popup"
-);
-
-const name=
-popup.dataset.name;
-
-const k=
-popup._key;
-
-
-tracks[name]=
-tracks[name].filter(
-x=>x!==k
-);
-
-popup.style.display=
-"none";
-
-renderTimeline();
-
-};
-
-
-/* =========================================================
-   MOVE KEY
-========================================================= */
-
-timeline.addEventListener(
-"pointermove",
-e=>{
-
-if(!movingKey)
-return;
-
-
-const rect=
-inner.getBoundingClientRect();
-
-
-let x=
-e.clientX-
-rect.left-
-OFFSET;
-
-
-let t=
-Math.max(
-0,
-Math.min(
-duration,
-x/PX
-)
-);
-
-
-movingKey.key.time=t;
-
-
-tracks[
-movingKey.name
-].sort(
-(a,b)=>a.time-b.time
-);
-
-renderTimeline();
-
-});
-
-
-timeline.addEventListener(
-"pointerup",
-()=>{
-
-if(movingKey){
-
-movingKey=null;
-
-renderTimeline();
-
-}
-
-});
-
-
-/* =========================================================
-   SCRUB
-========================================================= */
-
-let scrub=false;
-
-
-timeline.addEventListener(
-"pointerdown",
-e=>{
-
-if(
-e.target.classList.contains(
-"key"
-)||
-e.target===end
-)
-return;
-
-
-const rect=
-inner.getBoundingClientRect();
-
-
-let x=
-e.clientX-
-rect.left-
-OFFSET;
-
-
-scrub=true;
-
-
-currentTime=
-Math.max(
-0,
-Math.min(
-duration,
-x/PX
-)
-);
-
-
-evaluate();
-
-updateTimeline();
-
-});
-
-
-timeline.addEventListener(
-"pointermove",
-e=>{
-
-if(!scrub)
-return;
-
-
-const rect=
-inner.getBoundingClientRect();
-
-
-let x=
-e.clientX-
-rect.left-
-OFFSET;
-
-
-currentTime=
-Math.max(
-0,
-Math.min(
-duration,
-x/PX
-)
-);
-
-
-evaluate();
-
-updateTimeline();
-
-});
-
-
-timeline.addEventListener(
-"pointerup",
-()=>scrub=false
-);
-
-
-/* =========================================================
-   DURATION
-========================================================= */
-
-let draggingEnd=false;
-
-
-end.addEventListener(
-"pointerdown",
-e=>{
-
-e.stopPropagation();
-
-draggingEnd=true;
-
-});
-
-
-end.addEventListener(
-"pointermove",
-e=>{
-
-if(!draggingEnd)
-return;
-
-
-const rect=
-inner.getBoundingClientRect();
-
-
-let x=
-e.clientX-
-rect.left-
-OFFSET;
-
-
-duration=
-Math.max(
-.25,
-Math.min(
-50,
-x/PX
-)
-);
-
-
-if(
-currentTime>
-duration
-)
-currentTime=
-duration;
-
-
-renderTimeline();
-
-});
-
-
-end.addEventListener(
-"pointerup",
-()=>draggingEnd=false
-);
-
-end.addEventListener(
-"pointercancel",
-()=>draggingEnd=false
-);
-
-
-/* =========================================================
-   PLAYBACK
-========================================================= */
-
-let lastTime=
-performance.now();
-
-
-document
-.getElementById("play")
-.onclick=()=>{
-
-playing=!playing;
-
-document
-.getElementById("play")
-.textContent=
-playing
-?"⏸"
-:"▶";
-
-lastTime=
-performance.now();
-
-};
-
-
-document
-.getElementById("prev")
-.onclick=()=>{
-
-let t=0;
-
-Object.values(tracks)
-.forEach(list=>{
-
-list.forEach(k=>{
-
-if(
-k.time<
-currentTime-.02
-){
-
-t=
-Math.max(
-t,
-k.time
-);
-
-}
-
-});
-
-});
-
-
-currentTime=t;
-
-evaluate();
-
-updateTimeline();
-
-};
-
-
-document
-.getElementById("next")
-.onclick=()=>{
-
-let t=duration;
-
-Object.values(tracks)
-.forEach(list=>{
-
-list.forEach(k=>{
-
-if(
-k.time>
-currentTime+.02
-){
-
-t=
-Math.min(
-t,
-k.time
-);
-
-}
-
-});
-
-});
-
-
-currentTime=t;
-
-evaluate();
-
-updateTimeline();
-
-};
-
-
-/* =========================================================
-   UNDO
-========================================================= */
-
-document
-.getElementById("undoBtn")
-.onclick=()=>{
-
-if(!undoStack.length)
-return;
-
-
-redoStack.push(
-saveState()
-);
-
-restore(
-undoStack.pop()
-);
-
-renderTimeline();
-
-};
-
-
-/* =========================================================
-   REDO
-========================================================= */
-
-document
-.getElementById("redoBtn")
-.onclick=()=>{
-
-if(!redoStack.length)
-return;
-
-
-undoStack.push(
-saveState()
-);
-
-restore(
-redoStack.pop()
-);
-
-renderTimeline();
-
-};
-
-
-/* =========================================================
-   PAGES
-========================================================= */
-
-document
-.querySelectorAll(".page")
-.forEach(btn=>{
-
-btn.onclick=()=>{
-
-document
-.querySelectorAll(".page")
-.forEach(x=>
-x.classList.remove(
-"active"
-)
-);
-
-btn.classList.add(
-"active"
-);
-
-
-const page=
-btn.dataset.page;
-
-
-document
-.getElementById(
-"timelinePanel"
-)
-.style.display=
-page==="animate"
-?"flex"
-:"none";
-
-
-document
-.getElementById(
-"parts"
-)
-.style.display=
-page==="rig"||
-page==="transform"
-?"flex"
-:"none";
-
-
-document
-.getElementById(
-"transformInfo"
-)
-.style.display=
-page==="transform"
-?"block"
-:"none";
-
-
-if(
-page==="camera"
-){
-
-orbit.enabled=true;
-
-}
-
-
-if(
-page==="transform"
-){
-
-gizmo.attach(
-parts[selected]
-);
-
-}
-
-};
-
-});
-
-
-/* =========================================================
-   RESIZE
-========================================================= */
-
-function resize(){
-
-const w=
-Math.max(
-1,
-view.clientWidth
-);
-
-const h=
-Math.max(
-1,
-view.clientHeight
-);
-
-
-camera.aspect=
-w/h;
-
-camera.updateProjectionMatrix();
-
-renderer.setSize(
-w,
-h,
-false
-);
-
-renderTimeline();
-
-}
+setupUI();
+setupTimeline();
+setupResize();
 
 
 window.addEventListener(
@@ -2643,37 +749,1592 @@ resize
 );
 
 
+/* LOOP */
+
+requestAnimationFrame(loopFrame);
+
+}
+
+
+/* =========================================================
+   ROUNDED BOX
+========================================================= */
+
+function roundedBox(w,h,d,r=.12){
+
+const shape=new THREE.Shape();
+
+const x=-w/2;
+const y=-h/2;
+
+shape.moveTo(x+r,y);
+shape.lineTo(x+w-r,y);
+
+shape.quadraticCurveTo(
+x+w,y,
+x+w,y+r
+);
+
+shape.lineTo(
+x+w,y+h-r
+);
+
+shape.quadraticCurveTo(
+x+w,y+h,
+x+w-r,y+h
+);
+
+shape.lineTo(
+x+r,y+h
+);
+
+shape.quadraticCurveTo(
+x,y+h,
+x,y+h-r
+);
+
+shape.lineTo(
+x,y+r
+);
+
+shape.quadraticCurveTo(
+x,y,
+x+r,y
+);
+
+const geo=
+new THREE.ExtrudeGeometry(
+shape,
+{
+depth:d,
+bevelEnabled:true,
+bevelSegments:2,
+bevelSize:r*.55,
+bevelThickness:r*.55
+}
+);
+
+geo.center();
+
+return geo;
+}
+
+
+/* =========================================================
+   BUILD R6
+========================================================= */
+
+function buildRig(){
+
+rigRoot=new THREE.Group();
+rigRoot.name="R6";
+
+scene.add(rigRoot);
+
+
+/* MATERIALS */
+
+const bodyMat=
+new THREE.MeshPhongMaterial({
+color:0xd0d0d0,
+shininess:18
+});
+
+const torsoMat=
+new THREE.MeshPhongMaterial({
+color:0x10bde5,
+shininess:18
+});
+
+const legMat=
+new THREE.MeshPhongMaterial({
+color:0xf04d61,
+shininess:18
+});
+
+
+/* TORSO */
+
+const torso=
+new THREE.Mesh(
+roundedBox(2,2.2,1,.12),
+torsoMat
+);
+
+torso.name="Torso";
+torso.position.y=3.2;
+
+torso.castShadow=true;
+torso.receiveShadow=true;
+
+rigRoot.add(torso);
+
+rig.Torso=torso;
+
+
+/* HEAD PIVOT */
+
+const headPivot=
+new THREE.Group();
+
+headPivot.name="HeadPivot";
+
+headPivot.position.set(
+0,
+1.1,
+0
+);
+
+torso.add(headPivot);
+
+pivots.Head=headPivot;
+
+
+/* HEAD */
+
+const head=
+new THREE.Mesh(
+new THREE.BoxGeometry(
+1.9,
+1.3,
+1
+),
+bodyMat
+);
+
+head.name="Head";
+
+head.position.y=.65;
+
+head.castShadow=true;
+head.receiveShadow=true;
+
+headPivot.add(head);
+
+rig.Head=head;
+
+
+/* FACE */
+
+const faceCanvas=
+document.createElement("canvas");
+
+faceCanvas.width=256;
+faceCanvas.height=128;
+
+const fctx=
+faceCanvas.getContext("2d");
+
+fctx.clearRect(
+0,
+0,
+256,
+128
+);
+
+fctx.fillStyle="#111";
+
+fctx.font="bold 70px Arial";
+fctx.textAlign="center";
+fctx.textBaseline="middle";
+
+fctx.fillText(
+">v<",
+128,
+64
+);
+
+const faceTexture=
+new THREE.CanvasTexture(
+faceCanvas
+);
+
+faceTexture.encoding=
+THREE.sRGBEncoding;
+
+const faceMat=
+new THREE.MeshBasicMaterial({
+map:faceTexture,
+transparent:true
+});
+
+const face=
+new THREE.Mesh(
+new THREE.PlaneGeometry(
+1.55,
+.78
+),
+faceMat
+);
+
+face.position.set(
+0,
+.32,
+.506
+);
+
+head.add(face);
+
+
+/* ARM FUNCTION */
+
+function makeArm(name,x){
+
+const pivot=
+new THREE.Group();
+
+pivot.name=name+"Pivot";
+
+pivot.position.set(
+x,
+1.1,
+0
+);
+
+torso.add(pivot);
+
+pivots[name]=pivot;
+
+
+const arm=
+new THREE.Mesh(
+roundedBox(1,2.2,1,.12),
+bodyMat
+);
+
+arm.name=name;
+
+arm.position.y=-1.1;
+
+arm.castShadow=true;
+arm.receiveShadow=true;
+
+pivot.add(arm);
+
+rig[name]=arm;
+}
+
+
+/* LEGS */
+
+function makeLeg(name,x){
+
+const pivot=
+new THREE.Group();
+
+pivot.name=name+"Pivot";
+
+pivot.position.set(
+x,
+-1.1,
+0
+);
+
+torso.add(pivot);
+
+pivots[name]=pivot;
+
+
+const leg=
+new THREE.Mesh(
+roundedBox(1,2.2,1,.12),
+legMat
+);
+
+leg.name=name;
+
+leg.position.y=-1.1;
+
+leg.castShadow=true;
+leg.receiveShadow=true;
+
+pivot.add(leg);
+
+rig[name]=leg;
+}
+
+
+makeArm("Left Arm",-1);
+makeArm("Right Arm",1);
+
+makeLeg("Left Leg",-0.5);
+makeLeg("Right Leg",0.5);
+
+
+/* DEFAULT POSES */
+
+for(const name in keyframes){
+
+keyframes[name]=[];
+
+addKeyframe(name,0);
+}
+
+
+/* INITIAL CAMERA */
+
+orbit.target.set(
+0,
+2.3,
+0
+);
+
+orbit.update();
+
+}
+
+
+/* =========================================================
+   TRANSFORM TARGET
+========================================================= */
+
+function targetFor(name){
+
+if(name==="Torso")
+return rig.Torso;
+
+return pivots[name];
+}
+
+
+/* =========================================================
+   KEYFRAME
+========================================================= */
+
+function addKeyframe(name,time){
+
+const target=
+targetFor(name);
+
+if(!target)return;
+
+
+time=snapTime(time);
+
+const existing=
+keyframes[name].find(
+k=>Math.abs(k.time-time)<.0001
+);
+
+if(existing){
+
+existing.position.copy(
+target.position
+);
+
+existing.quaternion.copy(
+target.quaternion
+);
+
+existing.scale.copy(
+target.scale
+);
+
+return existing;
+}
+
+
+const k={
+id:Math.random().toString(36).slice(2),
+time:time,
+position:target.position.clone(),
+quaternion:target.quaternion.clone(),
+scale:target.scale.clone(),
+type:"Linear"
+};
+
+keyframes[name].push(k);
+
+keyframes[name].sort(
+(a,b)=>a.time-b.time
+);
+
+return k;
+}
+
+
+/* =========================================================
+   SNAP
+========================================================= */
+
+function snapTime(t){
+
+const step=1/fps;
+
+return Math.max(
+0,
+Math.min(
+duration,
+Math.round(t/step)*step
+)
+);
+}
+
+
+/* =========================================================
+   RENDER TIMELINE
+========================================================= */
+
+function renderTimeline(){
+
+ruler.innerHTML="";
+tracksArea.innerHTML="";
+
+
+const width=
+duration*pixelsPerSecond*zoom+200;
+
+timelineContent.style.width=
+width+"px";
+
+
+/* RULER */
+
+const step=.25;
+
+for(
+let t=0;
+t<=duration+.001;
+t+=step
+){
+
+const x=t*pixelsPerSecond*zoom;
+
+const major=
+Math.abs(
+Math.round(t*4)%4
+)===0;
+
+
+const line=
+document.createElement("div");
+
+line.className=
+major?
+"rulerMajor":
+"rulerMinor";
+
+line.style.left=x+"px";
+
+ruler.appendChild(line);
+
+
+if(major){
+
+const txt=
+document.createElement("div");
+
+txt.className="rulerText";
+
+txt.style.left=x+"px";
+
+txt.textContent=
+t.toFixed(
+t===0?0:2
+);
+
+ruler.appendChild(txt);
+}
+
+}
+
+
+/* TRACKS */
+
+const names=[
+"Torso",
+"Right Arm",
+"Left Arm",
+"Right Leg",
+"Left Leg",
+"Head"
+];
+
+
+names.forEach(
+(name,index)=>{
+
+const line=
+document.createElement("div");
+
+line.className="trackLine";
+
+line.dataset.part=name;
+
+
+/* GRID */
+
+for(
+let t=0;
+t<=duration+.001;
+t+=1/fps
+){
+
+const x=
+t*pixelsPerSecond*zoom;
+
+const g=
+document.createElement("div");
+
+g.className=
+Math.round(t*fps)%(
+fps/4
+)===0
+?
+"gridLine major"
+:
+"gridLine";
+
+g.style.left=x+"px";
+
+line.appendChild(g);
+
+}
+
+
+/* KEYFRAMES */
+
+keyframes[name].forEach(
+k=>{
+
+const el=
+document.createElement("div");
+
+el.className="keyframe";
+
+if(
+selectedKF &&
+selectedKF.id===k.id
+){
+el.classList.add("selected");
+}
+
+el.style.left=
+(k.time*pixelsPerSecond*zoom)
++"px";
+
+el.dataset.id=k.id;
+el.dataset.part=name;
+
+el.addEventListener(
+"pointerdown",
+e=>{
+
+e.stopPropagation();
+
+startKFDrag(
+e,
+name,
+k,
+el
+);
+
+});
+
+el.addEventListener(
+"contextmenu",
+e=>{
+
+e.preventDefault();
+
+selectedKF={
+part:name,
+data:k,
+el:el
+};
+
+showContextMenu(
+e.clientX,
+e.clientY
+);
+
+});
+
+line.appendChild(el);
+
+});
+
+
+tracksArea.appendChild(line);
+
+});
+
+updatePlayhead();
+}
+
+
+/* =========================================================
+   PLAYHEAD
+========================================================= */
+
+function updatePlayhead(){
+
+const x=
+currentTime*
+pixelsPerSecond*
+zoom;
+
+playhead.style.left=x+"px";
+
+timeReadout.textContent=
+currentTime.toFixed(2)
++" / "
++duration.toFixed(2);
+
+}
+
+
+/* =========================================================
+   PLAYHEAD CLICK
+========================================================= */
+
+timelineScroll.addEventListener(
+"pointerdown",
+function(e){
+
+if(
+e.target.classList.contains("keyframe")
+)return;
+
+const rect=
+timelineScroll.getBoundingClientRect();
+
+const x=
+e.clientX-
+rect.left+
+timelineScroll.scrollLeft;
+
+currentTime=
+snapTime(
+x/(pixelsPerSecond*zoom)
+);
+
+applyAnimation(
+currentTime
+);
+
+updatePlayhead();
+
+draggingPlayhead=true;
+
+});
+
+
+window.addEventListener(
+"pointermove",
+function(e){
+
+if(!draggingPlayhead)
+return;
+
+const rect=
+timelineScroll.getBoundingClientRect();
+
+const x=
+e.clientX-
+rect.left+
+timelineScroll.scrollLeft;
+
+currentTime=
+snapTime(
+x/(pixelsPerSecond*zoom)
+);
+
+applyAnimation(currentTime);
+updatePlayhead();
+
+});
+
+
+window.addEventListener(
+"pointerup",
+function(){
+
+draggingPlayhead=false;
+
+});
+
+
+/* =========================================================
+   KEYFRAME DRAG
+========================================================= */
+
+function startKFDrag(e,name,k,el){
+
+selectedKF={
+part:name,
+data:k,
+el:el
+};
+
+renderTimeline();
+
+dragKF={
+name:name,
+k:k,
+startX:e.clientX,
+oldTime:k.time
+};
+
+el.setPointerCapture?.(e.pointerId);
+
+window.addEventListener(
+"pointermove",
+moveKF
+);
+
+window.addEventListener(
+"pointerup",
+endKF
+);
+
+}
+
+
+/* IMPORTANT:
+   PLAYHEAD NEVER MOVES WHILE KF IS DRAGGED.
+*/
+
+function moveKF(e){
+
+if(!dragKF)
+return;
+
+const delta=
+(e.clientX-dragKF.startX)
+/
+(pixelsPerSecond*zoom);
+
+let newTime=
+snapTime(
+dragKF.oldTime+delta
+);
+
+const arr=
+keyframes[dragKF.name];
+
+
+/* avoid duplicate */
+
+const collision=
+arr.find(
+k=>
+k!==dragKF.k &&
+Math.abs(k.time-newTime)<.0001
+);
+
+if(collision)
+return;
+
+dragKF.k.time=newTime;
+
+arr.sort(
+(a,b)=>a.time-b.time
+);
+
+renderTimeline();
+
+}
+
+
+function endKF(){
+
+window.removeEventListener(
+"pointermove",
+moveKF
+);
+
+window.removeEventListener(
+"pointerup",
+endKF
+);
+
+dragKF=null;
+
+}
+
+
+/* =========================================================
+   APPLY ANIMATION
+========================================================= */
+
+function applyAnimation(time){
+
+for(const name in keyframes){
+
+const arr=keyframes[name];
+
+if(!arr.length)
+continue;
+
+const target=
+targetFor(name);
+
+if(!target)
+continue;
+
+
+/* BEFORE FIRST */
+
+if(time<=arr[0].time){
+
+applyPose(
+target,
+arr[0]
+);
+
+continue;
+}
+
+
+/* AFTER LAST */
+
+if(time>=arr[arr.length-1].time){
+
+applyPose(
+target,
+arr[arr.length-1]
+);
+
+continue;
+}
+
+
+/* FIND A/B */
+
+let a=arr[0];
+let b=arr[arr.length-1];
+
+for(
+let i=0;
+i<arr.length-1;
+i++
+){
+
+if(
+time>=arr[i].time &&
+time<=arr[i+1].time
+){
+
+a=arr[i];
+b=arr[i+1];
+
+break;
+}
+
+}
+
+
+const span=
+b.time-a.time;
+
+let p=
+span<=0
+?0
+:(time-a.time)/span;
+
+
+if(a.type==="Constant")
+p=0;
+
+else if(a.type==="Smooth")
+p=p*p*(3-2*p);
+
+
+/* POSITION */
+
+target.position.lerpVectors(
+a.position,
+b.position,
+p
+);
+
+
+/* ROTATION */
+
+THREE.Quaternion.slerp(
+a.quaternion,
+b.quaternion,
+target.quaternion,
+p
+);
+
+
+/* SCALE */
+
+target.scale.lerpVectors(
+a.scale,
+b.scale,
+p
+);
+
+}
+
+}
+
+
+/* =========================================================
+   APPLY POSE
+========================================================= */
+
+function applyPose(target,k){
+
+target.position.copy(
+k.position
+);
+
+target.quaternion.copy(
+k.quaternion
+);
+
+target.scale.copy(
+k.scale
+);
+
+}
+
+
+/* =========================================================
+   ADD KF CURRENT
+========================================================= */
+
+function addCurrentKeyframe(){
+
+if(!selectedPart)
+selectedPart="Torso";
+
+const k=
+addKeyframe(
+selectedPart,
+currentTime
+);
+
+selectedKF={
+part:selectedPart,
+data:k
+};
+
+renderTimeline();
+
+}
+
+
+/* =========================================================
+   TRACK SELECT
+========================================================= */
+
+document
+.querySelectorAll(".track")
+.forEach(el=>{
+
+el.addEventListener(
+"click",
+()=>{
+
+selectedPart=
+el.dataset.part;
+
+document
+.querySelectorAll(".track")
+.forEach(x=>
+x.classList.remove("selected")
+);
+
+el.classList.add("selected");
+
+});
+
+});
+
+
+/* =========================================================
+   CONTEXT MENU
+========================================================= */
+
+function showContextMenu(x,y){
+
+contextMenu.style.left=
+Math.min(
+x,
+innerWidth-200
+)+"px";
+
+contextMenu.style.top=
+Math.min(
+y,
+innerHeight-180
+)+"px";
+
+contextMenu.style.display="block";
+
+}
+
+
+function hideContextMenu(){
+
+contextMenu.style.display="none";
+
+document.getElementById(
+"typeMenu"
+).style.display="none";
+
+}
+
+
+document.addEventListener(
+"pointerdown",
+e=>{
+
+if(
+!contextMenu.contains(e.target)
+){
+
+hideContextMenu();
+
+}
+
+});
+
+
+/* DELETE */
+
+document.getElementById(
+"deleteKF"
+).onclick=()=>{
+
+if(!selectedKF)
+return;
+
+const arr=
+keyframes[selectedKF.part];
+
+const i=
+arr.indexOf(
+selectedKF.data
+);
+
+if(i>=0)
+arr.splice(i,1);
+
+selectedKF=null;
+
+hideContextMenu();
+
+renderTimeline();
+
+};
+
+
+/* DUPLICATE */
+
+document.getElementById(
+"duplicateKF"
+).onclick=()=>{
+
+if(!selectedKF)
+return;
+
+const old=
+selectedKF.data;
+
+const newTime=
+snapTime(
+old.time+1/fps
+);
+
+const arr=
+keyframes[selectedKF.part];
+
+if(
+arr.some(
+k=>Math.abs(k.time-newTime)<.0001
+)
+){
+
+hideContextMenu();
+return;
+
+}
+
+const k={
+id:Math.random().toString(36).slice(2),
+time:newTime,
+position:old.position.clone(),
+quaternion:old.quaternion.clone(),
+scale:old.scale.clone(),
+type:old.type
+};
+
+arr.push(k);
+
+arr.sort(
+(a,b)=>a.time-b.time
+);
+
+selectedKF={
+part:selectedKF.part,
+data:k
+};
+
+hideContextMenu();
+
+renderTimeline();
+
+};
+
+
+/* COPY */
+
+document.getElementById(
+"copyKF"
+).onclick=()=>{
+
+if(!selectedKF)
+return;
+
+copiedKF={
+part:selectedKF.part,
+sourceTime:selectedKF.data.time,
+position:selectedKF.data.position.clone(),
+quaternion:selectedKF.data.quaternion.clone(),
+scale:selectedKF.data.scale.clone(),
+type:selectedKF.data.type
+};
+
+hideContextMenu();
+
+};
+
+
+/* TYPE */
+
+document.getElementById(
+"typeToggle"
+).onclick=()=>{
+
+const m=
+document.getElementById(
+"typeMenu"
+);
+
+m.style.display=
+m.style.display==="block"
+?"none"
+:"block";
+
+};
+
+
+document
+.querySelectorAll(".typeBtn")
+.forEach(btn=>{
+
+btn.onclick=()=>{
+
+if(!selectedKF)
+return;
+
+selectedKF.data.type=
+btn.dataset.type;
+
+hideContextMenu();
+
+renderTimeline();
+
+};
+
+});
+
+
+/* =========================================================
+   COPY / PASTE
+========================================================= */
+
+document.getElementById(
+"copyBtn"
+).onclick=()=>{
+
+if(!selectedKF)
+return;
+
+copiedKF={
+part:selectedKF.part,
+sourceTime:selectedKF.data.time,
+position:selectedKF.data.position.clone(),
+quaternion:selectedKF.data.quaternion.clone(),
+scale:selectedKF.data.scale.clone(),
+type:selectedKF.data.type
+};
+
+};
+
+
+document.getElementById(
+"pasteBtn"
+).onclick=()=>{
+
+if(!copiedKF)
+return;
+
+const name=
+selectedPart||
+copiedKF.part;
+
+const time=
+snapTime(currentTime);
+
+const arr=
+keyframes[name];
+
+const existing=
+arr.find(
+k=>Math.abs(k.time-time)<.0001
+);
+
+if(existing){
+
+existing.position.copy(
+copiedKF.position
+);
+
+existing.quaternion.copy(
+copiedKF.quaternion
+);
+
+existing.scale.copy(
+copiedKF.scale
+);
+
+existing.type=
+copiedKF.type;
+
+}else{
+
+arr.push({
+
+id:Math.random().toString(36).slice(2),
+
+time:time,
+
+position:copiedKF.position.clone(),
+
+quaternion:copiedKF.quaternion.clone(),
+
+scale:copiedKF.scale.clone(),
+
+type:copiedKF.type
+
+});
+
+arr.sort(
+(a,b)=>a.time-b.time
+);
+
+}
+
+renderTimeline();
+
+};
+
+
+/* =========================================================
+   PLAYBACK
+========================================================= */
+
+document.getElementById(
+"playBtn"
+).onclick=()=>{
+
+playing=!playing;
+
+document.getElementById(
+"playBtn"
+).textContent=
+playing?"⏸":"▶";
+
+};
+
+
+document.getElementById(
+"rewindBtn"
+).onclick=()=>{
+
+currentTime=0;
+
+applyAnimation(0);
+updatePlayhead();
+
+};
+
+
+document.getElementById(
+"prevBtn"
+).onclick=()=>{
+
+currentTime=
+snapTime(
+currentTime-1/fps
+);
+
+applyAnimation(currentTime);
+updatePlayhead();
+
+};
+
+
+document.getElementById(
+"nextBtn"
+).onclick=()=>{
+
+currentTime=
+snapTime(
+currentTime+1/fps
+);
+
+if(currentTime>duration)
+currentTime=duration;
+
+applyAnimation(currentTime);
+updatePlayhead();
+
+};
+
+
+document.getElementById(
+"loopBtn"
+).onclick=()=>{
+
+loop=!loop;
+
+document.getElementById(
+"loopBtn"
+).classList.toggle(
+"active",
+loop
+);
+
+};
+
+
+/* =========================================================
+   TIMELINE ZOOM
+========================================================= */
+
+document.getElementById(
+"zoomIn"
+).onclick=()=>{
+
+zoom=Math.min(
+3,
+zoom+.25
+);
+
+zoomLabel.textContent=
+Math.round(zoom*100)+"%";
+
+renderTimeline();
+
+};
+
+
+document.getElementById(
+"zoomOut"
+).onclick=()=>{
+
+zoom=Math.max(
+.25,
+zoom-.25
+);
+
+zoomLabel.textContent=
+Math.round(zoom*100)+"%";
+
+renderTimeline();
+
+};
+
+
+/* =========================================================
+   RESIZABLE TIMELINE
+========================================================= */
+
+function setupResize(){
+
+const handle=
+document.getElementById(
+"resizeHandle"
+);
+
+let resizing=false;
+let startY=0;
+let startH=0;
+
+handle.addEventListener(
+"pointerdown",
+e=>{
+
+resizing=true;
+
+startY=e.clientY;
+
+startH=
+document.getElementById(
+"timelinePanel"
+).offsetHeight;
+
+handle.setPointerCapture?.(
+e.pointerId
+);
+
+});
+
+handle.addEventListener(
+"pointermove",
+e=>{
+
+if(!resizing)
+return;
+
+const delta=
+startY-e.clientY;
+
+let h=
+startH+delta;
+
+h=Math.max(
+100,
+Math.min(
+innerHeight*.75,
+h
+)
+);
+
+document.getElementById(
+"timelinePanel"
+).style.height=
+h+"px";
+
+});
+
+handle.addEventListener(
+"pointerup",
+()=>{
+
+resizing=false;
+
+});
+
+}
+
+
+/* =========================================================
+   UI
+========================================================= */
+
+function setupUI(){
+
+document.getElementById(
+"cameraReset"
+).onclick=()=>{
+
+camera.position.set(
+7,5,9
+);
+
+orbit.target.set(
+0,2.3,0
+);
+
+orbit.update();
+
+};
+
+
+document.getElementById(
+"newBtn"
+).onclick=()=>{
+
+for(const name in keyframes)
+keyframes[name]=[];
+
+currentTime=0;
+
+buildRig();
+
+renderTimeline();
+
+};
+
+
+/* simple keyboard */
+
+window.addEventListener(
+"keydown",
+e=>{
+
+if(e.code==="Space"){
+
+e.preventDefault();
+
+playing=!playing;
+
+document.getElementById(
+"playBtn"
+).textContent=
+playing?"⏸":"▶";
+
+}
+
+if(e.key==="i"){
+
+addCurrentKeyframe();
+
+}
+
+});
+
+}
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+function resize(){
+
+camera.aspect=
+innerWidth/innerHeight;
+
+camera.updateProjectionMatrix();
+
+renderer.setSize(
+innerWidth,
+innerHeight
+);
+
+}
+
+
 /* =========================================================
    ANIMATION LOOP
 ========================================================= */
 
-function animate(now){
+function loopFrame(now){
 
 requestAnimationFrame(
-animate
+loopFrame
 );
 
+const dt=
+(now-lastFrame)/1000;
 
-orbit.update();
-
+lastFrame=now;
 
 if(playing){
 
-let dt=
-Math.min(
-.08,
-(now-lastTime)/1000
-);
-
-lastTime=now;
-
-
 currentTime+=dt;
 
-
-if(
-currentTime>=duration
-){
+if(currentTime>=duration){
 
 if(loop){
 
@@ -2685,21 +2346,23 @@ currentTime=duration;
 
 playing=false;
 
-document
-.getElementById("play")
-.textContent="▶";
+document.getElementById(
+"playBtn"
+).textContent="▶";
 
 }
 
 }
 
+applyAnimation(
+currentTime
+);
 
-evaluate();
-
-updateTimeline();
+updatePlayhead();
 
 }
 
+orbit.update();
 
 renderer.render(
 scene,
@@ -2713,17 +2376,14 @@ camera
    START
 ========================================================= */
 
-resize();
+window.onload=()=>{
 
-selectPart(
-"Torso"
-);
+init();
 
 renderTimeline();
 
-requestAnimationFrame(
-animate
-);
+};
+
 
 </script>
 
