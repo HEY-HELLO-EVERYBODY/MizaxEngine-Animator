@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>MizaxEngine Animator V1</title>
+<title>MizaxEngine Animator V1.5</title>
 
 <style>
 :root{
- --bg:#14171e;
- --panel:#1d212b;
- --panel2:#242a37;
- --panel3:#2d3445;
- --line:#313949;
- --text:#d3d8e4;
- --dim:#7f889c;
- --accent:#3e90ff;
+ --bg:#121214;
+ --panel:#1a1a1d;
+ --panel2:#222226;
+ --panel3:#2d2d32;
+ --line:#3a3a40;
+ --text:#e4e4e8;
+ --dim:#8d8d96;
+ --accent:#e5303a;
  --danger:#e5484d;
  --labw:140px;
 }
@@ -73,7 +73,7 @@ button:disabled{pointer-events:none}
  place-items:center;
  background:transparent;
  border:0;
- border-radius:6px;
+ 
  color:var(--text);
  cursor:pointer;
 }
@@ -87,7 +87,7 @@ button:disabled{pointer-events:none}
  padding:0 12px;
  background:var(--panel3);
  border:1px solid var(--line);
- border-radius:6px;
+ 
  color:var(--text);
  cursor:pointer;
  white-space:nowrap;
@@ -119,8 +119,8 @@ button:disabled{pointer-events:none}
 .chip{
  flex:none;
  padding:9px 15px;
- border-radius:999px;
- background:rgba(29,33,43,.78);
+ 
+ background:rgba(26,26,29,.78);
  border:1px solid var(--line);
  color:var(--text);
  backdrop-filter:blur(6px);
@@ -133,11 +133,11 @@ button:disabled{pointer-events:none}
  position:absolute;
  left:8px;bottom:8px;
  padding:6px 8px;
- background:rgba(20,23,30,.72);
+ background:rgba(18,18,20,.72);
  border:1px solid var(--line);
- border-radius:6px;
+ 
  font:11px/1.5 ui-monospace,Menlo,Consolas,monospace;
- color:#aab2c5;
+ color:#b8b8c2;
  pointer-events:none;
 }
 #info b{color:#fff;font-family:inherit}
@@ -149,7 +149,7 @@ button:disabled{pointer-events:none}
  padding:7px 12px;
  background:var(--panel3);
  border:1px solid var(--accent);
- border-radius:6px;
+ 
  font-size:12px;
  opacity:0;
  pointer-events:none;
@@ -163,10 +163,10 @@ button:disabled{pointer-events:none}
  position:fixed;
  top:calc(58px + env(safe-area-inset-top,0px));
  left:6px;
- min-width:190px;
+ min-width:250px;
  background:var(--panel2);
  border:1px solid var(--line);
- border-radius:8px;
+ 
  box-shadow:0 10px 30px rgba(0,0,0,.55);
  overflow:hidden;
  display:none;
@@ -193,7 +193,7 @@ button:disabled{pointer-events:none}
  flex-direction:column;
  background:var(--panel);
  border-top:1px solid var(--line);
- border-radius:12px 12px 0 0;
+ 
  box-shadow:0 -8px 24px rgba(0,0,0,.4);
  position:relative;
  z-index:10;
@@ -203,15 +203,16 @@ button:disabled{pointer-events:none}
 
 #tlHandle{
  flex:none;
- height:24px;
+ height:30px;
  display:grid;
  place-items:center;
  cursor:ns-resize;
  touch-action:none;
 }
-#tlHandle i{width:44px;height:4px;border-radius:2px;background:#59627a}
+#tlHandle i{width:56px;height:5px;background:#5a5a62}
 
 #tlHead{
+ touch-action:none;
  flex:none;
  height:46px;
  display:flex;
@@ -251,12 +252,16 @@ button:disabled{pointer-events:none}
  height:36px;
  background:var(--bg);
  border:1px solid var(--line);
- border-radius:5px;
+ 
  text-align:center;
  padding:0 4px;
  outline:none;
 }
 .num{width:54px}
+.seg{flex:none;display:flex;border:1px solid var(--line)}
+.seg button{width:34px;height:36px;border:0;border-right:1px solid var(--line);background:var(--panel3);color:var(--text);padding:0;font-weight:700}
+.seg button:last-child{border-right:0}
+.seg button.active{background:var(--accent);color:#fff}
 select.sel{width:auto;padding:0 6px}
 .num:focus,select.sel:focus{border-color:var(--accent)}
 #kfInfo{flex:none;color:var(--dim);font-size:11px;padding-left:6px;white-space:nowrap}
@@ -272,7 +277,7 @@ select.sel{width:auto;padding:0 6px}
 }
 #wrap{position:relative;min-height:100%}
 
-.row{display:flex;height:42px;border-bottom:1px solid #1b1f28}
+.row{display:flex;height:42px;border-bottom:1px solid #17171a}
 .lab{
  position:sticky;left:0;z-index:5;
  flex:none;
@@ -291,28 +296,28 @@ select.sel{width:auto;padding:0 6px}
  flex:none;
  width:34px;height:38px;
  display:grid;place-items:center;
- background:transparent;border:0;border-radius:5px;
+ background:transparent;border:0;
  color:var(--dim);cursor:pointer;padding:0;
 }
 .lab button:active{background:var(--panel3);color:#fff}
-.row.group .lab{background:#2a3144;font-weight:600}
-.row.sel .lab{background:#2d3a5a}
-.row.group.sel .lab{background:#35487a}
+.row.group .lab{background:#2a2a2f;font-weight:600}
+.row.sel .lab{background:#40252a}
+.row.group.sel .lab{background:#5a2a30}
 .row.muted .trk{opacity:.4}
 
 .trk{position:relative;flex:none;height:100%;background-repeat:repeat-x}
 .row.group .trk{background-color:rgba(255,255,255,.03)}
-.row.sel .trk{background-color:rgba(62,144,255,.07)}
+.row.sel .trk{background-color:rgba(229,48,58,.07)}
 
 .rulerRow{position:sticky;top:0;z-index:6;height:28px;background:var(--panel2)}
 .rulerRow .lab{z-index:7;background:var(--panel);color:var(--dim);font-size:11px;cursor:default}
 #rulerTrk{touch-action:none;cursor:ew-resize;background:var(--panel2);border-bottom:1px solid var(--line)}
-.tick{position:absolute;bottom:0;width:1px;height:6px;background:#4a5266}
-.tick.maj{height:13px;background:#8a93a8}
+.tick{position:absolute;bottom:0;width:1px;height:6px;background:#55555d}
+.tick.maj{height:13px;background:#9a9aa4}
 .tickLab{position:absolute;top:2px;font:10px ui-monospace,Menlo,monospace;color:var(--dim);margin-left:4px}
 .phHead{position:absolute;top:2px;width:14px;height:14px;margin-left:-7px;background:var(--accent);clip-path:polygon(0 0,100% 0,50% 100%);pointer-events:none;z-index:2}
 #ph{position:absolute;top:28px;bottom:0;width:2px;margin-left:-1px;background:var(--accent);z-index:4;pointer-events:none}
-#afterEnd{position:absolute;top:28px;bottom:0;right:0;background:rgba(0,0,0,.28);border-left:2px solid rgba(62,144,255,.55);pointer-events:none;z-index:1}
+#afterEnd{position:absolute;top:28px;bottom:0;right:0;background:rgba(0,0,0,.28);border-left:2px solid rgba(229,48,58,.55);pointer-events:none;z-index:1}
 
 .kf{
  position:absolute;top:0;
@@ -326,44 +331,54 @@ select.sel{width:auto;padding:0 6px}
 .kf::before{
  content:"";
  width:12px;height:12px;
- background:#dfe3ee;
- border:1px solid #11141a;
+ background:#e6e6ea;
+ border:1px solid #0d0d0f;
  transform:rotate(45deg);
 }
-.kf.smooth::before{border-radius:50%;transform:none;width:13px;height:13px}
+.kf.smooth::before{background:linear-gradient(135deg,#e6e6ea 50%,#8a8a94 50%)}
 .kf.step::before{transform:none;width:11px;height:11px}
-.kf.sel::before{background:var(--accent);box-shadow:0 0 0 3px rgba(62,144,255,.35)}
-.kfdot{position:absolute;top:50%;width:7px;height:7px;margin:-3px 0 0 -3px;background:#7a849c;transform:rotate(45deg);pointer-events:none}
+.kf.sel::before{background:var(--accent)!important;box-shadow:0 0 0 3px rgba(229,48,58,.35)}
+.kfdot{position:absolute;top:50%;width:7px;height:7px;margin:-3px 0 0 -3px;background:#8a8a94;transform:rotate(45deg);pointer-events:none}
 
 input.txt,input.num{user-select:text;-webkit-user-select:text}
-#exportModal{
+.modal{
  position:fixed;inset:0;z-index:100;
  display:none;align-items:center;justify-content:center;
  background:rgba(0,0,0,.62);
  padding:12px;
 }
-#exportModal.open{display:flex}
-#exportModal .card{
+.modal.open{display:flex}
+.modal .card{
  width:min(100%,400px);
  max-height:92dvh;
  overflow:auto;
  background:var(--panel2);
  border:1px solid var(--line);
- border-radius:12px;
+ 
  padding:14px 16px;
  box-shadow:0 20px 50px rgba(0,0,0,.6);
 }
-#exportModal h3{margin:0 0 6px;font-size:16px;font-weight:600}
+.modal h3{margin:0 0 6px;font-size:16px;font-weight:600}
 .fr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
 .fr .hint{color:var(--dim);font-size:11px;display:block;margin-top:2px}
 .fr input[type=checkbox]{width:20px;height:20px;accent-color:var(--accent)}
-.txt{width:170px;height:32px;background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:0 8px;outline:none}
+.txt{width:170px;height:32px;background:var(--bg);border:1px solid var(--line);padding:0 8px;outline:none}
 .axes{display:flex;gap:14px}
 .axes label{display:flex;align-items:center;gap:5px}
 .axes input{width:20px;height:20px;accent-color:var(--accent)}
 .note{color:var(--dim);font-size:11px;line-height:1.5;margin:10px 0 0}
 .btns{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
 .btns .tb{height:36px;padding:0 16px}
+
+.faces{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:6px 0}
+.faces button{height:46px;padding:0;background:var(--panel3);border:1px solid var(--line);color:var(--text);font-size:15px;font-weight:700;white-space:nowrap}
+.faces button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.swatches{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:10px 0}
+.swatches button{height:38px;padding:0;border:1px solid var(--line)}
+input[type=color]{width:64px;height:38px;padding:0;border:1px solid var(--line);background:var(--bg)}
+.col{display:block}
+.rowc{display:flex;gap:6px;align-items:center;margin-top:6px}
+.rowc .txt{flex:1;width:auto}
 </style>
 </head>
 
@@ -372,6 +387,8 @@ input.txt,input.num{user-select:text;-webkit-user-select:text}
 
  <div id="topbar">
   <button class="ib" id="btnMenu" data-ic="menu"></button>
+  <button class="tb" id="btnSet">Set</button>
+  <button class="tb" id="btnTroll">Troll</button>
   <button class="ib" id="btnUndo" data-ic="undo"></button>
   <button class="ib" id="btnRedo" data-ic="redo"></button>
   <span class="sep"></span>
@@ -392,13 +409,7 @@ input.txt,input.num{user-select:text;-webkit-user-select:text}
   <div id="tlHandle"><i></i></div>
   <div id="tlHead">
    <span>TIMELINE</span>
-   <div class="hd">
-    <button class="tb" id="hLoad">Load</button>
-    <button class="tb" id="hJson">JSON</button>
-    <button class="tb active" id="hRbx">RBXMX</button>
-    <button class="ib" id="hOpt" data-ic="gear"></button>
-    <button class="ib" id="tlToggle" data-ic="chev"></button>
-   </div>
+   <button class="ib" id="tlToggle" data-ic="chev"></button>
   </div>
 
   <div class="bar">
@@ -406,7 +417,7 @@ input.txt,input.num{user-select:text;-webkit-user-select:text}
    <button class="ib" id="bPrev" data-ic="left"></button>
    <button class="ib" id="bPlay" data-ic="play"></button>
    <button class="ib" id="bNext" data-ic="right"></button>
-   <button class="ib active" id="bLoop" data-ic="loop"></button>
+   <button class="tb active" id="bLoop">Loop: On</button>
    <div id="readout">0:00:00 / 60</div>
    <span class="sep"></span>
    <button class="ib" id="bZoomOut"><b style="font-size:20px">−</b></button>
@@ -423,14 +434,13 @@ input.txt,input.num{user-select:text;-webkit-user-select:text}
     <option value="smooth">Smooth</option>
     <option value="step">Step</option>
    </select>
+   <span class="lbl">Ease</span>
+   <div class="seg" id="easeSeg">
+    <button data-e="1">1</button><button data-e="2">2</button><button data-e="3">3</button><button data-e="4">4</button><button data-e="5">5</button>
+   </div>
    <button class="ib" id="bCopy" data-ic="copy"></button>
    <button class="ib" id="bPaste" data-ic="paste"></button>
    <button class="ib" id="bDel" data-ic="trash"></button>
-   <span class="sep"></span>
-   <span class="lbl">Length (s)</span>
-   <input class="num" id="dur" type="number" value="2" min="0.25" step="0.25">
-   <span class="lbl">FPS</span>
-   <input class="num" id="fps" type="number" value="30" min="1" max="120">
    <span id="kfInfo"></span>
   </div>
 
@@ -439,23 +449,53 @@ input.txt,input.num{user-select:text;-webkit-user-select:text}
 </div>
 
 <div id="menu">
- <button id="mNew">New animation</button>
- <button id="mSave">Save animation (.json)</button>
- <button id="mExport">Export Roblox (.rbxmx)</button>
- <button id="mLoad">Load animation (.json)</button>
+ <button id="mRbx">Export .rbxmx</button>
+ <button id="mJson">Save .json</button>
+ <button id="mLoad">Load .json</button>
  <button id="mConvert">Convert .json file to .rbxmx</button>
+ <button id="mOpt">Export options</button>
+ <button id="mHandle">Handle size: M</button>
  <button id="mReset">Reset selected part pose</button>
+ <button id="mNew">New animation</button>
 </div>
-<div id="exportModal"><div class="card">
- <h3>Export Roblox KeyframeSequence</h3>
- <div class="fr"><span>Name</span><input class="txt" id="xName" value="MizaxAnimation"></div>
- <div class="fr"><span>Priority</span>
-  <select class="sel" id="xPri">
+<div id="setModal" class="modal"><div class="card">
+ <h3>Animation settings</h3>
+ <div class="fr"><span>Name</span><input class="txt" id="sName" value="MizaxAnimation" maxlength="40"></div>
+ <div class="fr"><span>Loop<span class="hint">Animasi diulang terus</span></span><input type="checkbox" id="sLoop" checked></div>
+ <div class="fr"><span>Animation Priority<span class="hint">Action menimpa Idle dan Movement</span></span>
+  <select class="sel" id="sPri">
    <option value="1000">Core</option>
    <option value="0">Idle</option>
    <option value="1">Movement</option>
    <option value="2" selected>Action</option>
+   <option value="3">Action2</option>
+   <option value="4">Action3</option>
+   <option value="5">Action4</option>
   </select></div>
+ <div class="fr"><span>Length (s)</span><input class="num" id="dur" type="number" value="2" min="0.25" step="0.25"></div>
+ <div class="fr"><span>FPS</span><input class="num" id="fps" type="number" value="30" min="1" max="120"></div>
+ <div class="btns"><button class="tb active" id="setClose">Done</button></div>
+</div></div>
+
+<div id="trollModal" class="modal"><div class="card">
+ <h3>Troll: warna dan wajah rig</h3>
+ <span class="lbl">Wajah</span>
+ <div class="faces" id="faces"></div>
+ <div class="rowc"><input class="txt" id="faceTxt" maxlength="10" placeholder="wajah sendiri"><button class="tb" id="faceApply">Pakai</button><input type="color" id="faceCol" value="#111111"></div>
+ <div class="fr"><span>Bagian</span>
+  <select class="sel" id="colTarget">
+   <option value="all">Semua</option>
+   <option>Torso</option><option>Head</option><option>Left Arm</option><option>Right Arm</option><option>Left Leg</option><option>Right Leg</option>
+  </select></div>
+ <div class="fr"><span>Warna</span><input type="color" id="colPick" value="#e5303a"></div>
+ <div class="swatches" id="swatches"></div>
+ <div class="fr"><span>Acak warna</span><button class="tb" id="colRand">Random</button></div>
+ <div class="fr"><span>Pelangi</span><button class="tb" id="colRainbow">Off</button></div>
+ <div class="btns"><button class="tb" id="colReset">Reset</button><button class="tb active" id="trollClose">Done</button></div>
+</div></div>
+
+<div id="exportModal" class="modal"><div class="card">
+ <h3>Export Roblox KeyframeSequence</h3>
  <div class="fr"><span>Enum format<span class="hint">Default = sama kayak file contoh dari Studio</span></span>
   <select class="sel" id="xFmt">
    <option value="name" selected>Studio baru (teks)</option>
@@ -469,7 +509,7 @@ input.txt,input.num{user-select:text;-webkit-user-select:text}
   </div></div>
  <div class="fr"><span>R6 joint axis fix<span class="hint">Sesuaikan sumbu rotasi ke Motor6D R6</span></span><input type="checkbox" id="xR6" checked></div>
  <div class="fr"><span>Position scale<span class="hint">Pengali jarak (stud)</span></span><input class="num" id="xScale" type="number" value="1" step="0.1"></div>
- <div class="fr"><span>Bake every N frames<span class="hint">0 = hanya di keyframe. Isi 2 sampai 4 kalau gerakannya beda</span></span><input class="num" id="xBake" type="number" value="0" min="0" step="1"></div>
+ <div class="fr"><span>Bake every N frames<span class="hint">0 = hanya di keyframe. Segmen Smooth/Ease sudah otomatis di-bake tiap 2 frame</span></span><input class="num" id="xBake" type="number" value="0" min="0" step="1"></div>
  <p class="note">Di Studio: klik kanan Explorer, pilih Insert from File, lalu pilih file .rbxmx. Pose yang dipakai: HumanoidRootPart, Torso, Head, Left Arm, Right Arm, Left Leg, Right Leg.</p>
  <div class="btns"><button class="tb" id="xCancel">Cancel</button><button class="tb active" id="xGo">Download .rbxmx</button></div>
 </div></div>
@@ -493,15 +533,22 @@ const LABEL_W = 140;
 const $ = id => document.getElementById(id);
 
 let scene, camera, renderer, orbit, tc;
-const meshes = {}, pivots = {}, rest = {};
+const meshes = {}, pivots = {}, rest = {}, mats = {};
 
-let anim = { duration:2, fps:30, loop:true, tracks:{} };
+let anim = { name:"MizaxAnimation", priority:"2", duration:2, fps:30, loop:true, tracks:{} };
 let time = 0, playing = false, speed = 1, zoom = 140;
 let selectedBone = null, selKF = null, clipboard = null;
-let autoKey = true, defaultInterp = "linear", dragging = false;
+let autoKey = true, defaultInterp = "smooth", dragging = false;
 let collapsed = new Set();
 let hist = [], hi = -1;
 let fileMode = "load";
+const HANDLE_SIZES = [1.4, 2.0, 2.7, 3.5], HANDLE_NAMES = ["S","M","L","XL"];
+let handleIdx = 1;
+let defaultEase = 3;
+const PARTS_COLOR = ["Torso","Head","Left Arm","Right Arm","Left Leg","Right Leg"];
+const DEFAULT_LOOK = {face:">v<", faceColor:"#111111", colors:{"Torso":"#00a2ff","Head":"#ffffff","Left Arm":"#cccccc","Right Arm":"#cccccc","Left Leg":"#cd2027","Right Leg":"#cd2027"}};
+let look = JSON.parse(JSON.stringify(DEFAULT_LOOK));
+let rainbow = false, faceCanvas = null, faceTex = null;
 
 let trkMap = {}, grpTrk = {}, rulerTrk, phEl, phHead, shadeEl;
 
@@ -590,20 +637,26 @@ function roundedBox(w, h, d, r){
  return g;
 }
 
-function faceTexture(){
- const c = document.createElement("canvas");
- c.width = 512; c.height = 512;
- const ctx = c.getContext("2d");
+function drawFace(){
+ if(!faceCanvas) return;
+ const ctx = faceCanvas.getContext("2d");
  ctx.clearRect(0,0,512,512);
- ctx.fillStyle = "#111";
+ ctx.fillStyle = look.faceColor;
  ctx.textAlign = "center";
  ctx.textBaseline = "middle";
- ctx.font = "bold 150px Arial";
- ctx.fillText(">v<", 256, 330);
- const t = new THREE.CanvasTexture(c);
- t.encoding = THREE.sRGBEncoding;
- t.needsUpdate = true;
- return t;
+ let size = 150;
+ do { ctx.font = "bold " + size + "px Arial, sans-serif"; size -= 6; }
+ while(ctx.measureText(look.face).width > 460 && size > 40);
+ ctx.fillText(look.face, 256, 330);
+ if(faceTex) faceTex.needsUpdate = true;
+}
+function faceTexture(){
+ faceCanvas = document.createElement("canvas");
+ faceCanvas.width = 512; faceCanvas.height = 512;
+ faceTex = new THREE.CanvasTexture(faceCanvas);
+ faceTex.encoding = THREE.sRGBEncoding;
+ drawFace();
+ return faceTex;
 }
 
 function buildRig(){
@@ -611,13 +664,17 @@ function buildRig(){
  root.name = "R6";
  scene.add(root);
 
- const bodyMat  = new THREE.MeshPhongMaterial({color:0xcccccc, shininess:20});
- const torsoMat = new THREE.MeshPhongMaterial({color:0x00a2ff, shininess:20});
- const legMat   = new THREE.MeshPhongMaterial({color:0xcd2027, shininess:20});
- const headMat  = new THREE.MeshPhongMaterial({color:0xffffff, shininess:25});
- const faceMat  = new THREE.MeshBasicMaterial({map:faceTexture(), transparent:true, alphaTest:0.01, depthWrite:false, side:THREE.DoubleSide});
+ const mk = (hex, sh) => new THREE.MeshPhongMaterial({color:new THREE.Color(hex), shininess:sh});
+ const LC = look.colors;
+ mats["Torso"] = mk(LC["Torso"], 20);
+ mats["Head"] = mk(LC["Head"], 25);
+ mats["Left Arm"] = mk(LC["Left Arm"], 20);
+ mats["Right Arm"] = mk(LC["Right Arm"], 20);
+ mats["Left Leg"] = mk(LC["Left Leg"], 20);
+ mats["Right Leg"] = mk(LC["Right Leg"], 20);
+ const faceMat = new THREE.MeshBasicMaterial({map:faceTexture(), transparent:true, alphaTest:0.01, depthWrite:false, side:THREE.DoubleSide});
 
- const torso = new THREE.Mesh(roundedBox(2,2,1,0.16), torsoMat);
+ const torso = new THREE.Mesh(roundedBox(2,2,1,0.16), mats["Torso"]);
  torso.name = "Torso";
  torso.castShadow = torso.receiveShadow = true;
  root.add(torso);
@@ -628,7 +685,7 @@ function buildRig(){
  headPivot.position.set(0,1,0);
  torso.add(headPivot);
 
- const head = new THREE.Mesh(new THREE.BoxGeometry(1.2,1.2,1.2), headMat);
+ const head = new THREE.Mesh(new THREE.BoxGeometry(1.2,1.2,1.2), mats["Head"]);
  head.name = "Head";
  head.position.set(0,0.6,0);
  head.castShadow = head.receiveShadow = true;
@@ -639,22 +696,23 @@ function buildRig(){
  head.add(face);
  meshes.Head = head; pivots.Head = headPivot;
 
- const limb = (name, x, y, mat, pivotName) => {
+ /* R6-accurate joints: pivot on the joint, mesh offset from the pivot */
+ const limb = (name, px, py, mx, my, pivotName) => {
   const p = new THREE.Group();
   p.name = pivotName;
-  p.position.set(x,y,0);
+  p.position.set(px, py, 0);
   torso.add(p);
-  const m = new THREE.Mesh(roundedBox(1,2,1,0.16), mat);
+  const m = new THREE.Mesh(roundedBox(1,2,1,0.16), mats[name]);
   m.name = name;
-  m.position.set(0,-1,0);
+  m.position.set(mx, my, 0);
   m.castShadow = m.receiveShadow = true;
   p.add(m);
   meshes[name] = m; pivots[name] = p;
  };
- limb("Left Arm", -1.5, 1, bodyMat, "LeftArmPivot");
- limb("Right Arm", 1.5, 1, bodyMat, "RightArmPivot");
- limb("Left Leg", -0.5, -1, legMat, "LeftLegPivot");
- limb("Right Leg", 0.5, -1, legMat, "RightLegPivot");
+ limb("Left Arm",  -1,  0.5,  -0.5, -0.5, "LeftArmPivot");
+ limb("Right Arm",  1,  0.5,   0.5, -0.5, "RightArmPivot");
+ limb("Left Leg",  -1, -1,     0.5, -1,   "LeftLegPivot");
+ limb("Right Leg",  1, -1,    -0.5, -1,   "RightLegPivot");
 
  BONES.forEach(b => {
   const p = pivots[b];
@@ -670,7 +728,7 @@ function initScene(){
  const vp = $("viewport");
 
  scene = new THREE.Scene();
- scene.background = new THREE.Color(0x14171e);
+ scene.background = new THREE.Color(0x121214);
 
  camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
  camera.position.set(7, 5, 9);
@@ -682,6 +740,12 @@ function initScene(){
  renderer.outputEncoding = THREE.sRGBEncoding;
  vp.insertBefore(renderer.domElement, vp.firstChild);
 
+ /* TransformControls first, so its pointerdown runs before OrbitControls and can lock it */
+ tc = new THREE.TransformControls(camera, renderer.domElement);
+ tc.setSize(HANDLE_SIZES[handleIdx]);
+ tc.setSpace("local");
+ scene.add(tc);
+
  orbit = new THREE.OrbitControls(camera, renderer.domElement);
  orbit.enableDamping = true;
  orbit.dampingFactor = 0.07;
@@ -689,9 +753,6 @@ function initScene(){
  orbit.minDistance = 3;
  orbit.maxDistance = 22;
 
- tc = new THREE.TransformControls(camera, renderer.domElement);
- tc.setSize(1.05);
- scene.add(tc);
 
  scene.add(new THREE.AmbientLight(0xffffff, 0.72));
  const dl = new THREE.DirectionalLight(0xffffff, 0.85);
@@ -699,7 +760,7 @@ function initScene(){
  dl.castShadow = true;
  scene.add(dl);
 
- const grid = new THREE.GridHelper(20, 20, 0x3a4152, 0x23283a);
+ const grid = new THREE.GridHelper(20, 20, 0x7a2a30, 0x2a2a2e);
  grid.position.y = -2;
  scene.add(grid);
 
@@ -713,6 +774,11 @@ function initScene(){
   else commit();
  });
  tc.addEventListener("objectChange", onGizmoChange);
+
+ /* never stay stuck if the browser cancels a touch mid-drag */
+ const cancelDrag = () => { if(tc.dragging) tc.pointerUp({button:0}); orbit.enabled = true; };
+ renderer.domElement.addEventListener("pointercancel", cancelDrag);
+ renderer.domElement.addEventListener("lostpointercapture", () => { if(tc.dragging) cancelDrag(); });
 
  /* tap to select part */
  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
@@ -742,6 +808,7 @@ function resizeViewport(){
  renderer.setSize(w, h);
  camera.aspect = w / h;
  camera.updateProjectionMatrix();
+ renderer.render(scene, camera);
 }
 
 /* =========================================================
@@ -766,6 +833,12 @@ function resetChannel(b, ch){
 /* =========================================================
    INTERPOLATION
 ========================================================= */
+const EASE_P = [0, 1.6, 2.0, 2.6, 3.2, 4.0];
+function easeT(k, level){
+ const p = EASE_P[Math.max(1, Math.min(5, Math.round(level)))] || 2.6;
+ const a = Math.pow(k, p), b = Math.pow(1 - k, p);
+ return a / (a + b);
+}
 function catmull(p0, p1, p2, p3, t){
  const t2 = t*t, t3 = t2*t;
  return 0.5 * ((2*p1) + (-p0 + p2)*t + (2*p0 - 5*p1 + 4*p2 - p3)*t2 + (-p0 + 3*p1 - 3*p2 + p3)*t3);
@@ -780,11 +853,8 @@ function sample(keys, t){
  const a = keys[i], b = keys[i+1];
  const k = (t - a.t) / (b.t - a.t);
  if(a.interp === "step") return a.v.slice();
- if(a.interp === "smooth"){
-  const p0 = (keys[i-1] || a).v, p3 = (keys[i+2] || b).v;
-  return a.v.map((_, j) => catmull(p0[j], a.v[j], b.v[j], p3[j], k));
- }
- return a.v.map((x, j) => x + (b.v[j] - x) * k);
+ const kk = a.interp === "smooth" ? easeT(k, a.ease || 3) : k;
+ return a.v.map((x, j) => x + (b.v[j] - x) * kk);
 }
 
 function applyPose(){
@@ -851,7 +921,7 @@ function onGizmoChange(){
   k.v = v;
   if(!selKF || selKF.key !== k){ selKF = {bone:selectedBone, ch, key:k}; updateSel(); }
  } else {
-  k = {t, v, interp:defaultInterp};
+  k = {t, v, interp:defaultInterp, ease:defaultEase};
   tr.keys.push(k);
   tr.keys.sort((a, b) => a.t - b.t);
   selKF = {bone:selectedBone, ch, key:k};
@@ -869,7 +939,7 @@ function addKey(b, ch){
  let k = tr.keys.find(x => sameT(x.t, t));
  if(k) k.v = v;
  else {
-  k = {t, v, interp:defaultInterp};
+  k = {t, v, interp:defaultInterp, ease:defaultEase};
   tr.keys.push(k);
   tr.keys.sort((a, c) => a.t - c.t);
  }
@@ -890,7 +960,7 @@ function deleteKey(){
 
 function copyKey(){
  if(!selKF){ toast("Select a keyframe first"); return; }
- clipboard = {bone:selKF.bone, ch:selKF.ch, v:selKF.key.v.slice(), interp:selKF.key.interp};
+ clipboard = {bone:selKF.bone, ch:selKF.ch, v:selKF.key.v.slice(), interp:selKF.key.interp, ease:selKF.key.ease || 3};
  updateSel();
  toast("Copied");
 }
@@ -901,7 +971,7 @@ function pasteKey(){
  const tr = anim.tracks[b][clipboard.ch];
  const t = snapT(time);
  tr.keys = tr.keys.filter(k => !sameT(k.t, t));
- const k = {t, v:clipboard.v.slice(), interp:clipboard.interp};
+ const k = {t, v:clipboard.v.slice(), interp:clipboard.interp, ease:clipboard.ease || 3};
  tr.keys.push(k);
  tr.keys.sort((a, c) => a.t - c.t);
  tr.muted = false;
@@ -963,7 +1033,7 @@ function buildTimeline(){
    if(collapsed.has(b)) collapsed.delete(b); else collapsed.add(b);
    buildTimeline();
   };
-  const fo = el("span"); fo.innerHTML = ic("folder", 16); fo.style.color = "#6aa8ff"; fo.style.display = "flex";
+  const fo = el("span"); fo.innerHTML = ic("folder", 16); fo.style.color = "#ff6b72"; fo.style.display = "flex";
   const nm = el("span", "nm"); nm.textContent = b;
   gl.append(chev, fo, nm);
   gl.onclick = () => selectBone(b);
@@ -1121,6 +1191,8 @@ function updateSel(){
  $("bDel").disabled = !has;
  $("bPaste").disabled = !clipboard;
  $("interpSel").value = has ? selKF.key.interp : defaultInterp;
+ const ez = has ? (selKF.key.ease || 3) : defaultEase;
+ document.querySelectorAll("#easeSeg button").forEach(b => b.classList.toggle("active", +b.dataset.e === ez));
  if(has){
   const lab = CHANNELS.find(c => c.id === selKF.ch).label;
   $("kfInfo").textContent = selKF.bone + " · " + lab + " @ " + selKF.key.t.toFixed(2) + "s";
@@ -1197,6 +1269,10 @@ function frame(now){
   applyPose();
   updatePlayhead(true);
  }
+ if(rainbow){
+  const h = (now / 5000) % 1;
+  PARTS_COLOR.forEach((n, i) => mats[n].color.setHSL((h + i / 6) % 1, 0.85, 0.55));
+ }
  orbit.update();
  renderer.render(scene, camera);
 }
@@ -1204,7 +1280,7 @@ function frame(now){
 /* =========================================================
    HISTORY / FILE
 ========================================================= */
-const serialize = () => JSON.stringify({d:anim.duration, f:anim.fps, l:anim.loop, t:anim.tracks});
+const serialize = () => JSON.stringify({d:anim.duration, f:anim.fps, l:anim.loop, n:anim.name, p:anim.priority, t:anim.tracks});
 
 function commit(){
  const s = serialize();
@@ -1222,6 +1298,7 @@ function updateHist(){
 function restore(s){
  const o = JSON.parse(s);
  anim.duration = o.d; anim.fps = o.f; anim.loop = o.l; anim.tracks = o.t;
+ anim.name = o.n || anim.name; anim.priority = o.p || "2";
  selKF = null;
  syncInputs();
  buildTimeline();
@@ -1233,20 +1310,22 @@ function redo(){ if(hi < hist.length - 1){ hi++; restore(hist[hi]); updateHist()
 function syncInputs(){
  $("dur").value = anim.duration;
  $("fps").value = anim.fps;
- $("bLoop").classList.toggle("active", anim.loop);
+ $("sName").value = anim.name;
+ $("sPri").value = anim.priority;
+ updateLoopBtn();
 }
 
 function newAnim(){
  setPlaying(false);
- anim = {duration:2, fps:30, loop:true, tracks:freshTracks()};
+ anim = {name:"MizaxAnimation", priority:"2", duration:2, fps:30, loop:true, tracks:freshTracks()};
  time = 0; selKF = null;
  syncInputs(); buildTimeline(); applyPose();
  hist = [serialize()]; hi = 0; updateHist();
 }
 
 function saveAnim(){
- const nm = ($("xName").value.trim() || "MizaxAnimation");
- const data = {format:"mizax-anim", version:1, name:nm, duration:anim.duration, fps:anim.fps, loop:anim.loop, tracks:anim.tracks};
+ const nm = (anim.name.trim() || "MizaxAnimation");
+ const data = {format:"mizax-anim", version:1, name:nm, priority:anim.priority, look:look, duration:anim.duration, fps:anim.fps, loop:anim.loop, tracks:anim.tracks};
  const blob = new Blob([JSON.stringify(data, null, 1)], {type:"application/json"});
  const a = document.createElement("a");
  a.href = URL.createObjectURL(blob);
@@ -1267,17 +1346,22 @@ function loadAnim(text){
     tracks[b][c.id].muted = !!src.muted;
     tracks[b][c.id].keys = src.keys
      .filter(k => typeof k.t === "number" && Array.isArray(k.v) && k.v.length === 3)
-     .map(k => ({t:k.t, v:k.v.map(Number), interp:["linear","smooth","step"].includes(k.interp) ? k.interp : "linear"}))
+     .map(k => ({t:k.t, v:k.v.map(Number), interp:["linear","smooth","step"].includes(k.interp) ? k.interp : "linear", ease:Math.max(1, Math.min(5, Math.round(+k.ease || 3)))}))
      .sort((a, b) => a.t - b.t);
    }
   }));
   setPlaying(false);
-  anim = {duration:Math.max(0.25, +o.duration || 2), fps:Math.max(1, +o.fps || 30), loop:o.loop !== false, tracks};
+  anim = {name:String(o.name || "MizaxAnimation").slice(0,40), priority:["1000","0","1","2","3","4","5"].includes(String(o.priority)) ? String(o.priority) : "2", duration:Math.max(0.25, +o.duration || 2), fps:Math.max(1, +o.fps || 30), loop:o.loop !== false, tracks};
   time = 0; selKF = null;
   syncInputs(); buildTimeline(); applyPose();
   hist = [serialize()]; hi = 0; updateHist();
   toast("Loaded");
-  if(o.name) $("xName").value = o.name;
+  if(o.look && o.look.colors){
+   const hx = (v, d) => (/^#[0-9a-f]{6}$/i.test(v) ? v : d);
+   look = {face:String(o.look.face || ">v<").slice(0,12), faceColor:hx(o.look.faceColor, "#111111"), colors:{}};
+   PARTS_COLOR.forEach(n => look.colors[n] = hx(o.look.colors[n], DEFAULT_LOOK.colors[n]));
+   applyLook();
+  }
   return true;
  }catch(e){
   toast("File is not a Mizax animation");
@@ -1329,9 +1413,8 @@ function easingFor(b, t){
   });
  });
  const i = best ? best.interp : "linear";
- if(i === "step")   return {style:1, dir:0};
- if(i === "smooth") return {style:3, dir:2};
- return {style:0, dir:0};
+ if(i === "step")   return {style:1, dir:2};
+ return {style:0, dir:2};
 }
 
 function exportTimes(o){
@@ -1339,6 +1422,13 @@ function exportTimes(o){
  BONES.forEach(b => CHANNELS.forEach(c => anim.tracks[b][c.id].keys.forEach(k => {
   if(k.t <= anim.duration + 1e-6) all.push(k.t);
  })));
+ BONES.forEach(b => CHANNELS.forEach(c => {
+  const ks = anim.tracks[b][c.id].keys, step = 2 / anim.fps;
+  for(let i = 0; i < ks.length - 1; i++){
+   if(ks[i].interp !== "smooth") continue;
+   for(let t = ks[i].t + step; t < ks[i+1].t - 1e-4 && t <= anim.duration + 1e-6; t += step) all.push(t);
+  }
+ }));
  if(o.bake > 0){
   const step = o.bake / anim.fps;
   for(let t = 0; t <= anim.duration + 1e-6; t += step) all.push(Math.min(t, anim.duration));
@@ -1409,8 +1499,8 @@ function closeExport(){ $("exportModal").classList.remove("open"); }
 
 function doExport(){
  const o = {
-  name: ($("xName").value.trim() || "MizaxAnimation"),
-  priority: $("xPri").value,
+  name: (anim.name.trim() || "MizaxAnimation"),
+  priority: anim.priority,
   fmt: $("xFmt").value,
   fx: $("xFx").checked, fy: $("xFy").checked, fz: $("xFz").checked,
   r6: $("xR6").checked,
@@ -1418,7 +1508,7 @@ function doExport(){
   bake: Math.max(0, Math.round(+$("xBake").value || 0))
  };
  const xml = buildRbxmx(o);
- const blob = new Blob([xml], {type:"text/xml"});
+ const blob = new Blob([xml], {type:"application/octet-stream"});  /* octet-stream: Android ga nambahin .xml di belakang nama file */
  const a = document.createElement("a");
  a.href = URL.createObjectURL(blob);
  a.download = o.name.replace(/[^\w\-]+/g, "_") + ".rbxmx";
@@ -1428,6 +1518,74 @@ function doExport(){
  toast("Exported " + a.download);
 }
 
+const FACES = [">v<", "•_•", "x∆x", "^v^", "° 0 °"];
+const SWATCHES = ["#e5303a","#ff8a00","#ffd400","#2ecc40","#00c2ff","#2b6bff","#b04bff","#ff4fa3","#ffffff","#111111","#8b5a2b","#9a9aa4"];
+function refreshLookUI(){
+ document.querySelectorAll("#faces button").forEach(b => b.classList.toggle("active", b.dataset.f === look.face));
+ $("faceCol").value = look.faceColor;
+ const t = $("colTarget").value;
+ $("colPick").value = t === "all" ? look.colors["Torso"] : look.colors[t];
+ $("colRainbow").textContent = rainbow ? "On" : "Off";
+ $("colRainbow").classList.toggle("active", rainbow);
+}
+function applyLook(){
+ PARTS_COLOR.forEach(n => { if(mats[n]) mats[n].color.set(look.colors[n]); });
+ drawFace();
+ refreshLookUI();
+}
+function setColor(hex){
+ rainbow = false;
+ const t = $("colTarget").value;
+ (t === "all" ? PARTS_COLOR : [t]).forEach(n => look.colors[n] = hex);
+ applyLook();
+}
+function initLookUI(){
+ FACES.forEach(f => {
+  const b = document.createElement("button");
+  b.dataset.f = f; b.textContent = f;
+  b.onclick = () => { look.face = f; drawFace(); refreshLookUI(); };
+  $("faces").appendChild(b);
+ });
+ $("faceApply").onclick = () => {
+  const v = $("faceTxt").value.trim();
+  if(!v){ toast("Tulis wajahnya dulu"); return; }
+  look.face = v; drawFace(); refreshLookUI();
+ };
+ $("faceCol").oninput = e => { look.faceColor = e.target.value; drawFace(); };
+ SWATCHES.forEach(c => {
+  const b = document.createElement("button");
+  b.style.background = c;
+  b.onclick = () => setColor(c);
+  $("swatches").appendChild(b);
+ });
+ $("colTarget").onchange = refreshLookUI;
+ $("colPick").oninput = e => setColor(e.target.value);
+ $("colRand").onclick = () => {
+  rainbow = false;
+  PARTS_COLOR.forEach(n => look.colors[n] = "#" + new THREE.Color().setHSL(Math.random(), 0.75, 0.55).getHexString());
+  applyLook();
+ };
+ $("colRainbow").onclick = () => { rainbow = !rainbow; if(!rainbow) applyLook(); else refreshLookUI(); };
+ $("colReset").onclick = () => { rainbow = false; look = JSON.parse(JSON.stringify(DEFAULT_LOOK)); applyLook(); };
+ $("btnTroll").onclick = () => { refreshLookUI(); $("trollModal").classList.add("open"); };
+ $("trollClose").onclick = () => $("trollModal").classList.remove("open");
+ refreshLookUI();
+}
+function initSetUI(){
+ $("btnSet").onclick = () => { syncInputs(); $("setModal").classList.add("open"); };
+ $("setClose").onclick = () => $("setModal").classList.remove("open");
+ $("sName").oninput = e => { anim.name = e.target.value; };
+ $("sName").onchange = () => commit();
+ $("sLoop").onchange = e => { anim.loop = e.target.checked; updateLoopBtn(); commit(); };
+ $("sPri").onchange = e => { anim.priority = e.target.value; commit(); toast("Priority: " + e.target.selectedOptions[0].textContent); };
+ document.querySelectorAll(".modal").forEach(m => m.addEventListener("pointerdown", e => { if(e.target === m) m.classList.remove("open"); }));
+}
+function updateSpaceBtn(){ $("btnSpace").textContent = tc.space === "local" ? "Local" : "World"; }
+function updateLoopBtn(){
+ $("sLoop").checked = anim.loop;
+ $("bLoop").classList.toggle("active", anim.loop);
+ $("bLoop").textContent = "Loop: " + (anim.loop ? "On" : "Off");
+}
 function stepFrame(d){ setPlaying(false); setTime(snapT(time + d / anim.fps)); }
 function holdRepeat(btn, d){
  let to = null, iv = null;
@@ -1442,6 +1600,8 @@ function holdRepeat(btn, d){
 }
 
 function setupUI(){
+ initLookUI();
+ initSetUI();
  /* tiny haptic tick on every button press */
  document.addEventListener("pointerdown", e => {
   if(e.target.closest && e.target.closest("button") && navigator.vibrate) navigator.vibrate(6);
@@ -1449,10 +1609,11 @@ function setupUI(){
 
  document.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => setMode(b.dataset.mode));
 
+ updateSpaceBtn();
  $("btnSpace").onclick = () => {
-  const local = tc.space === "local";
-  tc.setSpace(local ? "world" : "local");
-  $("btnSpace").textContent = local ? "World" : "Local";
+  tc.setSpace(tc.space === "local" ? "world" : "local");
+  updateSpaceBtn();
+  toast(tc.space === "local" ? "Local: handle ikut arah part" : "World: handle lurus sumbu dunia");
  };
  $("btnAuto").onclick = () => {
   autoKey = !autoKey;
@@ -1467,17 +1628,22 @@ function setupUI(){
  $("btnMenu").onclick = e => { e.stopPropagation(); menu.style.display = menu.style.display === "block" ? "none" : "block"; };
  document.addEventListener("pointerdown", e => { if(!e.target.closest("#menu,#btnMenu")) menu.style.display = "none"; });
  $("mNew").onclick = () => { menu.style.display = "none"; if(confirm("Start a new animation? Unsaved keyframes will be lost.")) newAnim(); };
- $("mSave").onclick = () => { menu.style.display = "none"; saveAnim(); };
- $("mExport").onclick = () => { menu.style.display = "none"; openExport(); };
+ $("mJson").onclick = () => { menu.style.display = "none"; saveAnim(); };
+ $("mRbx").onclick = () => { menu.style.display = "none"; doExport(); };
+ $("mOpt").onclick = () => { menu.style.display = "none"; openExport(); };
+ $("mHandle").onclick = () => {
+  menu.style.display = "none";
+  handleIdx = (handleIdx + 1) % HANDLE_SIZES.length;
+  tc.setSize(HANDLE_SIZES[handleIdx]);
+  $("mHandle").textContent = "Handle size: " + HANDLE_NAMES[handleIdx];
+  toast("Handle size " + HANDLE_NAMES[handleIdx]);
+ };
  $("xCancel").onclick = closeExport;
  $("xGo").onclick = doExport;
  $("exportModal").addEventListener("pointerdown", e => { if(e.target.id === "exportModal") closeExport(); });
  $("mLoad").onclick = () => { menu.style.display = "none"; fileMode = "load"; $("fileIn").click(); };
  $("mConvert").onclick = () => { menu.style.display = "none"; fileMode = "convert"; $("fileIn").click(); };
- $("hLoad").onclick = () => { fileMode = "load"; $("fileIn").click(); };
- $("hJson").onclick = saveAnim;
- $("hRbx").onclick = doExport;
- $("hOpt").onclick = openExport;
+
  $("mReset").onclick = () => {
   menu.style.display = "none";
   if(!selectedBone) return;
@@ -1498,7 +1664,7 @@ function setupUI(){
  $("bRewind").onclick = () => { setPlaying(false); setTime(0); $("tlScroll").scrollLeft = 0; };
  holdRepeat($("bPrev"), -1);
  holdRepeat($("bNext"), 1);
- $("bLoop").onclick = () => { anim.loop = !anim.loop; $("bLoop").classList.toggle("active", anim.loop); commit(); };
+ $("bLoop").onclick = () => { anim.loop = !anim.loop; updateLoopBtn(); commit(); toast("Loop " + (anim.loop ? "on" : "off")); };
  $("bZoomIn").onclick = () => setZoom(zoom * 1.3);
  $("bZoomOut").onclick = () => setZoom(zoom / 1.3);
  $("spd").onchange = e => { speed = Math.max(0.1, Math.min(4, (+e.target.value || 100) / 100)); };
@@ -1518,6 +1684,19 @@ function setupUI(){
   } else defaultInterp = e.target.value;
  };
 
+ document.querySelectorAll("#easeSeg button").forEach(b => b.onclick = () => {
+  const n = +b.dataset.e;
+  if(selKF){
+   selKF.key.ease = n;
+   selKF.key.interp = "smooth";
+   applyPose(); renderKeys(); updateSel(); commit();
+   toast("Ease " + n);
+  } else {
+   defaultEase = n; defaultInterp = "smooth";
+   updateSel();
+   toast("Ease " + n + " untuk keyframe baru");
+  }
+ });
  $("dur").onchange = e => {
   anim.duration = Math.max(0.25, +e.target.value || 2);
   e.target.value = anim.duration;
@@ -1531,21 +1710,45 @@ function setupUI(){
  };
 
  /* timeline panel: collapse + resize */
- $("tlToggle").onclick = () => $("timeline").classList.toggle("collapsed");
- const tl = $("timeline"), handle = $("tlHandle");
- let rs = null;
- handle.addEventListener("pointerdown", e => {
-  rs = {y:e.clientY, h:tl.offsetHeight};
-  handle.setPointerCapture(e.pointerId);
-  tl.classList.remove("collapsed");
+ const tl = $("timeline");
+ $("tlToggle").onclick = () => tl.classList.toggle("collapsed");
+ let rs = null, pendH = null, raf = 0;
+ const maxTlH = () => Math.max(170, $("app").clientHeight - 54 - 130);
+ const flush = () => {
+  raf = 0;
+  if(pendH == null) return;
+  tl.style.height = pendH + "px";
+  pendH = null;
+  resizeViewport();
+ };
+ const bindDrag = el => {
+  el.addEventListener("pointerdown", e => {
+   if(e.target.closest("button")) return;
+   e.preventDefault();
+   if(tl.classList.contains("collapsed")){
+    tl.classList.remove("collapsed");
+    tl.style.height = Math.min(310, maxTlH()) + "px";
+    resizeViewport();
+   }
+   rs = {y:e.clientY, h:tl.getBoundingClientRect().height, id:e.pointerId};
+   el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener("pointermove", e => {
+   if(!rs || e.pointerId !== rs.id) return;
+   pendH = Math.max(150, Math.min(maxTlH(), rs.h + (rs.y - e.clientY)));
+   if(!raf) raf = requestAnimationFrame(flush);
+  });
+  const end = e => { if(rs && e.pointerId === rs.id) rs = null; };
+  el.addEventListener("pointerup", end);
+  el.addEventListener("pointercancel", end);
+  el.addEventListener("lostpointercapture", end);
+ };
+ bindDrag($("tlHandle"));
+ bindDrag($("tlHead"));
+ addEventListener("resize", () => {
+  const h = tl.getBoundingClientRect().height;
+  if(!tl.classList.contains("collapsed") && h > maxTlH()) tl.style.height = maxTlH() + "px";
  });
- handle.addEventListener("pointermove", e => {
-  if(!rs) return;
-  const h = rs.h + (rs.y - e.clientY);
-  tl.style.height = Math.max(150, Math.min(innerHeight * 0.8, h)) + "px";
- });
- handle.addEventListener("pointerup", () => rs = null);
- handle.addEventListener("pointercancel", () => rs = null);
 
  /* pinch zoom on timeline */
  const sc = $("tlScroll");
