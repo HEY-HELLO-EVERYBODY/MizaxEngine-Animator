@@ -2,571 +2,589 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-<title>MizaxEngine Animator Roblox Style</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>MizaxEngine Animator V1</title>
 
 <style>
+:root{
+ --bg:#14171e;
+ --panel:#1d212b;
+ --panel2:#242a37;
+ --panel3:#2d3445;
+ --line:#313949;
+ --text:#d3d8e4;
+ --dim:#7f889c;
+ --accent:#3e90ff;
+ --danger:#e5484d;
+ --labw:140px;
+}
+
 *{
  box-sizing:border-box;
  user-select:none;
+ -webkit-user-select:none;
  -webkit-tap-highlight-color:transparent;
 }
 
 html,body{
  margin:0;
- width:100%;
  height:100%;
  overflow:hidden;
- background:#0f0f0f;
- color:#ddd;
- font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;
+ background:var(--bg);
+ color:var(--text);
+ font-family:"Segoe UI",Roboto,system-ui,sans-serif;
+ font-size:13px;
+ touch-action:manipulation;
 }
 
-button{
- background:rgba(40,40,40,0.6);
- color:#ccc;
- border:1px solid rgba(255,255,255,0.15);
- border-radius:4px;
- padding:6px 10px;
- font-size:11px;
- white-space:nowrap;
- cursor:pointer;
- backdrop-filter:blur(6px);
-}
-
-button:active{background:rgba(80,80,80,0.8)}
-button.active{
- background:rgba(180,20,20,0.7);
- border-color:rgba(255,80,80,0.5);
- color:#fff;
-}
-
-#viewports{
- position:absolute;
- inset:0;
- z-index:1;
-}
-
-#viewports canvas{
- display:block;
- width:100%;
- height:100%;
-}
-
-/* TOP BAR TRANSPARAN ALA ROBLOX STUDIO */
-#topbar{
- position:absolute;
- top:8px;
- left:8px;
- right:8px;
- height:44px;
- background:rgba(20,20,20,0.5);
- backdrop-filter:blur(8px);
- border:1px solid rgba(255,255,255,0.1);
- border-radius:6px;
- z-index:20;
- display:flex;
- align-items:center;
- gap:4px;
- padding:0 8px;
- overflow-x:auto;
-}
-
-.logo{
- color:#ff3333;
- font-weight:bold;
- font-size:12px;
- margin:0 8px 0 2px;
- white-space:nowrap;
- letter-spacing:1px;
-}
-
-#playBtn{
- min-width:54px;
-}
-
-#duration, #fps{
- width:48px;
- background:rgba(15,15,15,0.6);
- color:#fff;
- border:1px solid rgba(255,255,255,0.15);
- border-radius:4px;
- padding:5px 4px;
- font-size:11px;
- text-align:center;
-}
-
-/* PANEL RIG / HIERARCHY (TRANSARAN 0.5) */
-#rigPanel{
- position:absolute;
- top:60px;
- left:8px;
- width:185px;
- max-height:42vh;
- background:rgba(20,20,20,0.5);
- backdrop-filter:blur(10px);
- border:1px solid rgba(255,255,255,0.1);
- border-radius:6px;
- z-index:15;
- overflow:hidden;
- box-shadow:0 8px 32px rgba(0,0,0,0.4);
-}
-
-.panelTitle{
- height:28px;
- display:flex;
- align-items:center;
- padding:0 8px;
- color:#ff4d4d;
- font-size:10px;
- font-weight:bold;
- border-bottom:1px solid rgba(255,255,255,0.08);
- background:rgba(25,25,25,0.3);
-}
-
-.tree{
- overflow:auto;
- max-height:calc(42vh - 28px);
-}
-
-.treeRow{
- height:26px;
- display:flex;
- align-items:center;
- padding-left:8px;
- font-size:11px;
- border-bottom:1px solid rgba(255,255,255,0.04);
- cursor:pointer;
- color:#ccc;
-}
-
-.treeRow:active,
-.treeRow.selected{
- background:rgba(180,20,20,0.6);
- color:#fff;
-}
-
-.treeArrow{
- color:#888;
- width:14px;
-}
-
-/* PANEL INFO TRANSFORM */
-#info{
- position:absolute;
- top:calc(60px + 42vh + 6px);
- left:8px;
- width:185px;
- background:rgba(20,20,20,0.5);
- backdrop-filter:blur(10px);
- border:1px solid rgba(255,255,255,0.1);
- border-radius:6px;
- z-index:15;
- padding:8px;
- font:10px monospace;
- line-height:1.55;
- box-shadow:0 8px 32px rgba(0,0,0,0.4);
- color:#bbb;
-}
-
-/* TIMELINE BAWAH */
-#timeline{
- position:absolute;
- left:8px;
- right:8px;
- bottom:8px;
- height:230px;
- min-height:80px;
- background:rgba(16,16,16,0.6);
- backdrop-filter:blur(12px);
- border:1px solid rgba(255,255,255,0.12);
- border-radius:8px;
- z-index:30;
+#app{
  display:flex;
  flex-direction:column;
- box-shadow:0 10px 40px rgba(0,0,0,0.5);
- overflow:hidden;
+ height:100vh;
+ height:100dvh;
+ padding-top:env(safe-area-inset-top,0px);
+ padding-bottom:env(safe-area-inset-bottom,0px);
 }
 
-#timelineHandle{
- height:8px;
+button,select,input{font:inherit;color:inherit}
+button{-webkit-appearance:none;appearance:none;touch-action:manipulation;-webkit-touch-callout:none;transition:transform .06s,background .06s,filter .06s}
+button:disabled{pointer-events:none}
+
+/* ---------- top bar ---------- */
+#topbar{
  flex:none;
- background:rgba(30,30,30,0.4);
- cursor:ns-resize;
- position:relative;
-}
-
-#timelineHandle:after{
- content:"";
- position:absolute;
- width:30px;
- height:2px;
- background:rgba(255,255,255,0.3);
- left:50%;
- top:3px;
- transform:translateX(-50%);
- border-radius:2px;
-}
-
-#timeControls{
- height:36px;
- flex:none;
+ height:54px;
  display:flex;
  align-items:center;
- gap:4px;
- padding:4px 8px;
- border-bottom:1px solid rgba(255,255,255,0.08);
+ gap:3px;
+ padding:0 6px;
+ background:var(--panel);
+ border-bottom:1px solid var(--line);
  overflow-x:auto;
- background:rgba(20,20,20,0.2);
+ scrollbar-width:none;
 }
+#topbar::-webkit-scrollbar,.bar::-webkit-scrollbar,#chips::-webkit-scrollbar{display:none}
 
-#timeReadout{
- color:#ddd;
- font:10px monospace;
- min-width:70px;
- text-align:center;
+.ib{
+ flex:none;
+ width:42px;
+ height:42px;
+ display:grid;
+ place-items:center;
+ background:transparent;
+ border:0;
+ border-radius:6px;
+ color:var(--text);
+ cursor:pointer;
 }
+.ib:active{background:var(--panel3);transform:scale(.88)}
+.ib.active{background:var(--accent);color:#fff}
+.ib:disabled{opacity:.3}
 
-#timelineBody{
+.tb{
+ flex:none;
+ height:38px;
+ padding:0 12px;
+ background:var(--panel3);
+ border:1px solid var(--line);
+ border-radius:6px;
+ color:var(--text);
+ cursor:pointer;
+ white-space:nowrap;
+}
+.tb:active{filter:brightness(1.35);transform:scale(.93)}
+.tb.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.tb:disabled{opacity:.35}
+
+.sep{flex:none;width:1px;height:22px;background:var(--line);margin:0 5px}
+
+/* ---------- viewport ---------- */
+#viewport{
+ position:relative;
  flex:1;
  min-height:0;
- display:flex;
  overflow:hidden;
 }
+#viewport canvas{display:block;position:absolute;inset:0;width:100%;height:100%}
 
-#labels{
- width:125px;
- min-width:125px;
- background:rgba(15,15,15,0.4);
- border-right:1px solid rgba(255,255,255,0.08);
- overflow:hidden;
-}
-
-.labelHead{
- height:26px;
- border-bottom:1px solid rgba(255,255,255,0.08);
+#chips{
+ position:absolute;
+ top:8px;left:8px;right:8px;
  display:flex;
- align-items:center;
- padding-left:8px;
- color:#888;
- font-size:9px;
+ gap:6px;
+ overflow-x:auto;
+ scrollbar-width:none;
+ z-index:2;
 }
-
-.label{
- height:32px;
- display:flex;
- align-items:center;
- padding-left:8px;
- border-bottom:1px solid rgba(255,255,255,0.04);
- font-size:10px;
- white-space:nowrap;
- overflow:hidden;
- color:#ccc;
-}
-
-#trackViewport{
- flex:1;
- min-width:0;
- overflow:auto;
- position:relative;
-}
-
-#trackInner{
- position:relative;
- min-width:800px;
- height:100%;
-}
-
-#ruler{
- height:26px;
- position:relative;
- border-bottom:1px solid rgba(255,255,255,0.08);
- background:rgba(20,20,20,0.3);
-}
-
-.tick{
- position:absolute;
- top:0;
- height:26px;
- border-left:1px solid rgba(255,255,255,0.1);
- color:#888;
- font:9px monospace;
- padding:3px 0 0 3px;
-}
-
-.tick.major{
- border-color:rgba(255,255,255,0.25);
- color:#ccc;
-}
-
-#tracks{
- position:absolute;
- top:26px;
- left:0;
- right:0;
-}
-
-.track{
- height:32px;
- position:relative;
- border-bottom:1px solid rgba(255,255,255,0.04);
-}
-
-.snapLine{
- position:absolute;
- top:0;
- bottom:0;
- width:1px;
- background:rgba(255,255,255,0.03);
- pointer-events:none;
-}
-
-.kf{
- position:absolute;
- top:9px;
- width:10px;
- height:10px;
- background:#888;
- border:1px solid #ccc;
- transform:rotate(45deg);
- margin-left:-5px;
+.chip{
+ flex:none;
+ padding:9px 15px;
+ border-radius:999px;
+ background:rgba(29,33,43,.78);
+ border:1px solid var(--line);
+ color:var(--text);
+ backdrop-filter:blur(6px);
  cursor:pointer;
- z-index:5;
 }
+.chip:active{transform:scale(.93)}
+.chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
-.kf.selected{
- background:#ff3333;
- border-color:#ff9999;
- box-shadow:0 0 6px #ff3333;
-}
-
-#playhead{
+#info{
  position:absolute;
- top:0;
- bottom:0;
- width:2px;
- background:#ff3333;
- z-index:20;
- pointer-events:none;
-}
-
-#playheadHead{
- position:absolute;
- top:0;
- left:-4px;
- width:10px;
- height:10px;
- background:#ff3333;
- clip-path:polygon(0 0,100% 0,50% 100%);
-}
-
-#contextMenu{
- position:fixed;
- display:none;
- z-index:100;
- background:rgba(20,20,20,0.85);
- backdrop-filter:blur(10px);
- border:1px solid rgba(255,255,255,0.2);
- border-radius:6px;
- width:140px;
- box-shadow:0 8px 24px rgba(0,0,0,0.5);
- overflow:hidden;
-}
-
-.ctxTitle{
+ left:8px;bottom:8px;
  padding:6px 8px;
- color:#ff4d4d;
- font-size:9px;
- border-bottom:1px solid rgba(255,255,255,0.1);
- font-weight:bold;
+ background:rgba(20,23,30,.72);
+ border:1px solid var(--line);
+ border-radius:6px;
+ font:11px/1.5 ui-monospace,Menlo,Consolas,monospace;
+ color:#aab2c5;
+ pointer-events:none;
 }
-
-.ctxBtn{
- width:100%;
- border:0;
- border-bottom:1px solid rgba(255,255,255,0.05);
- text-align:left;
- padding:8px;
- background:transparent;
- color:#ddd;
- font-size:10px;
- cursor:pointer;
-}
-
-.ctxBtn:active{
- background:rgba(180,20,20,0.6);
-}
+#info b{color:#fff;font-family:inherit}
 
 #toast{
  position:absolute;
- left:50%;
- bottom:250px;
+ left:50%;bottom:14px;
  transform:translateX(-50%);
- background:rgba(20,20,20,0.85);
- backdrop-filter:blur(8px);
- border:1px solid rgba(255,51,51,0.5);
- border-radius:4px;
- padding:6px 10px;
- font-size:10px;
- z-index:100;
+ padding:7px 12px;
+ background:var(--panel3);
+ border:1px solid var(--accent);
+ border-radius:6px;
+ font-size:12px;
+ opacity:0;
+ pointer-events:none;
+ transition:opacity .15s;
+ z-index:5;
+}
+#toast.show{opacity:1}
+
+/* ---------- menu ---------- */
+#menu{
+ position:fixed;
+ top:calc(58px + env(safe-area-inset-top,0px));
+ left:6px;
+ min-width:190px;
+ background:var(--panel2);
+ border:1px solid var(--line);
+ border-radius:8px;
+ box-shadow:0 10px 30px rgba(0,0,0,.55);
+ overflow:hidden;
  display:none;
+ z-index:50;
+}
+#menu button{
+ display:block;
+ width:100%;
+ text-align:left;
+ padding:15px 16px;
+ background:transparent;
+ border:0;
+ border-bottom:1px solid var(--line);
+ cursor:pointer;
+}
+#menu button:last-child{border-bottom:0}
+#menu button:active{background:var(--accent)}
+
+/* ---------- timeline ---------- */
+#timeline{
+ flex:none;
+ height:310px;
+ display:flex;
+ flex-direction:column;
+ background:var(--panel);
+ border-top:1px solid var(--line);
+ border-radius:12px 12px 0 0;
+ box-shadow:0 -8px 24px rgba(0,0,0,.4);
+ position:relative;
+ z-index:10;
+}
+#timeline.collapsed{height:auto!important}
+#timeline.collapsed .bar,#timeline.collapsed #tlScroll{display:none}
+
+#tlHandle{
+ flex:none;
+ height:24px;
+ display:grid;
+ place-items:center;
+ cursor:ns-resize;
+ touch-action:none;
+}
+#tlHandle i{width:44px;height:4px;border-radius:2px;background:#59627a}
+
+#tlHead{
+ flex:none;
+ height:46px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:6px;
+ padding:0 6px 0 14px;
+}
+#tlHead>span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:14px;letter-spacing:.5px;color:var(--dim)}
+.hd{display:flex;align-items:center;gap:4px;flex:none}
+.hd .tb{padding:0 10px;font-size:12px;font-weight:600}
+#tlToggle svg{transition:transform .15s}
+#timeline.collapsed #tlToggle svg{transform:rotate(180deg)}
+
+.bar{
+ flex:none;
+ height:50px;
+ display:flex;
+ align-items:center;
+ gap:4px;
+ padding:0 8px;
+ overflow-x:auto;
+ border-bottom:1px solid var(--line);
+ scrollbar-width:none;
+}
+
+#readout{
+ flex:none;
+ min-width:96px;
+ text-align:center;
+ font:15px ui-monospace,Menlo,Consolas,monospace;
  color:#fff;
 }
+.lbl{flex:none;color:var(--dim);font-size:11px}
+.num,select.sel{
+ flex:none;
+ height:36px;
+ background:var(--bg);
+ border:1px solid var(--line);
+ border-radius:5px;
+ text-align:center;
+ padding:0 4px;
+ outline:none;
+}
+.num{width:54px}
+select.sel{width:auto;padding:0 6px}
+.num:focus,select.sel:focus{border-color:var(--accent)}
+#kfInfo{flex:none;color:var(--dim);font-size:11px;padding-left:6px;white-space:nowrap}
+
+#tlScroll{
+ flex:1;
+ min-height:0;
+ overflow:auto;
+ position:relative;
+ background:var(--bg);
+ touch-action:pan-x pan-y;
+ overscroll-behavior:contain;
+}
+#wrap{position:relative;min-height:100%}
+
+.row{display:flex;height:42px;border-bottom:1px solid #1b1f28}
+.lab{
+ position:sticky;left:0;z-index:5;
+ flex:none;
+ width:var(--labw);
+ display:flex;
+ align-items:center;
+ gap:3px;
+ padding:0 4px 0 6px;
+ background:var(--panel2);
+ border-right:1px solid var(--line);
+ overflow:hidden;
+ cursor:pointer;
+}
+.lab .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lab button{
+ flex:none;
+ width:34px;height:38px;
+ display:grid;place-items:center;
+ background:transparent;border:0;border-radius:5px;
+ color:var(--dim);cursor:pointer;padding:0;
+}
+.lab button:active{background:var(--panel3);color:#fff}
+.row.group .lab{background:#2a3144;font-weight:600}
+.row.sel .lab{background:#2d3a5a}
+.row.group.sel .lab{background:#35487a}
+.row.muted .trk{opacity:.4}
+
+.trk{position:relative;flex:none;height:100%;background-repeat:repeat-x}
+.row.group .trk{background-color:rgba(255,255,255,.03)}
+.row.sel .trk{background-color:rgba(62,144,255,.07)}
+
+.rulerRow{position:sticky;top:0;z-index:6;height:28px;background:var(--panel2)}
+.rulerRow .lab{z-index:7;background:var(--panel);color:var(--dim);font-size:11px;cursor:default}
+#rulerTrk{touch-action:none;cursor:ew-resize;background:var(--panel2);border-bottom:1px solid var(--line)}
+.tick{position:absolute;bottom:0;width:1px;height:6px;background:#4a5266}
+.tick.maj{height:13px;background:#8a93a8}
+.tickLab{position:absolute;top:2px;font:10px ui-monospace,Menlo,monospace;color:var(--dim);margin-left:4px}
+.phHead{position:absolute;top:2px;width:14px;height:14px;margin-left:-7px;background:var(--accent);clip-path:polygon(0 0,100% 0,50% 100%);pointer-events:none;z-index:2}
+#ph{position:absolute;top:28px;bottom:0;width:2px;margin-left:-1px;background:var(--accent);z-index:4;pointer-events:none}
+#afterEnd{position:absolute;top:28px;bottom:0;right:0;background:rgba(0,0,0,.28);border-left:2px solid rgba(62,144,255,.55);pointer-events:none;z-index:1}
+
+.kf{
+ position:absolute;top:0;
+ width:44px;height:100%;
+ margin-left:-22px;
+ display:grid;place-items:center;
+ z-index:3;
+ touch-action:none;
+ cursor:grab;
+}
+.kf::before{
+ content:"";
+ width:12px;height:12px;
+ background:#dfe3ee;
+ border:1px solid #11141a;
+ transform:rotate(45deg);
+}
+.kf.smooth::before{border-radius:50%;transform:none;width:13px;height:13px}
+.kf.step::before{transform:none;width:11px;height:11px}
+.kf.sel::before{background:var(--accent);box-shadow:0 0 0 3px rgba(62,144,255,.35)}
+.kfdot{position:absolute;top:50%;width:7px;height:7px;margin:-3px 0 0 -3px;background:#7a849c;transform:rotate(45deg);pointer-events:none}
+
+input.txt,input.num{user-select:text;-webkit-user-select:text}
+#exportModal{
+ position:fixed;inset:0;z-index:100;
+ display:none;align-items:center;justify-content:center;
+ background:rgba(0,0,0,.62);
+ padding:12px;
+}
+#exportModal.open{display:flex}
+#exportModal .card{
+ width:min(100%,400px);
+ max-height:92dvh;
+ overflow:auto;
+ background:var(--panel2);
+ border:1px solid var(--line);
+ border-radius:12px;
+ padding:14px 16px;
+ box-shadow:0 20px 50px rgba(0,0,0,.6);
+}
+#exportModal h3{margin:0 0 6px;font-size:16px;font-weight:600}
+.fr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.fr .hint{color:var(--dim);font-size:11px;display:block;margin-top:2px}
+.fr input[type=checkbox]{width:20px;height:20px;accent-color:var(--accent)}
+.txt{width:170px;height:32px;background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:0 8px;outline:none}
+.axes{display:flex;gap:14px}
+.axes label{display:flex;align-items:center;gap:5px}
+.axes input{width:20px;height:20px;accent-color:var(--accent)}
+.note{color:var(--dim);font-size:11px;line-height:1.5;margin:10px 0 0}
+.btns{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.btns .tb{height:36px;padding:0 16px}
 </style>
 </head>
 
 <body>
+<div id="app">
 
-<div id="viewports"></div>
-
-<div id="topbar">
- <div class="logo">MIZAX</div>
- <button id="rewind">⏮</button>
- <button id="prev">◀</button>
- <button id="playBtn">▶ PLAY</button>
- <button id="next">▶</button>
- <button id="loop" class="active">LOOP</button>
- <button id="copyBtn">COPY</button>
- <button id="pasteBtn">PASTE</button>
- <button id="newBtn">NEW</button>
- <span style="font-size:9px;color:#777;margin-left:4px;">DUR</span>
- <input id="duration" type="number" value="2" min="0.25" step="0.25">
- <span style="font-size:9px;color:#777">FPS</span>
- <input id="fps" type="number" value="30" min="1" max="120">
-</div>
-
-<div id="rigPanel">
- <div class="panelTitle">EXPLORER (RIG)</div>
- <div class="tree" id="tree"></div>
-</div>
-
-<div id="info">Select a part...</div>
-
-<div id="timeline">
- <div id="timelineHandle"></div>
- <div id="timeControls">
-  <button id="zoomOut">−</button>
-  <button id="zoomIn">+</button>
-  <button id="addKf">KEYFRAME</button>
-  <span id="timeReadout">0.00 / 2.00</span>
+ <div id="topbar">
+  <button class="ib" id="btnMenu" data-ic="menu"></button>
+  <button class="ib" id="btnUndo" data-ic="undo"></button>
+  <button class="ib" id="btnRedo" data-ic="redo"></button>
+  <span class="sep"></span>
+  <button class="ib active" data-mode="translate" data-ic="move"></button>
+  <button class="ib" data-mode="rotate" data-ic="rotate"></button>
+  <span class="sep"></span>
+  <button class="tb" id="btnSpace">Local</button>
+  <button class="tb active" id="btnAuto">Auto key</button>
  </div>
- <div id="timelineBody">
-  <div id="labels">
-   <div class="labelHead">PARTS</div>
-   <div id="labelRows"></div>
-  </div>
-  <div id="trackViewport">
-   <div id="trackInner">
-    <div id="ruler"></div>
-    <div id="tracks"></div>
-    <div id="playhead">
-     <div id="playheadHead"></div>
-    </div>
+
+ <div id="viewport">
+  <div id="chips"></div>
+  <div id="info"></div>
+  <div id="toast"></div>
+ </div>
+
+ <div id="timeline">
+  <div id="tlHandle"><i></i></div>
+  <div id="tlHead">
+   <span>TIMELINE</span>
+   <div class="hd">
+    <button class="tb" id="hLoad">Load</button>
+    <button class="tb" id="hJson">JSON</button>
+    <button class="tb active" id="hRbx">RBXMX</button>
+    <button class="ib" id="hOpt" data-ic="gear"></button>
+    <button class="ib" id="tlToggle" data-ic="chev"></button>
    </div>
   </div>
+
+  <div class="bar">
+   <button class="ib" id="bRewind" data-ic="prev"></button>
+   <button class="ib" id="bPrev" data-ic="left"></button>
+   <button class="ib" id="bPlay" data-ic="play"></button>
+   <button class="ib" id="bNext" data-ic="right"></button>
+   <button class="ib active" id="bLoop" data-ic="loop"></button>
+   <div id="readout">0:00:00 / 60</div>
+   <span class="sep"></span>
+   <button class="ib" id="bZoomOut"><b style="font-size:20px">−</b></button>
+   <button class="ib" id="bZoomIn"><b style="font-size:20px">+</b></button>
+   <span class="sep"></span>
+   <span class="lbl">Speed %</span>
+   <input class="num" id="spd" type="number" value="100" min="10" max="400" step="10">
+  </div>
+
+  <div class="bar">
+   <button class="tb" id="bKey">◆ Add key</button>
+   <select class="sel" id="interpSel">
+    <option value="linear">Linear</option>
+    <option value="smooth">Smooth</option>
+    <option value="step">Step</option>
+   </select>
+   <button class="ib" id="bCopy" data-ic="copy"></button>
+   <button class="ib" id="bPaste" data-ic="paste"></button>
+   <button class="ib" id="bDel" data-ic="trash"></button>
+   <span class="sep"></span>
+   <span class="lbl">Length (s)</span>
+   <input class="num" id="dur" type="number" value="2" min="0.25" step="0.25">
+   <span class="lbl">FPS</span>
+   <input class="num" id="fps" type="number" value="30" min="1" max="120">
+   <span id="kfInfo"></span>
+  </div>
+
+  <div id="tlScroll"><div id="wrap"></div></div>
  </div>
 </div>
 
-<div id="contextMenu">
- <div class="ctxTitle">KEYFRAME</div>
- <button class="ctxBtn" id="ctxDuplicate">Duplicate</button>
- <button class="ctxBtn" id="ctxDelete">Delete</button>
- <button class="ctxBtn" id="ctxType">Type: Pose</button>
+<div id="menu">
+ <button id="mNew">New animation</button>
+ <button id="mSave">Save animation (.json)</button>
+ <button id="mExport">Export Roblox (.rbxmx)</button>
+ <button id="mLoad">Load animation (.json)</button>
+ <button id="mConvert">Convert .json file to .rbxmx</button>
+ <button id="mReset">Reset selected part pose</button>
 </div>
+<div id="exportModal"><div class="card">
+ <h3>Export Roblox KeyframeSequence</h3>
+ <div class="fr"><span>Name</span><input class="txt" id="xName" value="MizaxAnimation"></div>
+ <div class="fr"><span>Priority</span>
+  <select class="sel" id="xPri">
+   <option value="1000">Core</option>
+   <option value="0">Idle</option>
+   <option value="1">Movement</option>
+   <option value="2" selected>Action</option>
+  </select></div>
+ <div class="fr"><span>Enum format<span class="hint">Default = sama kayak file contoh dari Studio</span></span>
+  <select class="sel" id="xFmt">
+   <option value="name" selected>Studio baru (teks)</option>
+   <option value="token">Lama (token angka)</option>
+  </select></div>
+ <div class="fr"><span>Flip axis<span class="hint">Kalau animasi menghadap belakang, centang X dan Z</span></span>
+  <div class="axes">
+   <label><input type="checkbox" id="xFx">X</label>
+   <label><input type="checkbox" id="xFy">Y</label>
+   <label><input type="checkbox" id="xFz">Z</label>
+  </div></div>
+ <div class="fr"><span>R6 joint axis fix<span class="hint">Sesuaikan sumbu rotasi ke Motor6D R6</span></span><input type="checkbox" id="xR6" checked></div>
+ <div class="fr"><span>Position scale<span class="hint">Pengali jarak (stud)</span></span><input class="num" id="xScale" type="number" value="1" step="0.1"></div>
+ <div class="fr"><span>Bake every N frames<span class="hint">0 = hanya di keyframe. Isi 2 sampai 4 kalau gerakannya beda</span></span><input class="num" id="xBake" type="number" value="0" min="0" step="1"></div>
+ <p class="note">Di Studio: klik kanan Explorer, pilih Insert from File, lalu pilih file .rbxmx. Pose yang dipakai: HumanoidRootPart, Torso, Head, Left Arm, Right Arm, Left Leg, Right Leg.</p>
+ <div class="btns"><button class="tb" id="xCancel">Cancel</button><button class="tb active" id="xGo">Download .rbxmx</button></div>
+</div></div>
+<input type="file" id="fileIn" accept=".json,application/json" hidden>
 
-<div id="toast"></div>
-
-<!-- THREE.JS & CONTROLS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TransformControls.js"></script>
 
 <script>
-let scene, camera, renderer;
-let orbitControls, transformControls;
-let r6Rig = {};
-let pivots = {};
-let selectedPart = null;
-
-let duration = 2;
-let fps = 30;
-let currentTime = 0;
-let playing = false;
-let loop = true;
-let timelineZoom = 100;
-
-let keyframes = [];
-let selectedKF = null;
-let clipboard = null;
-
-const parts = ["Torso", "Head", "Left Arm", "Right Arm", "Left Leg", "Right Leg"];
+/* =========================================================
+   CONSTANTS & STATE
+========================================================= */
+const BONES = ["Torso","Head","Left Arm","Right Arm","Left Leg","Right Leg"];
+const CHANNELS = [
+ {id:"rotation", label:"Rotation", mode:"rotate"},
+ {id:"position", label:"Position", mode:"translate"}
+];
+const MODE_TO_CH = {rotate:"rotation", translate:"position"};
+const LABEL_W = 140;
 const $ = id => document.getElementById(id);
 
-function init(){
- scene = new THREE.Scene();
- scene.background = new THREE.Color(0x141414);
+let scene, camera, renderer, orbit, tc;
+const meshes = {}, pivots = {}, rest = {};
 
- camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 1000);
- camera.position.set(7, 5, 9);
+let anim = { duration:2, fps:30, loop:true, tracks:{} };
+let time = 0, playing = false, speed = 1, zoom = 140;
+let selectedBone = null, selKF = null, clipboard = null;
+let autoKey = true, defaultInterp = "linear", dragging = false;
+let collapsed = new Set();
+let hist = [], hi = -1;
+let fileMode = "load";
 
- renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
- renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
- renderer.setSize(innerWidth, innerHeight);
- renderer.shadowMap.enabled = true;
- renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+let trkMap = {}, grpTrk = {}, rulerTrk, phEl, phHead, shadeEl;
 
- $("viewports").appendChild(renderer.domElement);
+/* =========================================================
+   ICONS
+========================================================= */
+const IC = {
+ menu:"M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z",
+ undo:"M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z",
+ play:"M8 5v14l11-7z",
+ pause:"M6 19h4V5H6v14zm8-14v14h4V5h-4z",
+ prev:"M6 6h2v12H6zm3.5 6l8.5 6V6z",
+ left:"M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z",
+ right:"M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z",
+ loop:"M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z",
+ move:"M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z",
+ rotate:"M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z",
+ add:"M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z",
+ trash:"M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z",
+ copy:"M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z",
+ paste:"M19 2h-4.18C14.4.84 13.3 0 12 0c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 18H5V4h2v3h10V4h2v16z",
+ eye:"M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z",
+ chev:"M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z",
+ gear:"M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z",
+ folder:"M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"
+};
+function ic(name, size){
+ size = size || 20;
+ let extra = "";
+ if(name === "eyeoff") { name = "eye"; extra = '<path d="M3 3l18 18" stroke="currentColor" stroke-width="2.4" fill="none"/>'; }
+ const flip = name === "redo";
+ const d = IC[flip ? "undo" : name];
+ return '<svg viewBox="0 0 24 24" width="'+size+'" height="'+size+'" fill="currentColor"'+(flip?' style="transform:scaleX(-1)"':'')+'><path d="'+d+'"/>'+extra+'</svg>';
+}
+document.querySelectorAll("[data-ic]").forEach(e => e.innerHTML = ic(e.dataset.ic));
+$("btnRedo").innerHTML = ic("redo");
 
- orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
- orbitControls.enableDamping = true;
- orbitControls.dampingFactor = 0.06;
- orbitControls.target.set(0, 1.5, 0);
- orbitControls.minDistance = 3;
- orbitControls.maxDistance = 20;
+/* =========================================================
+   HELPERS
+========================================================= */
+function el(tag, cls){ const e = document.createElement(tag); if(cls) e.className = cls; return e; }
+function snapT(t){ return Math.round(t * anim.fps) / anim.fps; }
+function clampT(t){ return Math.max(0, Math.min(anim.duration, t)); }
+function sameT(a, b){ return Math.abs(a - b) < 0.5 / anim.fps; }
+const f2 = n => (Math.abs(n) < 0.005 ? 0 : n).toFixed(2);
 
- transformControls = new THREE.TransformControls(camera, renderer.domElement);
- transformControls.setSize(0.75);
- scene.add(transformControls);
-
- transformControls.addEventListener("dragging-changed", e => orbitControls.enabled = !e.value);
- transformControls.addEventListener("change", () => updateInfo());
-
- scene.add(new THREE.AmbientLight(0xffffff, 0.72));
- const light = new THREE.DirectionalLight(0xffffff, 0.85);
- light.position.set(5, 10, 7);
- light.castShadow = true;
- scene.add(light);
-
- const grid = new THREE.GridHelper(20, 20, 0x333333, 0x1c1c1c);
- grid.position.y = -2;
- scene.add(grid);
-
- buildR6Rig();
- setupUI();
- buildTimeline();
-
- window.addEventListener("resize", resize);
- animate();
- animatePlayback();
+let toastTimer;
+function toast(msg){
+ const t = $("toast");
+ t.textContent = msg; t.classList.add("show");
+ clearTimeout(toastTimer);
+ toastTimer = setTimeout(() => t.classList.remove("show"), 1000);
 }
 
+function freshTracks(){
+ const tr = {};
+ BONES.forEach(b => {
+  tr[b] = {};
+  CHANNELS.forEach(c => tr[b][c.id] = {keys:[], muted:false});
+ });
+ return tr;
+}
+anim.tracks = freshTracks();
+
+/* =========================================================
+   3D SCENE
+========================================================= */
 function roundedBox(w, h, d, r){
  const s = new THREE.Shape();
- const x = -w / 2, y = -h / 2;
- const rr = Math.min(r, w / 2, h / 2);
- s.moveTo(x + rr, y);
- s.lineTo(x + w - rr, y);
- s.quadraticCurveTo(x + w, y, x + w, y + rr);
- s.lineTo(x + w, y + h - rr);
- s.quadraticCurveTo(x + w, y + h, x + w - rr, y + h);
- s.lineTo(x + rr, y + h);
- s.quadraticCurveTo(x, y + h, x, y + h - rr);
- s.lineTo(x, y + rr);
- s.quadraticCurveTo(x, y, x + rr, y);
-
+ const x = -w/2, y = -h/2;
+ const rr = Math.min(r, w/2, h/2);
+ s.moveTo(x+rr, y);
+ s.lineTo(x+w-rr, y);
+ s.quadraticCurveTo(x+w, y, x+w, y+rr);
+ s.lineTo(x+w, y+h-rr);
+ s.quadraticCurveTo(x+w, y+h, x+w-rr, y+h);
+ s.lineTo(x+rr, y+h);
+ s.quadraticCurveTo(x, y+h, x, y+h-rr);
+ s.lineTo(x, y+rr);
+ s.quadraticCurveTo(x, y, x+rr, y);
  const g = new THREE.ExtrudeGeometry(s, {
-  depth: d, bevelEnabled: true, bevelSegments: 2,
-  bevelSize: r * 0.35, bevelThickness: r * 0.35, curveSegments: 4
+  depth:d, bevelEnabled:true, bevelSegments:2,
+  bevelSize:r*0.35, bevelThickness:r*0.35, curveSegments:4
  });
  g.center();
  return g;
@@ -576,365 +594,1004 @@ function faceTexture(){
  const c = document.createElement("canvas");
  c.width = 512; c.height = 512;
  const ctx = c.getContext("2d");
- ctx.clearRect(0, 0, 512, 512);
+ ctx.clearRect(0,0,512,512);
  ctx.fillStyle = "#111";
  ctx.textAlign = "center";
  ctx.textBaseline = "middle";
  ctx.font = "bold 150px Arial";
  ctx.fillText(">v<", 256, 330);
  const t = new THREE.CanvasTexture(c);
+ t.encoding = THREE.sRGBEncoding;
  t.needsUpdate = true;
  return t;
 }
 
-function buildR6Rig(){
+function buildRig(){
  const root = new THREE.Group();
  root.name = "R6";
  scene.add(root);
 
- const bodyMat = new THREE.MeshPhongMaterial({ color: 0xcccccc, shininess: 20 });
- const torsoMat = new THREE.MeshPhongMaterial({ color: 0x00a2ff, shininess: 20 });
- const legMat = new THREE.MeshPhongMaterial({ color: 0xcd2027, shininess: 20 });
- const headMat = new THREE.MeshPhongMaterial({ color: 0xffffff, shininess: 25 });
- const faceMat = new THREE.MeshBasicMaterial({ map: faceTexture(), transparent: true, alphaTest: 0.01, depthWrite: false, side: THREE.DoubleSide });
+ const bodyMat  = new THREE.MeshPhongMaterial({color:0xcccccc, shininess:20});
+ const torsoMat = new THREE.MeshPhongMaterial({color:0x00a2ff, shininess:20});
+ const legMat   = new THREE.MeshPhongMaterial({color:0xcd2027, shininess:20});
+ const headMat  = new THREE.MeshPhongMaterial({color:0xffffff, shininess:25});
+ const faceMat  = new THREE.MeshBasicMaterial({map:faceTexture(), transparent:true, alphaTest:0.01, depthWrite:false, side:THREE.DoubleSide});
 
- const torsoGeo = roundedBox(2, 2, 1, 0.16);
- const armGeo = roundedBox(1, 2, 1, 0.16);
- const legGeo = roundedBox(1, 2, 1, 0.16);
- const headGeo = new THREE.BoxGeometry(1.2, 1.2, 1.2);
-
- const torso = new THREE.Mesh(torsoGeo, torsoMat);
+ const torso = new THREE.Mesh(roundedBox(2,2,1,0.16), torsoMat);
  torso.name = "Torso";
- torso.castShadow = true; torso.receiveShadow = true;
+ torso.castShadow = torso.receiveShadow = true;
  root.add(torso);
- r6Rig.Torso = torso; pivots.Torso = torso;
+ meshes.Torso = torso; pivots.Torso = torso;
 
  const headPivot = new THREE.Group();
- headPivot.name = "HeadPivot"; headPivot.position.set(0, 1, 0);
+ headPivot.name = "HeadPivot";
+ headPivot.position.set(0,1,0);
  torso.add(headPivot);
 
- const head = new THREE.Mesh(headGeo, headMat);
- head.name = "Head"; head.position.set(0, 0.6, 0);
- head.castShadow = true; head.receiveShadow = true;
+ const head = new THREE.Mesh(new THREE.BoxGeometry(1.2,1.2,1.2), headMat);
+ head.name = "Head";
+ head.position.set(0,0.6,0);
+ head.castShadow = head.receiveShadow = true;
  headPivot.add(head);
 
- const face = new THREE.Mesh(new THREE.PlaneGeometry(0.82, 0.48), faceMat);
- face.position.set(0, 0.20, 0.606);
+ const face = new THREE.Mesh(new THREE.PlaneGeometry(0.82,0.48), faceMat);
+ face.position.set(0,0.20,0.606);
  head.add(face);
+ meshes.Head = head; pivots.Head = headPivot;
 
- r6Rig.Head = head; pivots.Head = headPivot;
+ const limb = (name, x, y, mat, pivotName) => {
+  const p = new THREE.Group();
+  p.name = pivotName;
+  p.position.set(x,y,0);
+  torso.add(p);
+  const m = new THREE.Mesh(roundedBox(1,2,1,0.16), mat);
+  m.name = name;
+  m.position.set(0,-1,0);
+  m.castShadow = m.receiveShadow = true;
+  p.add(m);
+  meshes[name] = m; pivots[name] = p;
+ };
+ limb("Left Arm", -1.5, 1, bodyMat, "LeftArmPivot");
+ limb("Right Arm", 1.5, 1, bodyMat, "RightArmPivot");
+ limb("Left Leg", -0.5, -1, legMat, "LeftLegPivot");
+ limb("Right Leg", 0.5, -1, legMat, "RightLegPivot");
 
- createLimb("Left Arm", -1.5, 1, armGeo, bodyMat, "LeftArmPivot");
- createLimb("Right Arm", 1.5, 1, armGeo, bodyMat, "RightArmPivot");
- createLimb("Left Leg", -0.5, -1, legGeo, legMat, "LeftLegPivot");
- createLimb("Right Leg", 0.5, -1, legGeo, legMat, "RightLegPivot");
-
- buildTree();
- selectPart(torso);
-}
-
-function createLimb(name, x, y, geo, mat, pivotName){
- const pivot = new THREE.Group();
- pivot.name = pivotName; pivot.position.set(x, y, 0);
- r6Rig.Torso.add(pivot);
-
- const mesh = new THREE.Mesh(geo, mat);
- mesh.name = name; mesh.position.set(0, -1, 0);
- mesh.castShadow = true; mesh.receiveShadow = true;
- pivot.add(mesh);
-
- r6Rig[name] = mesh; pivots[name] = pivot;
-}
-
-function buildTree(){
- $("tree").innerHTML = "";
- parts.forEach(name => {
-  const row = document.createElement("div");
-  row.className = "treeRow";
-  row.dataset.name = name;
-  row.innerHTML = '<span class="treeArrow">▸</span><span>' + name + '</span>';
-  row.onclick = () => selectPart(r6Rig[name]);
-  $("tree").appendChild(row);
+ BONES.forEach(b => {
+  const p = pivots[b];
+  rest[b] = {
+   pos: p.position.clone(),
+   rot: p.rotation.clone(),
+   scl: p.scale.clone()
+  };
  });
 }
 
-function selectPart(part){
- selectedPart = part;
- const target = pivots[part.name] || part;
- transformControls.attach(target);
+function initScene(){
+ const vp = $("viewport");
 
- document.querySelectorAll(".treeRow").forEach(x => {
-  x.classList.toggle("selected", x.dataset.name === part.name);
+ scene = new THREE.Scene();
+ scene.background = new THREE.Color(0x14171e);
+
+ camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
+ camera.position.set(7, 5, 9);
+
+ renderer = new THREE.WebGLRenderer({antialias:true});
+ renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+ renderer.shadowMap.enabled = true;
+ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+ renderer.outputEncoding = THREE.sRGBEncoding;
+ vp.insertBefore(renderer.domElement, vp.firstChild);
+
+ orbit = new THREE.OrbitControls(camera, renderer.domElement);
+ orbit.enableDamping = true;
+ orbit.dampingFactor = 0.07;
+ orbit.target.set(0, 1.2, 0);
+ orbit.minDistance = 3;
+ orbit.maxDistance = 22;
+
+ tc = new THREE.TransformControls(camera, renderer.domElement);
+ tc.setSize(1.05);
+ scene.add(tc);
+
+ scene.add(new THREE.AmbientLight(0xffffff, 0.72));
+ const dl = new THREE.DirectionalLight(0xffffff, 0.85);
+ dl.position.set(5, 10, 7);
+ dl.castShadow = true;
+ scene.add(dl);
+
+ const grid = new THREE.GridHelper(20, 20, 0x3a4152, 0x23283a);
+ grid.position.y = -2;
+ scene.add(grid);
+
+ buildRig();
+
+ /* gizmo events */
+ tc.addEventListener("dragging-changed", e => {
+  orbit.enabled = !e.value;
+  dragging = e.value;
+  if(e.value) setPlaying(false);
+  else commit();
  });
+ tc.addEventListener("objectChange", onGizmoChange);
+
+ /* tap to select part */
+ const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+ let down = null;
+ renderer.domElement.addEventListener("pointerdown", e => {
+  down = {x:e.clientX, y:e.clientY, gizmo: tc.axis !== null};
+ });
+ renderer.domElement.addEventListener("pointerup", e => {
+  const d = down; down = null;
+  if(!d || d.gizmo) return;
+  if(Math.hypot(e.clientX - d.x, e.clientY - d.y) > 6) return;
+  const r = renderer.domElement.getBoundingClientRect();
+  ndc.set(((e.clientX - r.left)/r.width)*2 - 1, -((e.clientY - r.top)/r.height)*2 + 1);
+  ray.setFromCamera(ndc, camera);
+  const hit = ray.intersectObjects(Object.values(meshes), false)[0];
+  if(hit) selectBone(hit.object.name);
+ });
+
+ new ResizeObserver(resizeViewport).observe(vp);
+ resizeViewport();
+}
+
+function resizeViewport(){
+ const vp = $("viewport");
+ const w = vp.clientWidth, h = vp.clientHeight;
+ if(!w || !h) return;
+ renderer.setSize(w, h);
+ camera.aspect = w / h;
+ camera.updateProjectionMatrix();
+}
+
+/* =========================================================
+   CHANNEL VALUES  (rotation = deg, position = offset from rest)
+========================================================= */
+function getValue(b, ch){
+ const p = pivots[b], r = rest[b];
+ if(ch === "rotation") return [p.rotation.x, p.rotation.y, p.rotation.z].map(v => THREE.MathUtils.radToDeg(v));
+ return [p.position.x - r.pos.x, p.position.y - r.pos.y, p.position.z - r.pos.z];
+}
+function setPivot(b, ch, v){
+ const p = pivots[b], r = rest[b];
+ if(ch === "rotation") p.rotation.set(...v.map(x => THREE.MathUtils.degToRad(x)));
+ else p.position.set(r.pos.x + v[0], r.pos.y + v[1], r.pos.z + v[2]);
+}
+function resetChannel(b, ch){
+ const p = pivots[b], r = rest[b];
+ if(ch === "rotation") p.rotation.copy(r.rot);
+ else p.position.copy(r.pos);
+}
+
+/* =========================================================
+   INTERPOLATION
+========================================================= */
+function catmull(p0, p1, p2, p3, t){
+ const t2 = t*t, t3 = t2*t;
+ return 0.5 * ((2*p1) + (-p0 + p2)*t + (2*p0 - 5*p1 + 4*p2 - p3)*t2 + (-p0 + 3*p1 - 3*p2 + p3)*t3);
+}
+function sample(keys, t){
+ const n = keys.length;
+ if(!n) return null;
+ if(n === 1 || t <= keys[0].t) return keys[0].v.slice();
+ if(t >= keys[n-1].t) return keys[n-1].v.slice();
+ let i = 0;
+ while(i < n - 1 && keys[i+1].t <= t) i++;
+ const a = keys[i], b = keys[i+1];
+ const k = (t - a.t) / (b.t - a.t);
+ if(a.interp === "step") return a.v.slice();
+ if(a.interp === "smooth"){
+  const p0 = (keys[i-1] || a).v, p3 = (keys[i+2] || b).v;
+  return a.v.map((_, j) => catmull(p0[j], a.v[j], b.v[j], p3[j], k));
+ }
+ return a.v.map((x, j) => x + (b.v[j] - x) * k);
+}
+
+function applyPose(){
+ BONES.forEach(b => CHANNELS.forEach(c => {
+  const tr = anim.tracks[b][c.id];
+  const v = tr.muted ? null : sample(tr.keys, time);
+  if(v) setPivot(b, c.id, v); else resetChannel(b, c.id);
+ }));
  updateInfo();
 }
 
+/* =========================================================
+   SELECTION / INFO
+========================================================= */
+function selectBone(name){
+ selectedBone = name;
+ tc.attach(pivots[name]);
+ updateChips();
+ updateSel();
+ updateInfo();
+}
+
+function buildChips(){
+ const c = $("chips");
+ c.innerHTML = "";
+ BONES.forEach(b => {
+  const e = el("button", "chip");
+  e.textContent = b;
+  e.dataset.bone = b;
+  e.onclick = () => selectBone(b);
+  c.appendChild(e);
+ });
+}
+function updateChips(){
+ document.querySelectorAll(".chip").forEach(e => e.classList.toggle("active", e.dataset.bone === selectedBone));
+}
+
 function updateInfo(){
- if(!selectedPart) return;
- const t = pivots[selectedPart.name] || selectedPart;
+ if(!selectedBone) return;
+ const p = pivots[selectedBone], d = THREE.MathUtils.radToDeg;
  $("info").innerHTML =
-  "<b style='color:#ff4d4d'>" + selectedPart.name + "</b><br>" +
-  "POS " + t.position.x.toFixed(2) + " / " + t.position.y.toFixed(2) + " / " + t.position.z.toFixed(2) + "<br>" +
-  "ROT " + THREE.MathUtils.radToDeg(t.rotation.x).toFixed(1) + "° / " +
-  THREE.MathUtils.radToDeg(t.rotation.y).toFixed(1) + "° / " +
-  THREE.MathUtils.radToDeg(t.rotation.z).toFixed(1) + "°";
+  "<b>"+selectedBone+"</b><br>" +
+  "pos "+f2(p.position.x)+" "+f2(p.position.y)+" "+f2(p.position.z)+"<br>" +
+  "rot "+d(p.rotation.x).toFixed(1)+" "+d(p.rotation.y).toFixed(1)+" "+d(p.rotation.z).toFixed(1)+"";
 }
 
+function setMode(m){
+ tc.setMode(m);
+ document.querySelectorAll("[data-mode]").forEach(b => b.classList.toggle("active", b.dataset.mode === m));
+}
+
+/* =========================================================
+   AUTO KEY (gizmo drag writes keyframes)
+========================================================= */
+function onGizmoChange(){
+ updateInfo();
+ if(!autoKey || !selectedBone || !dragging) return;
+ const ch = MODE_TO_CH[tc.getMode()];
+ const tr = anim.tracks[selectedBone][ch];
+ const t = snapT(time);
+ let k = tr.keys.find(x => sameT(x.t, t));
+ const v = getValue(selectedBone, ch);
+ if(k){
+  k.v = v;
+  if(!selKF || selKF.key !== k){ selKF = {bone:selectedBone, ch, key:k}; updateSel(); }
+ } else {
+  k = {t, v, interp:defaultInterp};
+  tr.keys.push(k);
+  tr.keys.sort((a, b) => a.t - b.t);
+  selKF = {bone:selectedBone, ch, key:k};
+  if(tr.muted){ tr.muted = false; buildTimeline(); } else { renderKeys(); updateSel(); }
+ }
+}
+
+/* =========================================================
+   KEYFRAME OPS
+========================================================= */
+function addKey(b, ch){
+ const tr = anim.tracks[b][ch];
+ const v = tr.muted ? getValue(b, ch) : getValue(b, ch);
+ const t = snapT(time);
+ let k = tr.keys.find(x => sameT(x.t, t));
+ if(k) k.v = v;
+ else {
+  k = {t, v, interp:defaultInterp};
+  tr.keys.push(k);
+  tr.keys.sort((a, c) => a.t - c.t);
+ }
+ selKF = {bone:b, ch, key:k};
+ if(tr.muted){ tr.muted = false; buildTimeline(); } else { renderKeys(); updateSel(); }
+ commit();
+ toast("Keyframe added");
+}
+
+function deleteKey(){
+ if(!selKF){ toast("Select a keyframe first"); return; }
+ const tr = anim.tracks[selKF.bone][selKF.ch];
+ tr.keys = tr.keys.filter(k => k !== selKF.key);
+ selKF = null;
+ applyPose(); renderKeys(); updateSel(); commit();
+ toast("Deleted");
+}
+
+function copyKey(){
+ if(!selKF){ toast("Select a keyframe first"); return; }
+ clipboard = {bone:selKF.bone, ch:selKF.ch, v:selKF.key.v.slice(), interp:selKF.key.interp};
+ updateSel();
+ toast("Copied");
+}
+
+function pasteKey(){
+ if(!clipboard){ toast("Nothing copied"); return; }
+ const b = selectedBone || clipboard.bone;
+ const tr = anim.tracks[b][clipboard.ch];
+ const t = snapT(time);
+ tr.keys = tr.keys.filter(k => !sameT(k.t, t));
+ const k = {t, v:clipboard.v.slice(), interp:clipboard.interp};
+ tr.keys.push(k);
+ tr.keys.sort((a, c) => a.t - c.t);
+ tr.muted = false;
+ selKF = {bone:b, ch:clipboard.ch, key:k};
+ applyPose(); buildTimeline(); commit();
+ toast("Pasted on " + b);
+}
+
+/* =========================================================
+   TIMELINE BUILD
+========================================================= */
 function buildTimeline(){
- $("labelRows").innerHTML = "";
- $("tracks").innerHTML = "";
- $("ruler").innerHTML = "";
+ const wrap = $("wrap");
+ const W = Math.ceil(anim.duration * zoom) + 80;
+ wrap.innerHTML = "";
+ wrap.style.width = (LABEL_W + W) + "px";
+ trkMap = {}; grpTrk = {};
 
- parts.forEach(name => {
-  const label = document.createElement("div");
-  label.className = "label"; label.textContent = name;
-  $("labelRows").appendChild(label);
+ /* ruler */
+ const rr = el("div", "row rulerRow");
+ const corner = el("div", "lab");
+ corner.textContent = "Parts";
+ rulerTrk = el("div", "trk");
+ rulerTrk.id = "rulerTrk";
+ rulerTrk.style.width = W + "px";
+ drawRuler();
+ phHead = el("div", "phHead");
+ rulerTrk.appendChild(phHead);
+ rr.append(corner, rulerTrk);
+ wrap.appendChild(rr);
 
-  const track = document.createElement("div");
-  track.className = "track"; track.dataset.part = name;
-  $("tracks").appendChild(track);
+ let scrubbing = false;
+ const scrub = e => setTime(xToTime(e.clientX));
+ rulerTrk.addEventListener("pointerdown", e => {
+  e.preventDefault();
+  rulerTrk.setPointerCapture(e.pointerId);
+  scrubbing = true;
+  setPlaying(false);
+  scrub(e);
+ });
+ rulerTrk.addEventListener("pointermove", e => { if(scrubbing) scrub(e); });
+ rulerTrk.addEventListener("pointerup", () => scrubbing = false);
+ rulerTrk.addEventListener("pointercancel", () => scrubbing = false);
+
+ const gridBg = "linear-gradient(to right, rgba(255,255,255,.06) 1px, transparent 1px)";
+
+ /* rows */
+ BONES.forEach(b => {
+  const isCol = collapsed.has(b);
+
+  const g = el("div", "row group");
+  g.dataset.bone = b;
+  const gl = el("div", "lab");
+  const chev = el("button");
+  chev.innerHTML = ic("chev", 18);
+  chev.firstChild.style.transform = isCol ? "rotate(-90deg)" : "";
+  chev.onclick = ev => {
+   ev.stopPropagation();
+   if(collapsed.has(b)) collapsed.delete(b); else collapsed.add(b);
+   buildTimeline();
+  };
+  const fo = el("span"); fo.innerHTML = ic("folder", 16); fo.style.color = "#6aa8ff"; fo.style.display = "flex";
+  const nm = el("span", "nm"); nm.textContent = b;
+  gl.append(chev, fo, nm);
+  gl.onclick = () => selectBone(b);
+  const gt = el("div", "trk");
+  gt.style.width = W + "px";
+  gt.style.backgroundImage = gridBg;
+  gt.style.backgroundSize = zoom + "px 100%";
+  gt.addEventListener("click", e => { selectBone(b); setTime(xToTime(e.clientX)); });
+  grpTrk[b] = gt;
+  g.append(gl, gt);
+  wrap.appendChild(g);
+
+  if(isCol) return;
+
+  CHANNELS.forEach(c => {
+   const tr = anim.tracks[b][c.id];
+   const r = el("div", "row ch" + (tr.muted ? " muted" : ""));
+   r.dataset.bone = b;
+
+   const lab = el("div", "lab");
+   const eye = el("button");
+   eye.innerHTML = ic(tr.muted ? "eyeoff" : "eye", 18);
+   eye.onclick = ev => {
+    ev.stopPropagation();
+    tr.muted = !tr.muted;
+    applyPose(); buildTimeline(); commit();
+   };
+   const n2 = el("span", "nm"); n2.textContent = c.label;
+   const add = el("button");
+   add.innerHTML = ic("add", 20);
+   add.onclick = ev => {
+    ev.stopPropagation();
+    selectBone(b); setMode(c.mode);
+    addKey(b, c.id);
+   };
+   lab.append(eye, n2, add);
+   lab.onclick = () => { selectBone(b); setMode(c.mode); };
+
+   const t = el("div", "trk");
+   t.style.width = W + "px";
+   t.style.backgroundImage = gridBg;
+   t.style.backgroundSize = zoom + "px 100%";
+   t.addEventListener("click", e => { selectBone(b); setMode(c.mode); setTime(xToTime(e.clientX)); });
+   trkMap[b + "|" + c.id] = t;
+
+   r.append(lab, t);
+   wrap.appendChild(r);
+  });
  });
 
- drawTimeline();
-}
+ /* playhead + end shade */
+ phEl = el("div"); phEl.id = "ph";
+ shadeEl = el("div"); shadeEl.id = "afterEnd";
+ shadeEl.style.left = (LABEL_W + anim.duration * zoom) + "px";
+ wrap.append(shadeEl, phEl);
 
-function pixelsPerSecond(){ return timelineZoom; }
-function timeToX(t){ return t * pixelsPerSecond(); }
-
-function xToTime(x){
- let t = x / pixelsPerSecond();
- const step = 1 / fps;
- t = Math.round(t / step) * step;
- return Math.max(0, Math.min(duration, t));
-}
-
-function drawTimeline(){
- const width = Math.max(800, duration * pixelsPerSecond() + 100);
- $("trackInner").style.width = width + "px";
- $("ruler").innerHTML = "";
-
- const visibleStep = 0.25;
- for(let t = 0; t <= duration + 0.001; t += visibleStep){
-  const tick = document.createElement("div");
-  tick.className = "tick " + (Math.abs(t % 1) < 0.001 ? "major" : "");
-  tick.style.left = timeToX(t) + "px";
-  tick.textContent = t.toFixed(2);
-  $("ruler").appendChild(tick);
-
-  const line = document.createElement("div");
-  line.className = "snapLine";
-  line.style.left = timeToX(t) + "px";
-  document.querySelectorAll(".track").forEach(track => track.appendChild(line.cloneNode()));
- }
- renderKeyframes();
+ renderKeys();
  updatePlayhead();
+ updateSel();
 }
 
-function renderKeyframes(){
- document.querySelectorAll(".kf").forEach(x => x.remove());
+function drawRuler(){
+ const steps = [0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 30, 60];
+ const step = steps.find(s => s * zoom >= 64) || 60;
+ const useMinor = step * zoom / 5 >= 7;
+ const minor = useMinor ? step / 5 : step;
+ const n = Math.floor(anim.duration / minor + 1e-6);
+ for(let i = 0; i <= n; i++){
+  const t = i * minor;
+  const major = useMinor ? (i % 5 === 0) : true;
+  const tk = el("div", "tick" + (major ? " maj" : ""));
+  tk.style.left = (t * zoom) + "px";
+  rulerTrk.appendChild(tk);
+  if(major){
+   const lb = el("div", "tickLab");
+   lb.style.left = (t * zoom) + "px";
+   lb.textContent = +t.toFixed(2);
+   rulerTrk.appendChild(lb);
+  }
+ }
+}
 
- keyframes.forEach((kf, index) => {
-  const track = document.querySelector('.track[data-part="' + kf.part + '"]');
-  if(!track) return;
-
-  const el = document.createElement("div");
-  el.className = "kf";
-  if(selectedKF === kf) el.classList.add("selected");
-  el.style.left = timeToX(kf.time) + "px";
-
-  el.addEventListener("click", e => {
-   e.stopPropagation();
-   selectedKF = kf;
-   currentTime = kf.time;
-   renderKeyframes();
-   updatePlayhead();
+function renderKeys(){
+ $("wrap").querySelectorAll(".kf,.kfdot").forEach(e => e.remove());
+ BONES.forEach(b => {
+  const times = new Set();
+  CHANNELS.forEach(c => {
+   const tr = anim.tracks[b][c.id];
+   tr.keys.forEach(k => times.add(k.t));
+   const host = trkMap[b + "|" + c.id];
+   if(!host) return;
+   tr.keys.forEach(k => host.appendChild(makeKf(b, c.id, k)));
   });
-
-  let holdTimer;
-  el.addEventListener("pointerdown", e => {
-   e.stopPropagation();
-   holdTimer = setTimeout(() => { selectedKF = kf; showContext(e.clientX, e.clientY); }, 500);
-   el.setPointerCapture(e.pointerId);
+  const g = grpTrk[b];
+  if(g) times.forEach(t => {
+   const d = el("div", "kfdot");
+   d.style.left = (t * zoom) + "px";
+   g.appendChild(d);
   });
-  el.addEventListener("pointerup", () => clearTimeout(holdTimer));
-  el.addEventListener("pointermove", e => {
-   if(selectedKF !== kf || e.pressure === 0) return;
-   clearTimeout(holdTimer);
-   const rect = $("trackInner").getBoundingClientRect();
-   const x = e.clientX - rect.left + $("trackViewport").scrollLeft;
-   kf.time = xToTime(x);
-   currentTime = kf.time;
-   updatePlayhead();
-   renderKeyframes();
-  });
-
-  track.appendChild(el);
  });
 }
 
-function addKeyframe(){
- if(!selectedPart) return;
- const t = xToTime(currentTime);
- const part = selectedPart.name;
- const target = pivots[part] || selectedPart;
+function makeKf(b, ch, k){
+ const e = el("div", "kf" + (k.interp === "smooth" ? " smooth" : k.interp === "step" ? " step" : ""));
+ e.style.left = (k.t * zoom) + "px";
+ e._k = k;
+ e.addEventListener("click", ev => ev.stopPropagation());
+ e.addEventListener("pointerdown", ev => {
+  ev.stopPropagation();
+  ev.preventDefault();
+  setPlaying(false);
+  selectedBone = b;
+  tc.attach(pivots[b]);
+  updateChips();
+  setMode(CHANNELS.find(c => c.id === ch).mode);
+  selKF = {bone:b, ch, key:k};
+  setTime(k.t);
+  updateSel();
 
- const kf = {
-  part: part, time: t, type: "Pose",
-  position: { x: target.position.x, y: target.position.y, z: target.position.z },
-  rotation: { x: target.rotation.x, y: target.rotation.y, z: target.rotation.z },
-  scale: { x: target.scale.x, y: target.scale.y, z: target.scale.z }
- };
-
- const existing = keyframes.find(x => x.part === part && Math.abs(x.time - t) < 0.0001);
- if(existing){ Object.assign(existing, kf); selectedKF = existing; }
- else { keyframes.push(kf); selectedKF = kf; }
-
- keyframes.sort((a, b) => a.time - b.time);
- renderKeyframes();
- showToast("Keyframe added");
-}
-
-function updatePlayhead(){
- $("playhead").style.left = timeToX(currentTime) + "px";
- $("timeReadout").textContent = currentTime.toFixed(2) + " / " + duration.toFixed(2);
-}
-
-function animatePlayback(){
- if(playing){
-  currentTime += 1 / 60;
-  if(currentTime >= duration){
-   if(loop) currentTime = 0;
-   else { currentTime = duration; playing = false; $("playBtn").textContent = "▶ PLAY"; }
-  }
-  applyNearestAnimation();
-  updatePlayhead();
- }
- requestAnimationFrame(animatePlayback);
-}
-
-function applyNearestAnimation(){
- if(!keyframes.length) return;
- for(const part of parts){
-  const list = keyframes.filter(k => k.part === part).sort((a, b) => a.time - b.time);
-  if(!list.length) continue;
-  let a = list[0], b = list[list.length - 1];
-  for(let i = 0; i < list.length - 1; i++){
-   if(currentTime >= list[i].time && currentTime <= list[i + 1].time){
-    a = list[i]; b = list[i + 1]; break;
+  e.setPointerCapture(ev.pointerId);
+  const sx = ev.clientX;
+  let moved = false;
+  const mv = m => {
+   if(!moved && Math.abs(m.clientX - sx) < 5) return;
+   moved = true;
+   const t = xToTime(m.clientX);
+   k.t = t;
+   e.style.left = (t * zoom) + "px";
+   time = t;
+   updatePlayhead();
+  };
+  const up = () => {
+   e.removeEventListener("pointermove", mv);
+   e.removeEventListener("pointerup", up);
+   e.removeEventListener("pointercancel", up);
+   if(moved){
+    const tr = anim.tracks[b][ch];
+    tr.keys = tr.keys.filter(o => o === k || !sameT(o.t, k.t));
+    tr.keys.sort((a, c) => a.t - c.t);
+    applyPose(); renderKeys(); updateSel(); commit();
    }
-  }
-  const span = b.time - a.time;
-  let alpha = span <= 0 ? 0 : (currentTime - a.time) / span;
-  alpha = Math.max(0, Math.min(1, alpha));
-  const target = pivots[part];
-  if(!target) continue;
+  };
+  e.addEventListener("pointermove", mv);
+  e.addEventListener("pointerup", up);
+  e.addEventListener("pointercancel", up);
+ });
+ return e;
+}
 
-  target.position.set(a.position.x + (b.position.x - a.position.x) * alpha, a.position.y + (b.position.y - a.position.y) * alpha, a.position.z + (b.position.z - a.position.z) * alpha);
-  target.rotation.set(a.rotation.x + (b.rotation.x - a.rotation.x) * alpha, a.rotation.y + (b.rotation.y - a.rotation.y) * alpha, a.rotation.z + (b.rotation.z - a.rotation.z) * alpha);
-  target.scale.set(a.scale.x + (b.scale.x - a.scale.x) * alpha, a.scale.y + (b.scale.y - a.scale.y) * alpha, a.scale.z + (b.scale.z - a.scale.z) * alpha);
+function updateSel(){
+ document.querySelectorAll("#wrap .row[data-bone]").forEach(r => r.classList.toggle("sel", r.dataset.bone === selectedBone));
+ document.querySelectorAll("#wrap .kf").forEach(e => e.classList.toggle("sel", !!selKF && e._k === selKF.key));
+ const has = !!selKF;
+ $("bCopy").disabled = !has;
+ $("bDel").disabled = !has;
+ $("bPaste").disabled = !clipboard;
+ $("interpSel").value = has ? selKF.key.interp : defaultInterp;
+ if(has){
+  const lab = CHANNELS.find(c => c.id === selKF.ch).label;
+  $("kfInfo").textContent = selKF.bone + " · " + lab + " @ " + selKF.key.t.toFixed(2) + "s";
+ } else {
+  $("kfInfo").textContent = "No keyframe selected";
  }
 }
 
-$("trackViewport").addEventListener("pointerdown", e => {
- if(e.target.classList.contains("kf")) return;
- const rect = $("trackInner").getBoundingClientRect();
- const x = e.clientX - rect.left + $("trackViewport").scrollLeft;
- currentTime = xToTime(x);
+/* =========================================================
+   TIME / PLAYBACK
+========================================================= */
+function xToTime(clientX){
+ const rect = rulerTrk.getBoundingClientRect();
+ return clampT(snapT((clientX - rect.left) / zoom));
+}
+
+function setTime(t){
+ time = clampT(t);
  updatePlayhead();
-});
-
-function copyKeyframe(){
- if(!selectedKF){ showToast("Select a keyframe first"); return; }
- clipboard = JSON.parse(JSON.stringify(selectedKF));
- showToast("Copied");
+ applyPose();
 }
 
-function pasteKeyframe(){
- if(!clipboard){ showToast("Nothing copied"); return; }
- const kf = JSON.parse(JSON.stringify(clipboard));
- kf.time = xToTime(currentTime);
- keyframes.push(kf);
- keyframes.sort((a, b) => a.time - b.time);
- selectedKF = kf;
- renderKeyframes();
- showToast("Pasted");
+function fmtTime(t){
+ const tf = Math.round(t * anim.fps);
+ const fr = tf % anim.fps;
+ const sec = Math.floor(tf / anim.fps);
+ const m = Math.floor(sec / 60), s = sec % 60;
+ return m + ":" + String(s).padStart(2, "0") + ":" + String(fr).padStart(2, "0");
 }
 
-function showContext(x, y){
- $("contextMenu").style.display = "block";
- $("contextMenu").style.left = Math.min(x, innerWidth - 145) + "px";
- $("contextMenu").style.top = Math.min(y, innerHeight - 110) + "px";
-}
+function updatePlayhead(follow){
+ if(!phEl) return;
+ const x = time * zoom;
+ phEl.style.left = (LABEL_W + x) + "px";
+ phHead.style.left = x + "px";
+ $("readout").textContent = fmtTime(time) + " / " + Math.round(anim.duration * anim.fps);
 
-function hideContext(){ $("contextMenu").style.display = "none"; }
-document.addEventListener("pointerdown", e => { if(!e.target.closest("#contextMenu")) hideContext(); });
-
-$("ctxDelete").onclick = () => {
- if(selectedKF){ keyframes = keyframes.filter(x => x !== selectedKF); selectedKF = null; renderKeyframes(); showToast("Deleted"); }
- hideContext();
-};
-
-$("ctxDuplicate").onclick = () => {
- if(selectedKF){
-  const copy = JSON.parse(JSON.stringify(selectedKF));
-  copy.time = xToTime(selectedKF.time + 1 / fps);
-  keyframes.push(copy); keyframes.sort((a, b) => a.time - b.time);
-  selectedKF = copy; renderKeyframes(); showToast("Duplicated");
+ if(follow){
+  const sc = $("tlScroll");
+  const cx = LABEL_W + x, sl = sc.scrollLeft, cw = sc.clientWidth;
+  if(cx - sl > cw - 24) sc.scrollLeft = cx - cw + 80;
+  else if(cx - sl < LABEL_W) sc.scrollLeft = Math.max(0, cx - LABEL_W - 20);
  }
- hideContext();
-};
-
-$("ctxType").onclick = () => {
- if(selectedKF){ selectedKF.type = selectedKF.type === "Pose" ? "Move" : "Pose"; showToast("Type: " + selectedKF.type); }
- hideContext();
-};
-
-let resizing = false, startY = 0, startH = 0;
-$("timelineHandle").addEventListener("pointerdown", e => { resizing = true; startY = e.clientY; startH = $("timeline").offsetHeight; $("timelineHandle").setPointerCapture(e.pointerId); });
-$("timelineHandle").addEventListener("pointermove", e => { if(!resizing) return; const h = startH + (startY - e.clientY); $("timeline").style.height = Math.max(80, Math.min(innerHeight - 50, h)) + "px"; });
-$("timelineHandle").addEventListener("pointerup", () => resizing = false);
-
-$("playBtn").onclick = () => { playing = !playing; $("playBtn").textContent = playing ? "❚❚ PAUSE" : "▶ PLAY"; };
-$("rewind").onclick = () => { currentTime = 0; playing = false; $("playBtn").textContent = "▶ PLAY"; updatePlayhead(); };
-$("prev").onclick = () => { currentTime = xToTime(currentTime - 1 / fps); updatePlayhead(); };
-$("next").onclick = () => { currentTime = xToTime(currentTime + 1 / fps); updatePlayhead(); };
-$("loop").onclick = () => { loop = !loop; $("loop").classList.toggle("active", loop); };
-$("addKf").onclick = addKeyframe;
-$("copyBtn").onclick = copyKeyframe;
-$("pasteBtn").onclick = pasteKeyframe;
-$("zoomIn").onclick = () => { timelineZoom = Math.min(400, timelineZoom + 25); drawTimeline(); };
-$("zoomOut").onclick = () => { timelineZoom = Math.max(40, timelineZoom - 25); drawTimeline(); };
-
-$("duration").onchange = e => { duration = Math.max(0.25, Number(e.target.value) || 2); if(currentTime > duration) currentTime = duration; drawTimeline(); };
-$("fps").onchange = e => { fps = Math.max(1, Number(e.target.value) || 30); drawTimeline(); };
-
-$("newBtn").onclick = () => {
- keyframes = []; selectedKF = null; currentTime = 0; playing = false;
- $("playBtn").textContent = "▶ PLAY";
- parts.forEach(name => { const t = pivots[name]; if(t){ if(name==="Torso")t.position.set(0,0,0); t.rotation.set(0,0,0); t.scale.set(1,1,1); } });
- drawTimeline(); showToast("New animation");
-};
-
-function resize(){
- camera.aspect = innerWidth / innerHeight;
- camera.updateProjectionMatrix();
- renderer.setSize(innerWidth, innerHeight);
 }
 
-let toastTimer;
-function showToast(msg){
- $("toast").textContent = msg; $("toast").style.display = "block";
- clearTimeout(toastTimer);
- toastTimer = setTimeout(() => { $("toast").style.display = "none"; }, 900);
+function setPlaying(p){
+ if(p === playing) return;
+ playing = p;
+ if(p && !anim.loop && time >= anim.duration) time = 0;
+ $("bPlay").innerHTML = ic(p ? "pause" : "play");
+ $("bPlay").classList.toggle("active", p);
 }
 
-function animate(){
- requestAnimationFrame(animate);
- orbitControls.update();
+function setZoom(z){
+ const sc = $("tlScroll");
+ const before = LABEL_W + time * zoom - sc.scrollLeft;
+ zoom = Math.max(40, Math.min(600, z));
+ buildTimeline();
+ sc.scrollLeft = Math.max(0, LABEL_W + time * zoom - before);
+}
+
+let lastT = performance.now();
+function frame(now){
+ requestAnimationFrame(frame);
+ const dt = Math.min(0.1, (now - lastT) / 1000);
+ lastT = now;
+ if(playing){
+  let t = time + dt * speed;
+  if(t >= anim.duration){
+   if(anim.loop) t = t % anim.duration;
+   else { t = anim.duration; setPlaying(false); }
+  }
+  time = t;
+  applyPose();
+  updatePlayhead(true);
+ }
+ orbit.update();
  renderer.render(scene, camera);
 }
 
-window.onload = init;
+/* =========================================================
+   HISTORY / FILE
+========================================================= */
+const serialize = () => JSON.stringify({d:anim.duration, f:anim.fps, l:anim.loop, t:anim.tracks});
+
+function commit(){
+ const s = serialize();
+ if(s === hist[hi]) return;
+ hist = hist.slice(0, hi + 1);
+ hist.push(s);
+ if(hist.length > 100) hist.shift();
+ hi = hist.length - 1;
+ updateHist();
+}
+function updateHist(){
+ $("btnUndo").disabled = hi <= 0;
+ $("btnRedo").disabled = hi >= hist.length - 1;
+}
+function restore(s){
+ const o = JSON.parse(s);
+ anim.duration = o.d; anim.fps = o.f; anim.loop = o.l; anim.tracks = o.t;
+ selKF = null;
+ syncInputs();
+ buildTimeline();
+ applyPose();
+}
+function undo(){ if(hi > 0){ hi--; restore(hist[hi]); updateHist(); toast("Undo"); } }
+function redo(){ if(hi < hist.length - 1){ hi++; restore(hist[hi]); updateHist(); toast("Redo"); } }
+
+function syncInputs(){
+ $("dur").value = anim.duration;
+ $("fps").value = anim.fps;
+ $("bLoop").classList.toggle("active", anim.loop);
+}
+
+function newAnim(){
+ setPlaying(false);
+ anim = {duration:2, fps:30, loop:true, tracks:freshTracks()};
+ time = 0; selKF = null;
+ syncInputs(); buildTimeline(); applyPose();
+ hist = [serialize()]; hi = 0; updateHist();
+}
+
+function saveAnim(){
+ const nm = ($("xName").value.trim() || "MizaxAnimation");
+ const data = {format:"mizax-anim", version:1, name:nm, duration:anim.duration, fps:anim.fps, loop:anim.loop, tracks:anim.tracks};
+ const blob = new Blob([JSON.stringify(data, null, 1)], {type:"application/json"});
+ const a = document.createElement("a");
+ a.href = URL.createObjectURL(blob);
+ a.download = nm.replace(/[^\w\-]+/g, "_") + ".json";
+ document.body.appendChild(a); a.click(); a.remove();
+ setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+ toast("Saved " + a.download);
+}
+
+function loadAnim(text){
+ try{
+  const o = JSON.parse(text);
+  if(o.format !== "mizax-anim") throw 0;
+  const tracks = freshTracks();
+  BONES.forEach(b => CHANNELS.forEach(c => {
+   const src = o.tracks && o.tracks[b] && o.tracks[b][c.id];
+   if(src && Array.isArray(src.keys)){
+    tracks[b][c.id].muted = !!src.muted;
+    tracks[b][c.id].keys = src.keys
+     .filter(k => typeof k.t === "number" && Array.isArray(k.v) && k.v.length === 3)
+     .map(k => ({t:k.t, v:k.v.map(Number), interp:["linear","smooth","step"].includes(k.interp) ? k.interp : "linear"}))
+     .sort((a, b) => a.t - b.t);
+   }
+  }));
+  setPlaying(false);
+  anim = {duration:Math.max(0.25, +o.duration || 2), fps:Math.max(1, +o.fps || 30), loop:o.loop !== false, tracks};
+  time = 0; selKF = null;
+  syncInputs(); buildTimeline(); applyPose();
+  hist = [serialize()]; hi = 0; updateHist();
+  toast("Loaded");
+  if(o.name) $("xName").value = o.name;
+  return true;
+ }catch(e){
+  toast("File is not a Mizax animation");
+  return false;
+ }
+}
+
+/* =========================================================
+   UI WIRING
+========================================================= */
+/* =========================================================
+   EXPORT .rbxmx  (Roblox KeyframeSequence)
+========================================================= */
+const I3 = [[1,0,0],[0,1,0],[0,0,1]];
+const R6_N  = [[-1,0,0],[0,0,1],[0,1,0]];   /* RootJoint + Neck C0 */
+const R6_RS = [[0,0,1],[0,1,0],[-1,0,0]];   /* Right Shoulder / Right Hip C0 */
+const R6_LS = [[0,0,-1],[0,1,0],[1,0,0]];   /* Left Shoulder / Left Hip C0 */
+const R6_C0 = {"Torso":R6_N, "Head":R6_N, "Right Arm":R6_RS, "Left Arm":R6_LS, "Right Leg":R6_RS, "Left Leg":R6_LS};
+
+const mm  = (A, B) => A.map(r => [0,1,2].map(j => r[0]*B[0][j] + r[1]*B[1][j] + r[2]*B[2][j]));
+const tr3 = A => [0,1,2].map(i => [0,1,2].map(j => A[j][i]));
+const mv  = (A, v) => A.map(r => r[0]*v[0] + r[1]*v[1] + r[2]*v[2]);
+
+function eulerToMat(deg){
+ const e = new THREE.Euler(THREE.MathUtils.degToRad(deg[0]), THREE.MathUtils.degToRad(deg[1]), THREE.MathUtils.degToRad(deg[2]), "XYZ");
+ const el = new THREE.Matrix4().makeRotationFromEuler(e).elements;
+ return [0,1,2].map(i => [0,1,2].map(j => el[j*4 + i]));
+}
+
+function poseData(b, t, o){
+ const rt = anim.tracks[b].rotation, ps = anim.tracks[b].position;
+ const rv = (!rt.muted && sample(rt.keys, t)) || [0,0,0];
+ const pv = (!ps.muted && sample(ps.keys, t)) || [0,0,0];
+ const s = [o.fx ? -1 : 1, o.fy ? -1 : 1, o.fz ? -1 : 1];
+ const E = eulerToMat(rv).map((r, i) => r.map((v, j) => v * s[i] * s[j]));
+ const d = pv.map((v, i) => v * s[i] * o.scale);
+ if(o.r6 && R6_C0[b]){
+  const C = R6_C0[b], Ct = tr3(C);
+  return {R: mm(mm(Ct, E), C), p: mv(Ct, d)};
+ }
+ return {R:E, p:d};
+}
+
+function easingFor(b, t){
+ let best = null;
+ ["rotation","position"].forEach(ch => {
+  anim.tracks[b][ch].keys.forEach(k => {
+   if(k.t <= t + 1e-4 && (!best || k.t > best.t + 1e-6)) best = k;
+  });
+ });
+ const i = best ? best.interp : "linear";
+ if(i === "step")   return {style:1, dir:0};
+ if(i === "smooth") return {style:3, dir:2};
+ return {style:0, dir:0};
+}
+
+function exportTimes(o){
+ const all = [0, anim.duration];
+ BONES.forEach(b => CHANNELS.forEach(c => anim.tracks[b][c.id].keys.forEach(k => {
+  if(k.t <= anim.duration + 1e-6) all.push(k.t);
+ })));
+ if(o.bake > 0){
+  const step = o.bake / anim.fps;
+  for(let t = 0; t <= anim.duration + 1e-6; t += step) all.push(Math.min(t, anim.duration));
+ }
+ all.sort((a, b) => a - b);
+ const out = [];
+ all.forEach(t => { if(!out.length || t - out[out.length-1] > 1e-4) out.push(+t.toFixed(4)); });
+ return out;
+}
+
+function buildRbxmx(o){
+ let id = 0;
+ const ref = () => "RBX" + (id++);
+ const esc = x => String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+ const n = v => { const s = (+(+v).toFixed(6)).toString(); return s === "-0" ? "0" : s; };
+ const cf = (R, p) =>
+  '<CoordinateFrame name="CFrame"><X>'+n(p[0])+'</X><Y>'+n(p[1])+'</Y><Z>'+n(p[2])+'</Z>' +
+  '<R00>'+n(R[0][0])+'</R00><R01>'+n(R[0][1])+'</R01><R02>'+n(R[0][2])+'</R02>' +
+  '<R10>'+n(R[1][0])+'</R10><R11>'+n(R[1][1])+'</R11><R12>'+n(R[1][2])+'</R12>' +
+  '<R20>'+n(R[2][0])+'</R20><R21>'+n(R[2][1])+'</R21><R22>'+n(R[2][2])+'</R22></CoordinateFrame>';
+ const named = o.fmt === "name";
+ const SN = {0:"Linear", 1:"Constant", 3:"Cubic"}, DN = {0:"In", 1:"Out", 2:"InOut"};
+ const en = (style, dir) => named
+  ? '<string name="EasingDirection">'+DN[dir]+'</string><string name="EasingStyle">'+SN[style]+'</string>'
+  : '<token name="EasingDirection">'+dir+'</token><token name="EasingStyle">'+style+'</token>';
+ const open = (name, w, style, dir, R, p) =>
+  '<Item class="Pose" referent="'+ref()+'"><Properties><string name="Name">'+esc(name)+'</string>' +
+  '<float name="Weight">'+w+'</float>' + (named ? '<bool name="Weighted">false</bool>' : '') +
+  en(style, dir) + cf(R, p)+'</Properties>';
+ const boneXml = (b, t) => {
+  const e = easingFor(b, t), d = poseData(b, t, o);
+  return open(b, 1, e.style, e.dir, d.R, d.p);
+ };
+
+ const out = [];
+ if(named){
+  out.push('<roblox version="4">');
+ } else {
+  out.push('<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">');
+  out.push('<Meta name="ExplicitAutoJoints">true</Meta>');
+  out.push('<External>null</External>');
+  out.push('<External>nil</External>');
+ }
+ out.push('<Item class="KeyframeSequence" referent="'+ref()+'"><Properties>' +
+  (named ? '<Content name="AnimationId"><null></null></Content><BinaryString name="AuthoredHipHeightScale">AA==</BinaryString>' : '') +
+  '<string name="Name">'+esc(o.name)+'</string>' +
+  '<bool name="Loop">'+(anim.loop ? "true" : "false")+'</bool>' +
+  (named ? '<float name="Priority">'+o.priority+'</float>' : '<token name="Priority">'+o.priority+'</token>') +
+  '</Properties>');
+
+ exportTimes(o).forEach(t => {
+  out.push('<Item class="Keyframe" referent="'+ref()+'"><Properties>' +
+   (named ? '<bool name="IsPose">false</bool>' : '') +
+   '<string name="Name">Keyframe</string><float name="Time">'+n(t)+'</float></Properties>');
+  out.push(open("HumanoidRootPart", named ? 1 : 0, 0, named ? 2 : 0, I3, [0,0,0]));
+  out.push(boneXml("Torso", t));
+  ["Head","Left Arm","Right Arm","Left Leg","Right Leg"].forEach(b => out.push(boneXml(b, t) + '</Item>'));
+  out.push('</Item></Item>');   /* close Torso, HumanoidRootPart */
+  out.push('</Item>');          /* close Keyframe */
+ });
+
+ out.push('</Item></roblox>');
+ return out.join("\n");
+}
+
+function openExport(){ $("exportModal").classList.add("open"); }
+function closeExport(){ $("exportModal").classList.remove("open"); }
+
+function doExport(){
+ const o = {
+  name: ($("xName").value.trim() || "MizaxAnimation"),
+  priority: $("xPri").value,
+  fmt: $("xFmt").value,
+  fx: $("xFx").checked, fy: $("xFy").checked, fz: $("xFz").checked,
+  r6: $("xR6").checked,
+  scale: +$("xScale").value || 1,
+  bake: Math.max(0, Math.round(+$("xBake").value || 0))
+ };
+ const xml = buildRbxmx(o);
+ const blob = new Blob([xml], {type:"text/xml"});
+ const a = document.createElement("a");
+ a.href = URL.createObjectURL(blob);
+ a.download = o.name.replace(/[^\w\-]+/g, "_") + ".rbxmx";
+ document.body.appendChild(a); a.click(); a.remove();
+ setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+ closeExport();
+ toast("Exported " + a.download);
+}
+
+function stepFrame(d){ setPlaying(false); setTime(snapT(time + d / anim.fps)); }
+function holdRepeat(btn, d){
+ let to = null, iv = null;
+ const stop = () => { clearTimeout(to); clearInterval(iv); to = iv = null; };
+ btn.addEventListener("pointerdown", e => {
+  e.preventDefault();
+  stop();
+  stepFrame(d);
+  to = setTimeout(() => { iv = setInterval(() => stepFrame(d), 55); }, 340);
+ });
+ ["pointerup","pointerleave","pointercancel"].forEach(ev => btn.addEventListener(ev, stop));
+}
+
+function setupUI(){
+ /* tiny haptic tick on every button press */
+ document.addEventListener("pointerdown", e => {
+  if(e.target.closest && e.target.closest("button") && navigator.vibrate) navigator.vibrate(6);
+ }, {passive:true});
+
+ document.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => setMode(b.dataset.mode));
+
+ $("btnSpace").onclick = () => {
+  const local = tc.space === "local";
+  tc.setSpace(local ? "world" : "local");
+  $("btnSpace").textContent = local ? "World" : "Local";
+ };
+ $("btnAuto").onclick = () => {
+  autoKey = !autoKey;
+  $("btnAuto").classList.toggle("active", autoKey);
+  toast("Auto key " + (autoKey ? "on" : "off"));
+ };
+ $("btnUndo").onclick = undo;
+ $("btnRedo").onclick = redo;
+
+ /* menu */
+ const menu = $("menu");
+ $("btnMenu").onclick = e => { e.stopPropagation(); menu.style.display = menu.style.display === "block" ? "none" : "block"; };
+ document.addEventListener("pointerdown", e => { if(!e.target.closest("#menu,#btnMenu")) menu.style.display = "none"; });
+ $("mNew").onclick = () => { menu.style.display = "none"; if(confirm("Start a new animation? Unsaved keyframes will be lost.")) newAnim(); };
+ $("mSave").onclick = () => { menu.style.display = "none"; saveAnim(); };
+ $("mExport").onclick = () => { menu.style.display = "none"; openExport(); };
+ $("xCancel").onclick = closeExport;
+ $("xGo").onclick = doExport;
+ $("exportModal").addEventListener("pointerdown", e => { if(e.target.id === "exportModal") closeExport(); });
+ $("mLoad").onclick = () => { menu.style.display = "none"; fileMode = "load"; $("fileIn").click(); };
+ $("mConvert").onclick = () => { menu.style.display = "none"; fileMode = "convert"; $("fileIn").click(); };
+ $("hLoad").onclick = () => { fileMode = "load"; $("fileIn").click(); };
+ $("hJson").onclick = saveAnim;
+ $("hRbx").onclick = doExport;
+ $("hOpt").onclick = openExport;
+ $("mReset").onclick = () => {
+  menu.style.display = "none";
+  if(!selectedBone) return;
+  CHANNELS.forEach(c => resetChannel(selectedBone, c.id));
+  updateInfo(); toast("Pose reset");
+ };
+ $("fileIn").onchange = e => {
+  const f = e.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = () => { const ok = loadAnim(r.result); if(ok && fileMode === "convert") doExport(); };
+  r.readAsText(f);
+  e.target.value = "";
+ };
+
+ /* transport */
+ $("bPlay").onclick = () => setPlaying(!playing);
+ $("bRewind").onclick = () => { setPlaying(false); setTime(0); $("tlScroll").scrollLeft = 0; };
+ holdRepeat($("bPrev"), -1);
+ holdRepeat($("bNext"), 1);
+ $("bLoop").onclick = () => { anim.loop = !anim.loop; $("bLoop").classList.toggle("active", anim.loop); commit(); };
+ $("bZoomIn").onclick = () => setZoom(zoom * 1.3);
+ $("bZoomOut").onclick = () => setZoom(zoom / 1.3);
+ $("spd").onchange = e => { speed = Math.max(0.1, Math.min(4, (+e.target.value || 100) / 100)); };
+
+ /* keyframes */
+ $("bKey").onclick = () => {
+  if(!selectedBone){ toast("Select a part first"); return; }
+  addKey(selectedBone, MODE_TO_CH[tc.getMode()]);
+ };
+ $("bCopy").onclick = copyKey;
+ $("bPaste").onclick = pasteKey;
+ $("bDel").onclick = deleteKey;
+ $("interpSel").onchange = e => {
+  if(selKF){
+   selKF.key.interp = e.target.value;
+   applyPose(); renderKeys(); updateSel(); commit();
+  } else defaultInterp = e.target.value;
+ };
+
+ $("dur").onchange = e => {
+  anim.duration = Math.max(0.25, +e.target.value || 2);
+  e.target.value = anim.duration;
+  if(time > anim.duration) time = anim.duration;
+  buildTimeline(); applyPose(); commit();
+ };
+ $("fps").onchange = e => {
+  anim.fps = Math.max(1, Math.min(120, Math.round(+e.target.value || 30)));
+  e.target.value = anim.fps;
+  updatePlayhead(); commit();
+ };
+
+ /* timeline panel: collapse + resize */
+ $("tlToggle").onclick = () => $("timeline").classList.toggle("collapsed");
+ const tl = $("timeline"), handle = $("tlHandle");
+ let rs = null;
+ handle.addEventListener("pointerdown", e => {
+  rs = {y:e.clientY, h:tl.offsetHeight};
+  handle.setPointerCapture(e.pointerId);
+  tl.classList.remove("collapsed");
+ });
+ handle.addEventListener("pointermove", e => {
+  if(!rs) return;
+  const h = rs.h + (rs.y - e.clientY);
+  tl.style.height = Math.max(150, Math.min(innerHeight * 0.8, h)) + "px";
+ });
+ handle.addEventListener("pointerup", () => rs = null);
+ handle.addEventListener("pointercancel", () => rs = null);
+
+ /* pinch zoom on timeline */
+ const sc = $("tlScroll");
+ let pinch = null;
+ const dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+ sc.addEventListener("touchstart", e => { if(e.touches.length === 2) pinch = {d:dist(e.touches), z:zoom}; }, {passive:true});
+ sc.addEventListener("touchmove", e => {
+  if(pinch && e.touches.length === 2){
+   e.preventDefault();
+   setZoom(pinch.z * dist(e.touches) / pinch.d);
+  }
+ }, {passive:false});
+ sc.addEventListener("touchend", () => pinch = null, {passive:true});
+
+ /* keyboard (desktop) */
+ addEventListener("keydown", e => {
+  if(/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
+  const k = e.key.toLowerCase();
+  if((e.ctrlKey || e.metaKey) && k === "z"){ e.preventDefault(); e.shiftKey ? redo() : undo(); }
+  else if((e.ctrlKey || e.metaKey) && k === "y"){ e.preventDefault(); redo(); }
+  else if((e.ctrlKey || e.metaKey) && k === "c") copyKey();
+  else if((e.ctrlKey || e.metaKey) && k === "v") pasteKey();
+  else if(k === "g") setMode("translate");
+  else if(k === "r") setMode("rotate");
+  else if(k === "k") $("bKey").click();
+  else if(k === " "){ e.preventDefault(); setPlaying(!playing); }
+  else if(k === "delete" || k === "backspace") deleteKey();
+  else if(k === "arrowleft") stepFrame(-1);
+  else if(k === "arrowright") stepFrame(1);
+ });
+}
+
+/* =========================================================
+   START
+========================================================= */
+window.onload = () => {
+ initScene();
+ buildChips();
+ setupUI();
+ buildTimeline();
+ selectBone("Head");
+ setMode("rotate");
+ applyPose();
+ hist = [serialize()]; hi = 0; updateHist();
+ requestAnimationFrame(frame);
+};
 </script>
 </body>
 </html>
