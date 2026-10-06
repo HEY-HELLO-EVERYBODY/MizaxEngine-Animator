@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-<title>MizaxEngine Animator Full V1</title>
+<title>MizaxEngine Animator Roblox Style</title>
 
 <style>
 *{
@@ -17,26 +17,27 @@ html,body{
  width:100%;
  height:100%;
  overflow:hidden;
- background:#080808;
- color:#eee;
- font-family:Arial,sans-serif;
+ background:#0f0f0f;
+ color:#ddd;
+ font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;
 }
 
 button{
- background:#171717;
- color:#ddd;
- border:1px solid #333;
- border-radius:0;
- padding:7px 10px;
+ background:rgba(40,40,40,0.6);
+ color:#ccc;
+ border:1px solid rgba(255,255,255,0.15);
+ border-radius:4px;
+ padding:6px 10px;
  font-size:11px;
  white-space:nowrap;
  cursor:pointer;
+ backdrop-filter:blur(6px);
 }
 
-button:active{background:#2a2a2a}
+button:active{background:rgba(80,80,80,0.8)}
 button.active{
- background:#7b1010;
- border-color:#d51b1b;
+ background:rgba(180,20,20,0.7);
+ border-color:rgba(255,80,80,0.5);
  color:#fff;
 }
 
@@ -52,135 +53,145 @@ button.active{
  height:100%;
 }
 
+/* TOP BAR TRANSPARAN ALA ROBLOX STUDIO */
 #topbar{
  position:absolute;
- top:0;
- left:0;
- right:0;
- height:48px;
- background:#0d0d0d;
- border-bottom:1px solid #292929;
+ top:8px;
+ left:8px;
+ right:8px;
+ height:44px;
+ background:rgba(20,20,20,0.5);
+ backdrop-filter:blur(8px);
+ border:1px solid rgba(255,255,255,0.1);
+ border-radius:6px;
  z-index:20;
  display:flex;
  align-items:center;
  gap:4px;
- padding:5px;
+ padding:0 8px;
  overflow-x:auto;
 }
 
 .logo{
- color:#e21b23;
+ color:#ff3333;
  font-weight:bold;
- font-size:13px;
- margin:0 8px 0 3px;
+ font-size:12px;
+ margin:0 8px 0 2px;
  white-space:nowrap;
+ letter-spacing:1px;
 }
 
 #playBtn{
- min-width:58px;
+ min-width:54px;
 }
 
-#duration{
- width:55px;
- background:#111;
+#duration, #fps{
+ width:48px;
+ background:rgba(15,15,15,0.6);
  color:#fff;
- border:1px solid #333;
- border-radius:0;
- padding:7px 5px;
+ border:1px solid rgba(255,255,255,0.15);
+ border-radius:4px;
+ padding:5px 4px;
  font-size:11px;
+ text-align:center;
 }
 
-#fps{
- width:45px;
- background:#111;
- color:#fff;
- border:1px solid #333;
- border-radius:0;
- padding:7px 4px;
- font-size:11px;
-}
-
+/* PANEL RIG / HIERARCHY (TRANSARAN 0.5) */
 #rigPanel{
  position:absolute;
- top:58px;
+ top:60px;
  left:8px;
- width:190px;
- max-height:45vh;
- background:rgba(12,12,12,.94);
- border:1px solid #292929;
+ width:185px;
+ max-height:42vh;
+ background:rgba(20,20,20,0.5);
+ backdrop-filter:blur(10px);
+ border:1px solid rgba(255,255,255,0.1);
+ border-radius:6px;
  z-index:15;
  overflow:hidden;
+ box-shadow:0 8px 32px rgba(0,0,0,0.4);
 }
 
 .panelTitle{
- height:30px;
+ height:28px;
  display:flex;
  align-items:center;
  padding:0 8px;
- color:#e21b23;
- font-size:11px;
+ color:#ff4d4d;
+ font-size:10px;
  font-weight:bold;
- border-bottom:1px solid #292929;
+ border-bottom:1px solid rgba(255,255,255,0.08);
+ background:rgba(25,25,25,0.3);
 }
 
 .tree{
  overflow:auto;
- max-height:calc(45vh - 30px);
+ max-height:calc(42vh - 28px);
 }
 
 .treeRow{
- height:27px;
+ height:26px;
  display:flex;
  align-items:center;
- padding-left:10px;
+ padding-left:8px;
  font-size:11px;
- border-bottom:1px solid #171717;
+ border-bottom:1px solid rgba(255,255,255,0.04);
  cursor:pointer;
+ color:#ccc;
 }
 
 .treeRow:active,
 .treeRow.selected{
- background:#681010;
+ background:rgba(180,20,20,0.6);
  color:#fff;
 }
 
 .treeArrow{
- color:#777;
- width:15px;
+ color:#888;
+ width:14px;
 }
 
+/* PANEL INFO TRANSFORM */
 #info{
  position:absolute;
- top:calc(58px + 45vh + 7px);
+ top:calc(60px + 42vh + 6px);
  left:8px;
- width:190px;
- background:rgba(12,12,12,.94);
- border:1px solid #292929;
+ width:185px;
+ background:rgba(20,20,20,0.5);
+ backdrop-filter:blur(10px);
+ border:1px solid rgba(255,255,255,0.1);
+ border-radius:6px;
  z-index:15;
  padding:8px;
  font:10px monospace;
  line-height:1.55;
+ box-shadow:0 8px 32px rgba(0,0,0,0.4);
+ color:#bbb;
 }
 
+/* TIMELINE BAWAH */
 #timeline{
  position:absolute;
- left:0;
- right:0;
- bottom:0;
- height:250px;
- min-height:90px;
- background:#0b0b0b;
- border-top:2px solid #9c1717;
+ left:8px;
+ right:8px;
+ bottom:8px;
+ height:230px;
+ min-height:80px;
+ background:rgba(16,16,16,0.6);
+ backdrop-filter:blur(12px);
+ border:1px solid rgba(255,255,255,0.12);
+ border-radius:8px;
  z-index:30;
  display:flex;
  flex-direction:column;
+ box-shadow:0 10px 40px rgba(0,0,0,0.5);
+ overflow:hidden;
 }
 
 #timelineHandle{
- height:10px;
+ height:8px;
  flex:none;
- background:#151515;
- border-bottom:1px solid #333;
+ background:rgba(30,30,30,0.4);
  cursor:ns-resize;
  position:relative;
 }
@@ -188,29 +199,31 @@ button.active{
 #timelineHandle:after{
  content:"";
  position:absolute;
- width:35px;
- height:3px;
- background:#666;
+ width:30px;
+ height:2px;
+ background:rgba(255,255,255,0.3);
  left:50%;
  top:3px;
  transform:translateX(-50%);
+ border-radius:2px;
 }
 
 #timeControls{
- height:39px;
+ height:36px;
  flex:none;
  display:flex;
  align-items:center;
  gap:4px;
- padding:4px 6px;
- border-bottom:1px solid #292929;
+ padding:4px 8px;
+ border-bottom:1px solid rgba(255,255,255,0.08);
  overflow-x:auto;
+ background:rgba(20,20,20,0.2);
 }
 
 #timeReadout{
  color:#ddd;
- font:11px monospace;
- min-width:76px;
+ font:10px monospace;
+ min-width:70px;
  text-align:center;
 }
 
@@ -222,32 +235,33 @@ button.active{
 }
 
 #labels{
- width:135px;
- min-width:135px;
- background:#0e0e0e;
- border-right:1px solid #333;
+ width:125px;
+ min-width:125px;
+ background:rgba(15,15,15,0.4);
+ border-right:1px solid rgba(255,255,255,0.08);
  overflow:hidden;
 }
 
 .labelHead{
- height:30px;
- border-bottom:1px solid #333;
+ height:26px;
+ border-bottom:1px solid rgba(255,255,255,0.08);
  display:flex;
  align-items:center;
  padding-left:8px;
- color:#777;
- font-size:10px;
+ color:#888;
+ font-size:9px;
 }
 
 .label{
- height:34px;
+ height:32px;
  display:flex;
  align-items:center;
  padding-left:8px;
- border-bottom:1px solid #1d1d1d;
+ border-bottom:1px solid rgba(255,255,255,0.04);
  font-size:10px;
  white-space:nowrap;
  overflow:hidden;
+ color:#ccc;
 }
 
 #trackViewport{
@@ -259,43 +273,43 @@ button.active{
 
 #trackInner{
  position:relative;
- min-width:900px;
+ min-width:800px;
  height:100%;
 }
 
 #ruler{
- height:30px;
+ height:26px;
  position:relative;
- border-bottom:1px solid #333;
- background:#111;
+ border-bottom:1px solid rgba(255,255,255,0.08);
+ background:rgba(20,20,20,0.3);
 }
 
 .tick{
  position:absolute;
  top:0;
- height:30px;
- border-left:1px solid #343434;
- color:#777;
+ height:26px;
+ border-left:1px solid rgba(255,255,255,0.1);
+ color:#888;
  font:9px monospace;
- padding:3px 0 0 4px;
+ padding:3px 0 0 3px;
 }
 
 .tick.major{
- border-color:#555;
- color:#aaa;
+ border-color:rgba(255,255,255,0.25);
+ color:#ccc;
 }
 
 #tracks{
  position:absolute;
- top:30px;
+ top:26px;
  left:0;
  right:0;
 }
 
 .track{
- height:34px;
+ height:32px;
  position:relative;
- border-bottom:1px solid #1d1d1d;
+ border-bottom:1px solid rgba(255,255,255,0.04);
 }
 
 .snapLine{
@@ -303,27 +317,27 @@ button.active{
  top:0;
  bottom:0;
  width:1px;
- background:#242424;
+ background:rgba(255,255,255,0.03);
  pointer-events:none;
 }
 
 .kf{
  position:absolute;
- top:10px;
- width:12px;
- height:12px;
- background:#777;
- border:1px solid #aaa;
+ top:9px;
+ width:10px;
+ height:10px;
+ background:#888;
+ border:1px solid #ccc;
  transform:rotate(45deg);
- margin-left:-6px;
+ margin-left:-5px;
  cursor:pointer;
  z-index:5;
 }
 
 .kf.selected{
- background:#e21b23;
- border-color:#ff6767;
- box-shadow:0 0 8px #d51b1b;
+ background:#ff3333;
+ border-color:#ff9999;
+ box-shadow:0 0 6px #ff3333;
 }
 
 #playhead{
@@ -331,7 +345,7 @@ button.active{
  top:0;
  bottom:0;
  width:2px;
- background:#e21b23;
+ background:#ff3333;
  z-index:20;
  pointer-events:none;
 }
@@ -339,10 +353,10 @@ button.active{
 #playheadHead{
  position:absolute;
  top:0;
- left:-5px;
- width:12px;
- height:12px;
- background:#e21b23;
+ left:-4px;
+ width:10px;
+ height:10px;
+ background:#ff3333;
  clip-path:polygon(0 0,100% 0,50% 100%);
 }
 
@@ -350,63 +364,53 @@ button.active{
  position:fixed;
  display:none;
  z-index:100;
- background:#111;
- border:1px solid #555;
- width:150px;
- box-shadow:0 5px 20px #000;
+ background:rgba(20,20,20,0.85);
+ backdrop-filter:blur(10px);
+ border:1px solid rgba(255,255,255,0.2);
+ border-radius:6px;
+ width:140px;
+ box-shadow:0 8px 24px rgba(0,0,0,0.5);
+ overflow:hidden;
 }
 
 .ctxTitle{
- padding:7px;
- color:#e21b23;
- font-size:10px;
- border-bottom:1px solid #333;
+ padding:6px 8px;
+ color:#ff4d4d;
+ font-size:9px;
+ border-bottom:1px solid rgba(255,255,255,0.1);
+ font-weight:bold;
 }
 
 .ctxBtn{
  width:100%;
  border:0;
- border-bottom:1px solid #292929;
+ border-bottom:1px solid rgba(255,255,255,0.05);
  text-align:left;
- padding:9px;
- background:#151515;
+ padding:8px;
+ background:transparent;
  color:#ddd;
+ font-size:10px;
  cursor:pointer;
 }
 
 .ctxBtn:active{
- background:#721313;
+ background:rgba(180,20,20,0.6);
 }
 
 #toast{
  position:absolute;
  left:50%;
- bottom:270px;
+ bottom:250px;
  transform:translateX(-50%);
- background:#111;
- border:1px solid #e21b23;
- padding:7px 12px;
+ background:rgba(20,20,20,0.85);
+ backdrop-filter:blur(8px);
+ border:1px solid rgba(255,51,51,0.5);
+ border-radius:4px;
+ padding:6px 10px;
  font-size:10px;
  z-index:100;
  display:none;
-}
-
-@media(max-width:600px){
- #rigPanel{
-  width:155px;
-  max-height:35vh;
- }
- #info{
-  width:155px;
-  top:calc(58px + 35vh + 5px);
-  font-size:9px;
- }
- #labels{
-  width:110px;
-  min-width:110px;
- }
- .logo{font-size:11px}
- #timeline{height:235px}
+ color:#fff;
 }
 </style>
 </head>
@@ -416,7 +420,7 @@ button.active{
 <div id="viewports"></div>
 
 <div id="topbar">
- <div class="logo">MIZAXENGINE</div>
+ <div class="logo">MIZAX</div>
  <button id="rewind">⏮</button>
  <button id="prev">◀</button>
  <button id="playBtn">▶ PLAY</button>
@@ -425,15 +429,14 @@ button.active{
  <button id="copyBtn">COPY</button>
  <button id="pasteBtn">PASTE</button>
  <button id="newBtn">NEW</button>
- <span style="color:#555">│</span>
- <span style="font-size:9px;color:#777">DURATION</span>
+ <span style="font-size:9px;color:#777;margin-left:4px;">DUR</span>
  <input id="duration" type="number" value="2" min="0.25" step="0.25">
  <span style="font-size:9px;color:#777">FPS</span>
  <input id="fps" type="number" value="30" min="1" max="120">
 </div>
 
 <div id="rigPanel">
- <div class="panelTitle">RIG / HIERARCHY</div>
+ <div class="panelTitle">EXPLORER (RIG)</div>
  <div class="tree" id="tree"></div>
 </div>
 
@@ -479,10 +482,6 @@ button.active{
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TransformControls.js"></script>
 
 <script>
-/* =========================================================
-   MIZAXENGINE ANIMATOR FULL V1
-========================================================= */
-
 let scene, camera, renderer;
 let orbitControls, transformControls;
 let r6Rig = {};
@@ -500,37 +499,17 @@ let keyframes = [];
 let selectedKF = null;
 let clipboard = null;
 
-const parts = [
- "Torso",
- "Head",
- "Left Arm",
- "Right Arm",
- "Left Leg",
- "Right Leg"
-];
-
+const parts = ["Torso", "Head", "Left Arm", "Right Arm", "Left Leg", "Right Leg"];
 const $ = id => document.getElementById(id);
-
-/* =========================================================
-   INIT
-========================================================= */
 
 function init(){
  scene = new THREE.Scene();
- scene.background = new THREE.Color(0x1a1a1a);
+ scene.background = new THREE.Color(0x141414);
 
- camera = new THREE.PerspectiveCamera(
-  50,
-  innerWidth / innerHeight,
-  0.1,
-  1000
- );
+ camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 1000);
  camera.position.set(7, 5, 9);
 
- renderer = new THREE.WebGLRenderer({
-  antialias: true,
-  alpha: false
- });
+ renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
  renderer.setSize(innerWidth, innerHeight);
  renderer.shadowMap.enabled = true;
@@ -549,25 +528,16 @@ function init(){
  transformControls.setSize(0.75);
  scene.add(transformControls);
 
- transformControls.addEventListener(
-  "dragging-changed",
-  e => orbitControls.enabled = !e.value
- );
+ transformControls.addEventListener("dragging-changed", e => orbitControls.enabled = !e.value);
+ transformControls.addEventListener("change", () => updateInfo());
 
- transformControls.addEventListener(
-  "change",
-  () => updateInfo()
- );
-
- const ambient = new THREE.AmbientLight(0xffffff, 0.72);
- scene.add(ambient);
-
+ scene.add(new THREE.AmbientLight(0xffffff, 0.72));
  const light = new THREE.DirectionalLight(0xffffff, 0.85);
  light.position.set(5, 10, 7);
  light.castShadow = true;
  scene.add(light);
 
- const grid = new THREE.GridHelper(20, 20, 0x444444, 0x222222);
+ const grid = new THREE.GridHelper(20, 20, 0x333333, 0x1c1c1c);
  grid.position.y = -2;
  scene.add(grid);
 
@@ -576,20 +546,14 @@ function init(){
  buildTimeline();
 
  window.addEventListener("resize", resize);
-
  animate();
  animatePlayback();
 }
-
-/* =========================================================
-   ROUNDED BOX
-========================================================= */
 
 function roundedBox(w, h, d, r){
  const s = new THREE.Shape();
  const x = -w / 2, y = -h / 2;
  const rr = Math.min(r, w / 2, h / 2);
-
  s.moveTo(x + rr, y);
  s.lineTo(x + w - rr, y);
  s.quadraticCurveTo(x + w, y, x + w, y + rr);
@@ -601,42 +565,27 @@ function roundedBox(w, h, d, r){
  s.quadraticCurveTo(x, y, x + rr, y);
 
  const g = new THREE.ExtrudeGeometry(s, {
-  depth: d,
-  bevelEnabled: true,
-  bevelSegments: 2,
-  bevelSize: r * 0.35,
-  bevelThickness: r * 0.35,
-  curveSegments: 4
+  depth: d, bevelEnabled: true, bevelSegments: 2,
+  bevelSize: r * 0.35, bevelThickness: r * 0.35, curveSegments: 4
  });
  g.center();
  return g;
 }
 
-/* =========================================================
-   FACE TEXTURE
-========================================================= */
-
 function faceTexture(){
  const c = document.createElement("canvas");
- c.width = 512;
- c.height = 512;
+ c.width = 512; c.height = 512;
  const ctx = c.getContext("2d");
  ctx.clearRect(0, 0, 512, 512);
-
  ctx.fillStyle = "#111";
  ctx.textAlign = "center";
  ctx.textBaseline = "middle";
  ctx.font = "bold 150px Arial";
  ctx.fillText(">v<", 256, 330);
-
  const t = new THREE.CanvasTexture(c);
  t.needsUpdate = true;
  return t;
 }
-
-/* =========================================================
-   R6 RIG
-========================================================= */
 
 function buildR6Rig(){
  const root = new THREE.Group();
@@ -647,53 +596,36 @@ function buildR6Rig(){
  const torsoMat = new THREE.MeshPhongMaterial({ color: 0x00a2ff, shininess: 20 });
  const legMat = new THREE.MeshPhongMaterial({ color: 0xcd2027, shininess: 20 });
  const headMat = new THREE.MeshPhongMaterial({ color: 0xffffff, shininess: 25 });
- const faceMat = new THREE.MeshBasicMaterial({
-  map: faceTexture(),
-  transparent: true,
-  alphaTest: 0.01,
-  depthWrite: false,
-  side: THREE.DoubleSide
- });
+ const faceMat = new THREE.MeshBasicMaterial({ map: faceTexture(), transparent: true, alphaTest: 0.01, depthWrite: false, side: THREE.DoubleSide });
 
  const torsoGeo = roundedBox(2, 2, 1, 0.16);
  const armGeo = roundedBox(1, 2, 1, 0.16);
  const legGeo = roundedBox(1, 2, 1, 0.16);
  const headGeo = new THREE.BoxGeometry(1.2, 1.2, 1.2);
 
- /* TORSO */
  const torso = new THREE.Mesh(torsoGeo, torsoMat);
  torso.name = "Torso";
- torso.castShadow = true;
- torso.receiveShadow = true;
+ torso.castShadow = true; torso.receiveShadow = true;
  root.add(torso);
- r6Rig.Torso = torso;
- pivots.Torso = torso;
+ r6Rig.Torso = torso; pivots.Torso = torso;
 
- /* HEAD */
  const headPivot = new THREE.Group();
- headPivot.name = "HeadPivot";
- headPivot.position.set(0, 1, 0);
+ headPivot.name = "HeadPivot"; headPivot.position.set(0, 1, 0);
  torso.add(headPivot);
 
  const head = new THREE.Mesh(headGeo, headMat);
- head.name = "Head";
- head.position.set(0, 0.6, 0);
- head.castShadow = true;
- head.receiveShadow = true;
+ head.name = "Head"; head.position.set(0, 0.6, 0);
+ head.castShadow = true; head.receiveShadow = true;
  headPivot.add(head);
 
  const face = new THREE.Mesh(new THREE.PlaneGeometry(0.82, 0.48), faceMat);
  face.position.set(0, 0.20, 0.606);
  head.add(face);
 
- r6Rig.Head = head;
- pivots.Head = headPivot;
+ r6Rig.Head = head; pivots.Head = headPivot;
 
- /* ARMS */
  createLimb("Left Arm", -1.5, 1, armGeo, bodyMat, "LeftArmPivot");
  createLimb("Right Arm", 1.5, 1, armGeo, bodyMat, "RightArmPivot");
-
- /* LEGS */
  createLimb("Left Leg", -0.5, -1, legGeo, legMat, "LeftLegPivot");
  createLimb("Right Leg", 0.5, -1, legGeo, legMat, "RightLegPivot");
 
@@ -703,24 +635,16 @@ function buildR6Rig(){
 
 function createLimb(name, x, y, geo, mat, pivotName){
  const pivot = new THREE.Group();
- pivot.name = pivotName;
- pivot.position.set(x, y, 0);
+ pivot.name = pivotName; pivot.position.set(x, y, 0);
  r6Rig.Torso.add(pivot);
 
  const mesh = new THREE.Mesh(geo, mat);
- mesh.name = name;
- mesh.position.set(0, -1, 0);
- mesh.castShadow = true;
- mesh.receiveShadow = true;
+ mesh.name = name; mesh.position.set(0, -1, 0);
+ mesh.castShadow = true; mesh.receiveShadow = true;
  pivot.add(mesh);
 
- r6Rig[name] = mesh;
- pivots[name] = pivot;
+ r6Rig[name] = mesh; pivots[name] = pivot;
 }
-
-/* =========================================================
-   TREE & SELECTION
-========================================================= */
 
 function buildTree(){
  $("tree").innerHTML = "";
@@ -749,16 +673,12 @@ function updateInfo(){
  if(!selectedPart) return;
  const t = pivots[selectedPart.name] || selectedPart;
  $("info").innerHTML =
-  "<b style='color:#e21b23'>" + selectedPart.name + "</b><br>" +
+  "<b style='color:#ff4d4d'>" + selectedPart.name + "</b><br>" +
   "POS " + t.position.x.toFixed(2) + " / " + t.position.y.toFixed(2) + " / " + t.position.z.toFixed(2) + "<br>" +
   "ROT " + THREE.MathUtils.radToDeg(t.rotation.x).toFixed(1) + "° / " +
   THREE.MathUtils.radToDeg(t.rotation.y).toFixed(1) + "° / " +
   THREE.MathUtils.radToDeg(t.rotation.z).toFixed(1) + "°";
 }
-
-/* =========================================================
-   TIMELINE
-========================================================= */
 
 function buildTimeline(){
  $("labelRows").innerHTML = "";
@@ -767,13 +687,11 @@ function buildTimeline(){
 
  parts.forEach(name => {
   const label = document.createElement("div");
-  label.className = "label";
-  label.textContent = name;
+  label.className = "label"; label.textContent = name;
   $("labelRows").appendChild(label);
 
   const track = document.createElement("div");
-  track.className = "track";
-  track.dataset.part = name;
+  track.className = "track"; track.dataset.part = name;
   $("tracks").appendChild(track);
  });
 
@@ -791,12 +709,11 @@ function xToTime(x){
 }
 
 function drawTimeline(){
- const width = Math.max(900, duration * pixelsPerSecond() + 100);
+ const width = Math.max(800, duration * pixelsPerSecond() + 100);
  $("trackInner").style.width = width + "px";
  $("ruler").innerHTML = "";
 
- const visibleStep = fps >= 60 ? 0.25 : fps >= 30 ? 0.25 : 0.5;
-
+ const visibleStep = 0.25;
  for(let t = 0; t <= duration + 0.001; t += visibleStep){
   const tick = document.createElement("div");
   tick.className = "tick " + (Math.abs(t % 1) < 0.001 ? "major" : "");
@@ -807,11 +724,8 @@ function drawTimeline(){
   const line = document.createElement("div");
   line.className = "snapLine";
   line.style.left = timeToX(t) + "px";
-  document.querySelectorAll(".track").forEach(track => {
-   track.appendChild(line.cloneNode());
-  });
+  document.querySelectorAll(".track").forEach(track => track.appendChild(line.cloneNode()));
  }
-
  renderKeyframes();
  updatePlayhead();
 }
@@ -827,7 +741,6 @@ function renderKeyframes(){
   el.className = "kf";
   if(selectedKF === kf) el.classList.add("selected");
   el.style.left = timeToX(kf.time) + "px";
-  el.dataset.index = index;
 
   el.addEventListener("click", e => {
    e.stopPropagation();
@@ -840,15 +753,10 @@ function renderKeyframes(){
   let holdTimer;
   el.addEventListener("pointerdown", e => {
    e.stopPropagation();
-   holdTimer = setTimeout(() => {
-    selectedKF = kf;
-    showContext(e.clientX, e.clientY);
-   }, 500);
+   holdTimer = setTimeout(() => { selectedKF = kf; showContext(e.clientX, e.clientY); }, 500);
    el.setPointerCapture(e.pointerId);
   });
-
   el.addEventListener("pointerup", () => clearTimeout(holdTimer));
-
   el.addEventListener("pointermove", e => {
    if(selectedKF !== kf || e.pressure === 0) return;
    clearTimeout(holdTimer);
@@ -864,10 +772,6 @@ function renderKeyframes(){
  });
 }
 
-/* =========================================================
-   KEYFRAME ACTIONS
-========================================================= */
-
 function addKeyframe(){
  if(!selectedPart) return;
  const t = xToTime(currentTime);
@@ -875,22 +779,15 @@ function addKeyframe(){
  const target = pivots[part] || selectedPart;
 
  const kf = {
-  part: part,
-  time: t,
-  type: "Pose",
+  part: part, time: t, type: "Pose",
   position: { x: target.position.x, y: target.position.y, z: target.position.z },
   rotation: { x: target.rotation.x, y: target.rotation.y, z: target.rotation.z },
   scale: { x: target.scale.x, y: target.scale.y, z: target.scale.z }
  };
 
  const existing = keyframes.find(x => x.part === part && Math.abs(x.time - t) < 0.0001);
- if(existing){
-  Object.assign(existing, kf);
-  selectedKF = existing;
- } else {
-  keyframes.push(kf);
-  selectedKF = kf;
- }
+ if(existing){ Object.assign(existing, kf); selectedKF = existing; }
+ else { keyframes.push(kf); selectedKF = kf; }
 
  keyframes.sort((a, b) => a.time - b.time);
  renderKeyframes();
@@ -898,8 +795,7 @@ function addKeyframe(){
 }
 
 function updatePlayhead(){
- const x = timeToX(currentTime);
- $("playhead").style.left = x + "px";
+ $("playhead").style.left = timeToX(currentTime) + "px";
  $("timeReadout").textContent = currentTime.toFixed(2) + " / " + duration.toFixed(2);
 }
 
@@ -907,13 +803,8 @@ function animatePlayback(){
  if(playing){
   currentTime += 1 / 60;
   if(currentTime >= duration){
-   if(loop){
-    currentTime = 0;
-   } else {
-    currentTime = duration;
-    playing = false;
-    $("playBtn").textContent = "▶ PLAY";
-   }
+   if(loop) currentTime = 0;
+   else { currentTime = duration; playing = false; $("playBtn").textContent = "▶ PLAY"; }
   }
   applyNearestAnimation();
   updatePlayhead();
@@ -923,48 +814,26 @@ function animatePlayback(){
 
 function applyNearestAnimation(){
  if(!keyframes.length) return;
-
  for(const part of parts){
   const list = keyframes.filter(k => k.part === part).sort((a, b) => a.time - b.time);
   if(!list.length) continue;
-
   let a = list[0], b = list[list.length - 1];
   for(let i = 0; i < list.length - 1; i++){
    if(currentTime >= list[i].time && currentTime <= list[i + 1].time){
-    a = list[i];
-    b = list[i + 1];
-    break;
+    a = list[i]; b = list[i + 1]; break;
    }
   }
-
   const span = b.time - a.time;
   let alpha = span <= 0 ? 0 : (currentTime - a.time) / span;
   alpha = Math.max(0, Math.min(1, alpha));
-
   const target = pivots[part];
   if(!target) continue;
 
-  target.position.set(
-   a.position.x + (b.position.x - a.position.x) * alpha,
-   a.position.y + (b.position.y - a.position.y) * alpha,
-   a.position.z + (b.position.z - a.position.z) * alpha
-  );
-  target.rotation.set(
-   a.rotation.x + (b.rotation.x - a.rotation.x) * alpha,
-   a.rotation.y + (b.rotation.y - a.rotation.y) * alpha,
-   a.rotation.z + (b.rotation.z - a.rotation.z) * alpha
-  );
-  target.scale.set(
-   a.scale.x + (b.scale.x - a.scale.x) * alpha,
-   a.scale.y + (b.scale.y - a.scale.y) * alpha,
-   a.scale.z + (b.scale.z - a.scale.z) * alpha
-  );
+  target.position.set(a.position.x + (b.position.x - a.position.x) * alpha, a.position.y + (b.position.y - a.position.y) * alpha, a.position.z + (b.position.z - a.position.z) * alpha);
+  target.rotation.set(a.rotation.x + (b.rotation.x - a.rotation.x) * alpha, a.rotation.y + (b.rotation.y - a.rotation.y) * alpha, a.rotation.z + (b.rotation.z - a.rotation.z) * alpha);
+  target.scale.set(a.scale.x + (b.scale.x - a.scale.x) * alpha, a.scale.y + (b.scale.y - a.scale.y) * alpha, a.scale.z + (b.scale.z - a.scale.z) * alpha);
  }
 }
-
-/* =========================================================
-   UI EVENTS & CONTEXT MENU
-========================================================= */
 
 $("trackViewport").addEventListener("pointerdown", e => {
  if(e.target.classList.contains("kf")) return;
@@ -993,23 +862,15 @@ function pasteKeyframe(){
 
 function showContext(x, y){
  $("contextMenu").style.display = "block";
- $("contextMenu").style.left = Math.min(x, innerWidth - 155) + "px";
- $("contextMenu").style.top = Math.min(y, innerHeight - 125) + "px";
+ $("contextMenu").style.left = Math.min(x, innerWidth - 145) + "px";
+ $("contextMenu").style.top = Math.min(y, innerHeight - 110) + "px";
 }
 
 function hideContext(){ $("contextMenu").style.display = "none"; }
-
-document.addEventListener("pointerdown", e => {
- if(!e.target.closest("#contextMenu")) hideContext();
-});
+document.addEventListener("pointerdown", e => { if(!e.target.closest("#contextMenu")) hideContext(); });
 
 $("ctxDelete").onclick = () => {
- if(selectedKF){
-  keyframes = keyframes.filter(x => x !== selectedKF);
-  selectedKF = null;
-  renderKeyframes();
-  showToast("Deleted");
- }
+ if(selectedKF){ keyframes = keyframes.filter(x => x !== selectedKF); selectedKF = null; renderKeyframes(); showToast("Deleted"); }
  hideContext();
 };
 
@@ -1017,43 +878,23 @@ $("ctxDuplicate").onclick = () => {
  if(selectedKF){
   const copy = JSON.parse(JSON.stringify(selectedKF));
   copy.time = xToTime(selectedKF.time + 1 / fps);
-  keyframes.push(copy);
-  keyframes.sort((a, b) => a.time - b.time);
-  selectedKF = copy;
-  renderKeyframes();
-  showToast("Duplicated");
+  keyframes.push(copy); keyframes.sort((a, b) => a.time - b.time);
+  selectedKF = copy; renderKeyframes(); showToast("Duplicated");
  }
  hideContext();
 };
 
 $("ctxType").onclick = () => {
- if(selectedKF){
-  selectedKF.type = selectedKF.type === "Pose" ? "Move" : "Pose";
-  showToast("Type: " + selectedKF.type);
- }
+ if(selectedKF){ selectedKF.type = selectedKF.type === "Pose" ? "Move" : "Pose"; showToast("Type: " + selectedKF.type); }
  hideContext();
 };
 
-/* Timeline Handle Resize */
 let resizing = false, startY = 0, startH = 0;
-$("timelineHandle").addEventListener("pointerdown", e => {
- resizing = true;
- startY = e.clientY;
- startH = $("timeline").offsetHeight;
- $("timelineHandle").setPointerCapture(e.pointerId);
-});
-$("timelineHandle").addEventListener("pointermove", e => {
- if(!resizing) return;
- const h = startH + (startY - e.clientY);
- $("timeline").style.height = Math.max(90, Math.min(innerHeight - 50, h)) + "px";
-});
+$("timelineHandle").addEventListener("pointerdown", e => { resizing = true; startY = e.clientY; startH = $("timeline").offsetHeight; $("timelineHandle").setPointerCapture(e.pointerId); });
+$("timelineHandle").addEventListener("pointermove", e => { if(!resizing) return; const h = startH + (startY - e.clientY); $("timeline").style.height = Math.max(80, Math.min(innerHeight - 50, h)) + "px"; });
 $("timelineHandle").addEventListener("pointerup", () => resizing = false);
 
-/* Controls setup */
-$("playBtn").onclick = () => {
- playing = !playing;
- $("playBtn").textContent = playing ? "❚❚ PAUSE" : "▶ PLAY";
-};
+$("playBtn").onclick = () => { playing = !playing; $("playBtn").textContent = playing ? "❚❚ PAUSE" : "▶ PLAY"; };
 $("rewind").onclick = () => { currentTime = 0; playing = false; $("playBtn").textContent = "▶ PLAY"; updatePlayhead(); };
 $("prev").onclick = () => { currentTime = xToTime(currentTime - 1 / fps); updatePlayhead(); };
 $("next").onclick = () => { currentTime = xToTime(currentTime + 1 / fps); updatePlayhead(); };
@@ -1064,37 +905,15 @@ $("pasteBtn").onclick = pasteKeyframe;
 $("zoomIn").onclick = () => { timelineZoom = Math.min(400, timelineZoom + 25); drawTimeline(); };
 $("zoomOut").onclick = () => { timelineZoom = Math.max(40, timelineZoom - 25); drawTimeline(); };
 
-$("duration").onchange = e => {
- duration = Math.max(0.25, Number(e.target.value) || 2);
- if(currentTime > duration) currentTime = duration;
- drawTimeline();
-};
-
-$("fps").onchange = e => {
- fps = Math.max(1, Number(e.target.value) || 30);
- drawTimeline();
-};
+$("duration").onchange = e => { duration = Math.max(0.25, Number(e.target.value) || 2); if(currentTime > duration) currentTime = duration; drawTimeline(); };
+$("fps").onchange = e => { fps = Math.max(1, Number(e.target.value) || 30); drawTimeline(); };
 
 $("newBtn").onclick = () => {
- keyframes = [];
- selectedKF = null;
- currentTime = 0;
- playing = false;
+ keyframes = []; selectedKF = null; currentTime = 0; playing = false;
  $("playBtn").textContent = "▶ PLAY";
- resetRig();
- drawTimeline();
- showToast("New animation");
+ parts.forEach(name => { const t = pivots[name]; if(t){ if(name==="Torso")t.position.set(0,0,0); t.rotation.set(0,0,0); t.scale.set(1,1,1); } });
+ drawTimeline(); showToast("New animation");
 };
-
-function resetRig(){
- parts.forEach(name => {
-  const t = pivots[name];
-  if(!t) return;
-  if(name === "Torso") t.position.set(0, 0, 0);
-  t.rotation.set(0, 0, 0);
-  t.scale.set(1, 1, 1);
- });
-}
 
 function resize(){
  camera.aspect = innerWidth / innerHeight;
@@ -1104,8 +923,7 @@ function resize(){
 
 let toastTimer;
 function showToast(msg){
- $("toast").textContent = msg;
- $("toast").style.display = "block";
+ $("toast").textContent = msg; $("toast").style.display = "block";
  clearTimeout(toastTimer);
  toastTimer = setTimeout(() => { $("toast").style.display = "none"; }, 900);
 }
