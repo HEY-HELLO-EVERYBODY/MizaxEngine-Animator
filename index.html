@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>MizaxEngine Animator V1.6 Pro</title>
+<title>MizaxEngine Animator V1.7 Pro</title>
 
 <style>
 :root{
@@ -542,7 +542,8 @@ const meshes = {}, pivots = {}, rest = {}, mats = {};
 
 let anim = { name:"MizaxAnimation", priority:"2", duration:2, fps:30, loop:true, tracks:{} };
 let time = 0, playing = false, speed = 1, zoom = 140;
-let selectedBone = null, selectedKFs = new Set(), clipboard = [];
+let selectedBones = new Set(["Head"]); // Multi-select parts
+let selectedKFs = new Set(), clipboard = [];
 let autoKey = true, defaultInterp = "smooth", dragging = false;
 let collapsed = new Set();
 let hist = [], hi = -1;
@@ -695,7 +696,7 @@ function buildRig(){
  headPivot.add(head);
 
  const face = new THREE.Mesh(new THREE.PlaneGeometry(0.82,0.48), faceMat);
- face.position.set(0,0.20,-0.606); /* Flip Z for forward facing */
+ face.position.set(0,0.20,-0.606);
  face.rotation.y = Math.PI;
  head.add(face);
  meshes.Head = head; pivots.Head = headPivot;
@@ -767,7 +768,6 @@ function initScene(){
 
  buildRig();
 
- /* Prevent Gizmo jump / glitch */
  tc.addEventListener("dragging-changed", e => {
   orbit.enabled = !e.value;
   dragging = e.value;
@@ -783,7 +783,7 @@ function initScene(){
  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
  let down = null;
  renderer.domElement.addEventListener("pointerdown", e => {
-  down = {x:e.clientX, y:e.clientY, gizmo: tc.axis !== null};
+  down = {x:e.clientX, y:e.clientY, gizmo: tc.axis !== null, shift: e.shiftKey};
  });
  renderer.domElement.addEventListener("pointerup", e => {
   const d = down; down = null;
@@ -793,7 +793,9 @@ function initScene(){
   ndc.set(((e.clientX - r.left)/r.width)*2 - 1, -((e.clientY - r.top)/r.height)*2 + 1);
   ray.setFromCamera(ndc, camera);
   const hit = ray.intersectObjects(Object.values(meshes), false)[0];
-  if(hit) selectBone(hit.object.name);
+  if(hit){
+   selectBone(hit.object.name, d.shift);
+  }
  });
 
  new ResizeObserver(resizeViewport).observe(vp);
@@ -862,11 +864,19 @@ function applyPose(){
 }
 
 /* =========================================================
-   SELECTION / INFO
+   MULTI-SELECT BONES & INFO
 ========================================================= */
-function selectBone(name){
- selectedBone = name;
- tc.attach(pivots[name]);
+function selectBone(name, shift){
+ if(shift){
+  if(selectedBones.has(name)) selectedBones.delete(name);
+  else selectedBones.add(name);
+  if(selectedBones.size === 0) selectedBones.add(name);
+ } else {
+  selectedBones.clear();
+  selectedBones.add(name);
+ }
+ const primary = Array.from(selectedBones)[selectedBones.size - 1];
+ tc.attach(pivots[primary]);
  updateChips();
  updateSel();
  updateInfo();
@@ -879,19 +889,21 @@ function buildChips(){
   const e = el("button", "chip");
   e.textContent = b;
   e.dataset.bone = b;
-  e.onclick = () => selectBone(b);
+  e.onclick = ev => selectBone(b, ev.shiftKey);
   c.appendChild(e);
  });
 }
 function updateChips(){
- document.querySelectorAll(".chip").forEach(e => e.classList.toggle("active", e.dataset.bone === selectedBone));
+ document.querySelectorAll(".chip").forEach(e => e.classList.toggle("active", selectedBones.has(e.dataset.bone)));
 }
 
 function updateInfo(){
- if(!selectedBone) return;
- const p = pivots[selectedBone], d = THREE.MathUtils.radToDeg;
+ const primary = Array.from(selectedBones)[selectedBones.size - 1];
+ if(!primary) return;
+ const p = pivots[primary], d = THREE.MathUtils.radToDeg;
+ let labelTxt = selectedBones.size > 1 ? selectedBones.size + " parts selected ("+primary+")" : primary;
  $("info").innerHTML =
-  "<b>"+selectedBone+"</b><br>" +
+  "<b>"+labelTxt+"</b><br>" +
   "pos "+f2(p.position.x)+" "+f2(p.position.y)+" "+f2(p.position.z)+"<br>" +
   "rot "+d(p.rotation.x).toFixed(1)+" "+d(p.rotation.y).toFixed(1)+" "+d(p.rotation.z).toFixed(1)+"";
 }
@@ -902,26 +914,27 @@ function setMode(m){
 }
 
 /* =========================================================
-   AUTO KEY
+   AUTO KEY (Supports Multi-Bone)
 ========================================================= */
 function onGizmoChange(){
  updateInfo();
- if(!autoKey || !selectedBone || !dragging) return;
+ if(!autoKey || selectedBones.size === 0 || !dragging) return;
  const ch = MODE_TO_CH[tc.getMode()];
- const tr = anim.tracks[selectedBone][ch];
  const t = snapT(time);
- let k = tr.keys.find(x => sameT(x.t, t));
- const v = getValue(selectedBone, ch);
- if(k){
-  k.v = v;
- } else {
-  k = {t, v, interp:defaultInterp, ease:defaultEase};
-  tr.keys.push(k);
-  tr.keys.sort((a, b) => a.t - b.t);
-  if(tr.muted){ tr.muted = false; buildTimeline(); } else renderKeys();
- }
- selectedKFs.clear();
- selectedKFs.add(k);
+
+ selectedBones.forEach(b => {
+  const tr = anim.tracks[b][ch];
+  let k = tr.keys.find(x => sameT(x.t, t));
+  const v = getValue(b, ch);
+  if(k){
+   k.v = v;
+  } else {
+   k = {t, v, interp:defaultInterp, ease:defaultEase};
+   tr.keys.push(k);
+   tr.keys.sort((a, b) => a.t - b.t);
+   if(tr.muted){ tr.muted = false; buildTimeline(); } else renderKeys();
+  }
+ });
  updateSel();
 }
 
@@ -961,7 +974,6 @@ function copyKey(){
  if(selectedKFs.size === 0){ toast("Select a keyframe first"); return; }
  clipboard = [];
  selectedKFs.forEach(k => {
-  // find bone and ch
   outer: for(let b of BONES){
    for(let c of CHANNELS){
     if(anim.tracks[b][c.id].keys.includes(k)){
@@ -1004,7 +1016,6 @@ function buildTimeline(){
  const boxEl = el("div"); boxEl.id = "boxSel";
  wrap.appendChild(boxEl);
 
- /* ruler */
  const rr = el("div", "row rulerRow");
  const corner = el("div", "lab");
  corner.textContent = "Parts";
@@ -1049,12 +1060,12 @@ function buildTimeline(){
   const fo = el("span"); fo.innerHTML = ic("folder", 16); fo.style.color = "#ff6b72"; fo.style.display = "flex";
   const nm = el("span", "nm"); nm.textContent = b;
   gl.append(chev, fo, nm);
-  gl.onclick = () => selectBone(b);
+  gl.onclick = ev => selectBone(b, ev.shiftKey);
   const gt = el("div", "trk");
   gt.style.width = W + "px";
   gt.style.backgroundImage = gridBg;
   gt.style.backgroundSize = zoom + "px 100%";
-  gt.addEventListener("click", e => { selectBone(b); setTime(xToTime(e.clientX)); });
+  gt.addEventListener("click", e => { selectBone(b, e.shiftKey); setTime(xToTime(e.clientX)); });
   grpTrk[b] = gt;
   g.append(gl, gt);
   wrap.appendChild(g);
@@ -1079,11 +1090,11 @@ function buildTimeline(){
    add.innerHTML = ic("add", 20);
    add.onclick = ev => {
     ev.stopPropagation();
-    selectBone(b); setMode(c.mode);
+    selectBone(b, ev.shiftKey); setMode(c.mode);
     addKey(b, c.id);
    };
    lab.append(eye, n2, add);
-   lab.onclick = () => { selectBone(b); setMode(c.mode); };
+   lab.onclick = ev => { selectBone(b, ev.shiftKey); setMode(c.mode); };
 
    const t = el("div", "trk");
    t.style.width = W + "px";
@@ -1140,7 +1151,6 @@ function setupBoxSelect(wrap, boxEl){
   boxEl.style.width = w + "px";
   boxEl.style.height = h + "px";
 
-  // Check keyframes inside box
   const bx = x - LABEL_W, bw = w;
   document.querySelectorAll("#wrap .kf").forEach(kf => {
    const kfX = parseFloat(kf.style.left);
@@ -1217,16 +1227,14 @@ function makeKf(b, ch, k){
    selectedKFs.clear();
    selectedKFs.add(k);
   }
-  selectBone(b);
+  selectBone(b, ev.shiftKey);
   updateSel();
  });
  e.addEventListener("pointerdown", ev => {
   ev.stopPropagation();
   ev.preventDefault();
   setPlaying(false);
-  selectedBone = b;
-  tc.attach(pivots[b]);
-  updateChips();
+  selectBone(b, ev.shiftKey);
   setMode(CHANNELS.find(c => c.id === ch).mode);
 
   if(!ev.shiftKey && !selectedKFs.has(k)){
@@ -1270,7 +1278,7 @@ function makeKf(b, ch, k){
 }
 
 function updateSel(){
- document.querySelectorAll("#wrap .row[data-bone]").forEach(r => r.classList.toggle("sel", r.dataset.bone === selectedBone));
+ document.querySelectorAll("#wrap .row[data-bone]").forEach(r => r.classList.toggle("sel", selectedBones.has(r.dataset.bone)));
  document.querySelectorAll("#wrap .kf").forEach(e => e.classList.toggle("sel", selectedKFs.has(e._k)));
  const has = selectedKFs.size > 0;
  $("bCopy").disabled = !has;
@@ -1465,7 +1473,7 @@ function loadAnim(text){
 }
 
 /* =========================================================
-   EXPORT .rbxmx (Roblox KeyframeSequence with Z-Flip)
+   EXPORT .rbxmx
 ========================================================= */
 const I3 = [[1,0,0],[0,1,0],[0,0,1]];
 const R6_N  = [[-1,0,0],[0,0,1],[0,1,0]];
@@ -1736,8 +1744,7 @@ function setupUI(){
 
  $("mReset").onclick = () => {
   menu.style.display = "none";
-  if(!selectedBone) return;
-  CHANNELS.forEach(c => resetChannel(selectedBone, c.id));
+  selectedBones.forEach(b => CHANNELS.forEach(c => resetChannel(b, c.id)));
   updateInfo(); toast("Pose reset");
  };
  $("fileIn").onchange = e => {
@@ -1759,8 +1766,8 @@ function setupUI(){
  $("spd").onchange = e => { speed = Math.max(0.1, Math.min(4, (+e.target.value || 100) / 100)); };
 
  $("bKey").onclick = () => {
-  if(!selectedBone){ toast("Select a part first"); return; }
-  addKey(selectedBone, MODE_TO_CH[tc.getMode()]);
+  if(selectedBones.size === 0){ toast("Select a part first"); return; }
+  selectedBones.forEach(b => addKey(b, MODE_TO_CH[tc.getMode()]));
  };
  $("bCopy").onclick = copyKey;
  $("bPaste").onclick = pasteKey;
@@ -1866,7 +1873,7 @@ window.onload = () => {
  buildChips();
  setupUI();
  buildTimeline();
- selectBone("Head");
+ selectBone("Head", false);
  setMode("rotate");
  applyPose();
  hist = [serialize()]; hi = 0; updateHist();
