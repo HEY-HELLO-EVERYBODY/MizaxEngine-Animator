@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>MizaxEngine Animator V1.9</title>
+<title>MizaxEngine Animator V2</title>
 
 <style>
 :root{
@@ -118,7 +118,8 @@ button:disabled{pointer-events:none}
 }
 .chip{
  flex:none;
- padding:9px 15px;
+ padding:6px 11px;
+ font-size:12px;
  
  background:rgba(26,26,29,.78);
  border:1px solid var(--line);
@@ -132,11 +133,11 @@ button:disabled{pointer-events:none}
 #info{
  position:absolute;
  left:8px;bottom:8px;
- padding:6px 8px;
+ padding:5px 7px;
  background:rgba(18,18,20,.72);
  border:1px solid var(--line);
  
- font:11px/1.5 ui-monospace,Menlo,Consolas,monospace;
+ font:10px/1.45 ui-monospace,Menlo,Consolas,monospace;
  color:#b8b8c2;
  pointer-events:none;
 }
@@ -151,7 +152,7 @@ button:disabled{pointer-events:none}
  border-bottom:1px solid var(--line);
  transition:max-height .16s ease;
 }
-#editPanel.open{max-height:220px}
+#editPanel.open{max-height:min(68vh,460px);overflow-y:auto}
 #editInner{padding:10px 10px 12px}
 .editLbl{font:700 10.5px ui-monospace,monospace;color:var(--dim);letter-spacing:.3px;margin:0 0 6px}
 #multiRow{display:flex;gap:6px;overflow-x:auto;padding-bottom:9px;margin-bottom:9px;border-bottom:1px solid var(--line)}
@@ -165,26 +166,37 @@ button:disabled{pointer-events:none}
  cursor:pointer;
 }
 .mchip.sel{background:var(--accent);border-color:var(--accent);color:#fff}
+#cframeSwitch{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+#cframeSwitch button{
+ flex:none;width:34px;height:34px;
+ background:var(--panel3);border:1px solid var(--line);color:var(--text);
+ font-size:16px;font-weight:700;cursor:pointer;
+}
+#cframeSwitch button:active{background:var(--accent);color:#fff}
+#chLabel{
+ flex:1;text-align:center;
+ background:var(--bg);border:1px solid var(--line);
+ padding:8px;font:700 12px ui-monospace,monospace;color:var(--accent);letter-spacing:.4px;
+}
 #editAxes{display:flex;gap:8px}
+#editAxes .tb{flex:none;padding:0 12px;font-size:12px}
 .exRow{flex:1;display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--line);padding:6px 8px}
 .exRow label{flex:none;font:700 11px ui-monospace,monospace;color:var(--dim)}
 .exRow input{width:100%;background:transparent;border:0;color:#fff;font:13px ui-monospace,monospace;outline:none}
 .editHint{font-size:10.5px;color:var(--dim);margin-top:8px;line-height:1.5}
 
 #viewCube{
- position:absolute;
- right:8px;bottom:8px;
  display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:3px;
- z-index:3;
+ grid-template-columns:repeat(6,1fr);
+ gap:4px;
+ margin-bottom:9px;
 }
 #viewCube button{
- width:44px;height:30px;
+ width:100%;height:30px;
  background:rgba(29,33,43,.78);
  border:1px solid var(--line);
  color:var(--dim);
- font-size:10px;
+ font-size:9px;
  backdrop-filter:blur(6px);
  cursor:pointer;
 }
@@ -447,18 +459,42 @@ input[type=color]{width:64px;height:38px;padding:0;border:1px solid var(--line);
   <span class="sep"></span>
   <button class="tb" id="btnSpace">Local</button>
   <button class="tb active" id="btnAuto">Auto key</button>
+  <button class="tb" id="btnOnion">Onion</button>
  </div>
 
  <div id="editPanel">
   <div id="editInner">
-   <div class="editLbl">Pilih part (bisa lebih dari satu)</div>
+   <div class="editLbl">Select part (multiple allowed)</div>
    <div id="multiRow"></div>
-   <div class="editLbl">Nilai — ikut mode Rotate/Move yang aktif</div>
+
+   <div class="editLbl">CFrame</div>
+   <div id="cframeSwitch">
+    <button id="chPrev">&lt;</button>
+    <div id="chLabel">Rotation</div>
+    <button id="chNext">&gt;</button>
+   </div>
    <div id="editAxes">
     <div class="exRow"><label>X</label><input type="number" id="axX" step="0.05"></div>
     <div class="exRow"><label>Y</label><input type="number" id="axY" step="0.05"></div>
     <div class="exRow"><label>Z</label><input type="number" id="axZ" step="0.05"></div>
+    <button class="tb" id="bMirror" title="Copy this part's pose to its left/right pair">⇄ Mirror</button>
    </div>
+
+   <div class="editLbl">Handle Step — 0 = free/smooth, or set a value to snap (studs for Move, degrees for Rotate)</div>
+   <div class="exRow" style="flex:none;width:140px">
+    <label>⇥</label><input type="number" id="stepVal" value="0" min="0" step="0.01">
+   </div>
+
+   <div class="editLbl">Camera view</div>
+   <div id="viewCube">
+    <button data-v="front" class="front">Front</button>
+    <button data-v="back">Back</button>
+    <button data-v="left">Left</button>
+    <button data-v="right">Right</button>
+    <button data-v="top">Top</button>
+    <button data-v="persp">3D</button>
+   </div>
+
    <div class="editHint" id="editHint"></div>
   </div>
  </div>
@@ -466,14 +502,6 @@ input[type=color]{width:64px;height:38px;padding:0;border:1px solid var(--line);
  <div id="viewport">
   <div id="chips"></div>
   <div id="info"></div>
-  <div id="viewCube">
-   <button data-v="front" class="front">Depan</button>
-   <button data-v="back">Belakang</button>
-   <button data-v="left">Kiri</button>
-   <button data-v="right">Kanan</button>
-   <button data-v="top">Atas</button>
-   <button data-v="persp">3D</button>
-  </div>
   <div id="toast"></div>
  </div>
 
@@ -533,8 +561,8 @@ input[type=color]{width:64px;height:38px;padding:0;border:1px solid var(--line);
 <div id="setModal" class="modal"><div class="card">
  <h3>Animation settings</h3>
  <div class="fr"><span>Name</span><input class="txt" id="sName" value="MizaxAnimation" maxlength="40"></div>
- <div class="fr"><span>Loop<span class="hint">Animasi diulang terus</span></span><input type="checkbox" id="sLoop" checked></div>
- <div class="fr"><span>Animation Priority<span class="hint">Action menimpa Idle dan Movement</span></span>
+ <div class="fr"><span>Loop<span class="hint">Animation repeats continuously</span></span><input type="checkbox" id="sLoop" checked></div>
+ <div class="fr"><span>Animation Priority<span class="hint">Action overrides Idle and Movement</span></span>
   <select class="sel" id="sPri">
    <option value="1000">Core</option>
    <option value="0">Idle</option>
@@ -550,39 +578,39 @@ input[type=color]{width:64px;height:38px;padding:0;border:1px solid var(--line);
 </div></div>
 
 <div id="trollModal" class="modal"><div class="card">
- <h3>Troll: warna dan wajah rig</h3>
- <span class="lbl">Wajah</span>
+ <h3>Troll: rig color and face</h3>
+ <span class="lbl">Face</span>
  <div class="faces" id="faces"></div>
- <div class="rowc"><input class="txt" id="faceTxt" maxlength="10" placeholder="wajah sendiri"><button class="tb" id="faceApply">Pakai</button><input type="color" id="faceCol" value="#111111"></div>
- <div class="fr"><span>Bagian</span>
+ <div class="rowc"><input class="txt" id="faceTxt" maxlength="10" placeholder="custom face"><button class="tb" id="faceApply">Apply</button><input type="color" id="faceCol" value="#111111"></div>
+ <div class="fr"><span>Part</span>
   <select class="sel" id="colTarget">
-   <option value="all">Semua</option>
+   <option value="all">All</option>
    <option>Torso</option><option>Head</option><option>Left Arm</option><option>Right Arm</option><option>Left Leg</option><option>Right Leg</option>
   </select></div>
- <div class="fr"><span>Warna</span><input type="color" id="colPick" value="#e5303a"></div>
+ <div class="fr"><span>Color</span><input type="color" id="colPick" value="#e5303a"></div>
  <div class="swatches" id="swatches"></div>
- <div class="fr"><span>Acak warna</span><button class="tb" id="colRand">Random</button></div>
- <div class="fr"><span>Pelangi</span><button class="tb" id="colRainbow">Off</button></div>
+ <div class="fr"><span>Random color</span><button class="tb" id="colRand">Random</button></div>
+ <div class="fr"><span>Rainbow</span><button class="tb" id="colRainbow">Off</button></div>
  <div class="btns"><button class="tb" id="colReset">Reset</button><button class="tb active" id="trollClose">Done</button></div>
 </div></div>
 
 <div id="exportModal" class="modal"><div class="card">
  <h3>Export Roblox KeyframeSequence</h3>
- <div class="fr"><span>Enum format<span class="hint">Default = sama kayak file contoh dari Studio</span></span>
+ <div class="fr"><span>Enum format<span class="hint">Default = matches the Studio-exported sample file</span></span>
   <select class="sel" id="xFmt">
-   <option value="name" selected>Studio baru (teks)</option>
-   <option value="token">Lama (token angka)</option>
+   <option value="name" selected>New Studio (text)</option>
+   <option value="token">Legacy (numeric token)</option>
   </select></div>
- <div class="fr"><span>Flip axis<span class="hint">Kalau animasi menghadap belakang, centang X dan Z</span></span>
+ <div class="fr"><span>Flip axis<span class="hint">If the animation faces backward, check X and Z</span></span>
   <div class="axes">
    <label><input type="checkbox" id="xFx">X</label>
    <label><input type="checkbox" id="xFy">Y</label>
    <label><input type="checkbox" id="xFz" checked>Z</label>
   </div></div>
- <div class="fr"><span>R6 joint axis fix<span class="hint">Sesuaikan sumbu rotasi ke Motor6D R6</span></span><input type="checkbox" id="xR6" checked></div>
- <div class="fr"><span>Position scale<span class="hint">Pengali jarak (stud)</span></span><input class="num" id="xScale" type="number" value="1" step="0.1"></div>
- <div class="fr"><span>Bake every N frames<span class="hint">0 = hanya di keyframe. Segmen Smooth/Ease sudah otomatis di-bake tiap 2 frame</span></span><input class="num" id="xBake" type="number" value="0" min="0" step="1"></div>
- <p class="note">Di Studio: klik kanan Explorer, pilih Insert from File, lalu pilih file .rbxmx. Pose yang dipakai: HumanoidRootPart, Torso, Head, Left Arm, Right Arm, Left Leg, Right Leg.</p>
+ <div class="fr"><span>R6 joint axis fix<span class="hint">Adjusts rotation axes to match R6 Motor6D joints</span></span><input type="checkbox" id="xR6" checked></div>
+ <div class="fr"><span>Position scale<span class="hint">Distance multiplier (studs)</span></span><input class="num" id="xScale" type="number" value="1" step="0.1"></div>
+ <div class="fr"><span>Bake every N frames<span class="hint">0 = keyframes only. Smooth/Ease segments are already auto-baked every 2 frames</span></span><input class="num" id="xBake" type="number" value="0" min="0" step="1"></div>
+ <p class="note">In Studio: right-click the Explorer, choose Insert from File, then pick the .rbxmx file. Poses used: HumanoidRootPart, Torso, Head, Left Arm, Right Arm, Left Leg, Right Leg.</p>
  <div class="btns"><button class="tb" id="xCancel">Cancel</button><button class="tb active" id="xGo">Download .rbxmx</button></div>
 </div></div>
 <input type="file" id="fileIn" accept=".json,application/json" hidden>
@@ -832,11 +860,16 @@ function initScene(){
  dl.castShadow = true;
  scene.add(dl);
 
+ /* kaki (Left/Right Leg) ujung bawahnya ada di world Y = -3 (torso 0, leg
+    pivot -1, leg mesh -1, setengah tinggi geometri -1) — baseplate disamain
+    persis ke situ biar kaki ga nembus/ngambang */
  const grid = new THREE.GridHelper(20, 20, 0x7a2a30, 0x2a2a2e);
- grid.position.y = -2;
+ grid.position.y = -3;
  scene.add(grid);
 
  buildRig();
+ ghostPrev = buildGhostRig(0x3ecbff); /* biru = pose sebelumnya */
+ ghostNext = buildGhostRig(0xff9d3e); /* oranye = pose berikutnya */
 
  /* gizmo events */
  tc.addEventListener("dragging-changed", e => {
@@ -981,6 +1014,91 @@ function applyPose(){
   if(v) setPivot(b, c.id, v); else resetChannel(b, c.id);
  }));
  updateInfo();
+ updateOnion();
+}
+
+/* =========================================================
+   ONION SKIN — bayangan transparan pose keyframe sebelum/sesudah,
+   bantu cocokin posisi tanpa bolak-balik scrub timeline
+========================================================= */
+let onionOn = false, ghostPrev = null, ghostNext = null;
+
+function buildGhostRig(color){
+ /* polygonOffset ngedorong kedalaman ghost sedikit ke belakang, dan tiap
+    mesh diskalain dikit lebih kecil (0.9-0.95) — dua-duanya biar ghost ga
+    coplanar persis sama rig asli pas posenya pas sama, yang nyebabin
+    Z-fighting (kedip-kedip gara-gara GPU bingung permukaan mana di depan) */
+ const mat = new THREE.MeshBasicMaterial({
+  color, transparent:true, opacity:0.22, depthWrite:false,
+  polygonOffset:true, polygonOffsetFactor:4, polygonOffsetUnits:4
+ });
+ const root = new THREE.Group();
+ scene.add(root);
+ const gp = {};
+
+ const torso = new THREE.Mesh(roundedBox(2,2,1,0.16), mat);
+ torso.scale.setScalar(0.94);
+ root.add(torso);
+ gp.Torso = torso;
+
+ const headPivot = new THREE.Group();
+ headPivot.position.set(0,1,0);
+ torso.add(headPivot);
+ const head = new THREE.Mesh(new THREE.BoxGeometry(1.2,1.2,1.2), mat);
+ head.position.set(0,0.6,0);
+ head.scale.setScalar(0.9);
+ headPivot.add(head);
+ gp.Head = headPivot;
+
+ const limb = (px, py, mx, my) => {
+  const p = new THREE.Group();
+  p.position.set(px, py, 0);
+  torso.add(p);
+  const m = new THREE.Mesh(roundedBox(1,2,1,0.16), mat);
+  m.position.set(mx, my, 0);
+  m.scale.setScalar(0.9);
+  p.add(m);
+  return p;
+ };
+ gp["Left Arm"]  = limb(-1,  0.5, -0.5, -0.5);
+ gp["Right Arm"] = limb( 1,  0.5,  0.5, -0.5);
+ gp["Left Leg"]  = limb(-1, -1,    0.5, -1);
+ gp["Right Leg"] = limb( 1, -1,   -0.5, -1);
+
+ root.visible = false;
+ return {root, pivots:gp};
+}
+
+function setGhostPose(gp, t){
+ BONES.forEach(b => CHANNELS.forEach(c => {
+  const tr = anim.tracks[b][c.id];
+  const v = tr.muted ? null : sample(tr.keys, t);
+  const target = gp[b];
+  if(!target) return;
+  if(c.id === "rotation"){
+   target.rotation.set(...(v || [0,0,0]).map(x => THREE.MathUtils.degToRad(x)));
+  } else {
+   const r = rest[b], off = v || [0,0,0];
+   target.position.set(r.pos.x + off[0], r.pos.y + off[1], r.pos.z + off[2]);
+  }
+ }));
+}
+
+function updateOnion(){
+ if(!ghostPrev || !ghostNext) return;
+ if(!onionOn){ ghostPrev.root.visible = false; ghostNext.root.visible = false; return; }
+
+ const times = new Set([0, anim.duration]);
+ BONES.forEach(b => CHANNELS.forEach(c => anim.tracks[b][c.id].keys.forEach(k => times.add(k.t))));
+ const sorted = [...times].sort((a, b) => a - b);
+ const prevT = sorted.filter(t => t < time - 1e-4).pop();
+ const nextT = sorted.find(t => t > time + 1e-4);
+
+ if(prevT !== undefined){ setGhostPose(ghostPrev.pivots, prevT); ghostPrev.root.visible = true; }
+ else ghostPrev.root.visible = false;
+
+ if(nextT !== undefined){ setGhostPose(ghostNext.pivots, nextT); ghostNext.root.visible = true; }
+ else ghostNext.root.visible = false;
 }
 
 /* =========================================================
@@ -1024,6 +1142,35 @@ function setSelection(names){
 }
 
 /* multi-select: dipakai dari panel Edit, tap buat tambah/buang dari seleksi */
+/* ========= mirror pose: copy pose part ini ke pasangan kiri/kanannya ========= */
+const MIRROR_PAIR = {"Left Arm":"Right Arm", "Right Arm":"Left Arm", "Left Leg":"Right Leg", "Right Leg":"Left Leg"};
+
+function mirrorSelected(){
+ if(selection.size !== 1){
+  toast("Select exactly one mirrorable part (an arm or leg)");
+  return;
+ }
+ const src = [...selection][0];
+ const dst = MIRROR_PAIR[src];
+ if(!dst){
+  toast(src + " has no left/right pair");
+  return;
+ }
+
+ CHANNELS.forEach(c => {
+  const v = getValue(src, c.id);
+  /* mirror sumbu X: posisi X dibalik, rotasi Y & Z dibalik, rotasi X tetap */
+  const mv = c.id === "position" ? [-v[0], v[1], v[2]] : [v[0], -v[1], -v[2]];
+  setPivot(dst, c.id, mv);
+  writeAutoKeyFor(dst, c.id);
+ });
+
+ applyPose();
+ buildTimeline();
+ commit();
+ toast("Mirrored " + src + "'s pose to " + dst);
+}
+
 function toggleMultiSelect(name){
  const next = new Set(selection);
  if(next.has(name) && next.size > 1) next.delete(name);
@@ -1060,8 +1207,8 @@ function buildMultiRow(){
 function updateMultiRow(){
  document.querySelectorAll(".mchip").forEach(e => e.classList.toggle("sel", selection.has(e.dataset.bone)));
  $("editHint").textContent = selection.size > 1
-  ? selection.size + " part dipilih — gizmo gerakin semuanya sekaligus, tiap part tetap muter di sendinya sendiri"
-  : "Tap part lain buat tambah ke seleksi";
+  ? selection.size + " parts selected — the gizmo moves them all at once, each still rotating around its own joint"
+  : "Tap another part to add it to the selection";
 }
 
 function updateInfo(){
@@ -1073,18 +1220,29 @@ function updateInfo(){
    "pos "+f2(p.position.x)+" "+f2(p.position.y)+" "+f2(p.position.z)+"<br>" +
    "rot "+d(p.rotation.x).toFixed(1)+" "+d(p.rotation.y).toFixed(1)+" "+d(p.rotation.z).toFixed(1)+"";
  } else {
-  $("info").innerHTML = "<b>"+selection.size+" part dipilih</b><br>" + [...selection].join(", ");
+  $("info").innerHTML = "<b>"+selection.size+" parts selected</b><br>" + [...selection].join(", ");
  }
  syncXform();
 }
 
-/* kotak X/Y/Z di panel Edit: nilainya ngikut channel yang aktif (rotation/position) */
+/* CFrame editor: Rotation & Position masing-masing punya tab sendiri,
+   dipindah pakai panah < >, independen dari mode gizmo (Move/Rotate) di
+   top bar — biar ga bingung field-nya ganti-ganti pas gizmo dipindah. */
+let editChannel = "rotation";
+const CH_LABEL = {rotation:"Rotation", position:"Position"};
+
+function cycleEditChannel(){
+ editChannel = editChannel === "rotation" ? "position" : "rotation";
+ $("chLabel").textContent = CH_LABEL[editChannel];
+ syncXform();
+}
+
+/* kotak X/Y/Z di panel Edit: nilainya ngikut tab CFrame (Rotation/Position) yang aktif */
 function syncXform(){
  if(xformTyping) return; /* jangan timpa input yang lagi diketik */
  if(selection.size === 0) return;
- const ch = MODE_TO_CH[tc.getMode()];
  const ref = selectedBone && selection.has(selectedBone) ? selectedBone : [...selection][0];
- const v = getValue(ref, ch);
+ const v = getValue(ref, editChannel);
  $("axX").value = +v[0].toFixed(2);
  $("axY").value = +v[1].toFixed(2);
  $("axZ").value = +v[2].toFixed(2);
@@ -1095,7 +1253,7 @@ function applyXform(axis, raw){
  if(selection.size === 0) return;
  const n = parseFloat(raw);
  if(!isFinite(n)) return;
- const ch = MODE_TO_CH[tc.getMode()];
+ const ch = editChannel;
  selection.forEach(bone => {
   const v = getValue(bone, ch);
   v[axis] = n;
@@ -1125,10 +1283,32 @@ function writeAutoKeyFor(bone, ch){
  }
 }
 
+let handleStep = 0; /* 0 = gizmo halus/bebas; >0 = snap sekian stud (move) / sekian derajat (rotate) */
+
+function applyHandleStep(){
+ if(handleStep <= 0){
+  tc.setTranslationSnap(null);
+  tc.setRotationSnap(null);
+  return;
+ }
+ if(tc.getMode() === "translate"){
+  tc.setTranslationSnap(handleStep);
+  tc.setRotationSnap(null);
+ } else {
+  tc.setRotationSnap(THREE.MathUtils.degToRad(handleStep));
+  tc.setTranslationSnap(null);
+ }
+}
+
 function setMode(m){
  tc.setMode(m);
  document.querySelectorAll("[data-mode]").forEach(b => b.classList.toggle("active", b.dataset.mode === m));
+ /* ganti gizmo Move/Rotate juga nyamain tab CFrame yang ditampilin,
+    tapi panah < > di panel Edit tetap bisa override manual kapan aja */
+ editChannel = MODE_TO_CH[m];
+ $("chLabel").textContent = CH_LABEL[editChannel];
  syncXform();
+ applyHandleStep();
 }
 
 /* =========================================================
@@ -1531,6 +1711,32 @@ function frame(now){
 ========================================================= */
 const serialize = () => JSON.stringify({d:anim.duration, f:anim.fps, l:anim.loop, n:anim.name, p:anim.priority, t:anim.tracks});
 
+/* ========= autosave ke localStorage — ga butuh internet, cuma di HP ini ========= */
+const AUTOSAVE_KEY = "mizax_autosave_v1";
+let autosaveTimer = null;
+
+function buildSaveData(){
+ const nm = (anim.name.trim() || "MizaxAnimation");
+ return {format:"mizax-anim", version:1, name:nm, priority:anim.priority, look:look, duration:anim.duration, fps:anim.fps, loop:anim.loop, tracks:anim.tracks};
+}
+
+function scheduleAutosave(){
+ clearTimeout(autosaveTimer);
+ autosaveTimer = setTimeout(doAutosave, 900);
+}
+function doAutosave(){
+ try{
+  localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(buildSaveData()));
+  localStorage.setItem(AUTOSAVE_KEY + "_time", String(Date.now()));
+ }catch(e){ /* localStorage ga ada (mode privat dll) — ya udah, lewatin aja */ }
+}
+function clearAutosave(){
+ try{ localStorage.removeItem(AUTOSAVE_KEY); localStorage.removeItem(AUTOSAVE_KEY + "_time"); }catch(e){}
+}
+function readAutosave(){
+ try{ return localStorage.getItem(AUTOSAVE_KEY); }catch(e){ return null; }
+}
+
 function commit(){
  const s = serialize();
  if(s === hist[hi]) return;
@@ -1539,6 +1745,7 @@ function commit(){
  if(hist.length > 100) hist.shift();
  hi = hist.length - 1;
  updateHist();
+ scheduleAutosave();
 }
 function updateHist(){
  $("btnUndo").disabled = hi <= 0;
@@ -1570,11 +1777,12 @@ function newAnim(){
  time = 0; selKF = null;
  syncInputs(); buildTimeline(); applyPose();
  hist = [serialize()]; hi = 0; updateHist();
+ clearAutosave();
 }
 
 function saveAnim(){
  const nm = (anim.name.trim() || "MizaxAnimation");
- const data = {format:"mizax-anim", version:1, name:nm, priority:anim.priority, look:look, duration:anim.duration, fps:anim.fps, loop:anim.loop, tracks:anim.tracks};
+ const data = buildSaveData();
  const blob = new Blob([JSON.stringify(data, null, 1)], {type:"application/json"});
  const a = document.createElement("a");
  a.href = URL.createObjectURL(blob);
@@ -1797,7 +2005,7 @@ function initLookUI(){
  });
  $("faceApply").onclick = () => {
   const v = $("faceTxt").value.trim();
-  if(!v){ toast("Tulis wajahnya dulu"); return; }
+  if(!v){ toast("Type a face first"); return; }
   look.face = v; drawFace(); refreshLookUI();
  };
  $("faceCol").oninput = e => { look.faceColor = e.target.value; drawFace(); };
@@ -1826,6 +2034,19 @@ function initEditUI(){
   $("editPanel").classList.toggle("open");
   $("btnEdit").classList.toggle("active", $("editPanel").classList.contains("open"));
   if($("editPanel").classList.contains("open")){ updateMultiRow(); syncXform(); }
+ };
+ $("bMirror").onclick = mirrorSelected;
+ $("stepVal").addEventListener("input", e => {
+  handleStep = Math.max(0, parseFloat(e.target.value) || 0);
+  applyHandleStep();
+ });
+ $("chPrev").onclick = cycleEditChannel;
+ $("chNext").onclick = cycleEditChannel;
+ $("btnOnion").onclick = () => {
+  onionOn = !onionOn;
+  $("btnOnion").classList.toggle("active", onionOn);
+  updateOnion();
+  toast("Onion skin " + (onionOn ? "on — blue = before, orange = after" : "off"));
  };
 }
 
@@ -1881,7 +2102,7 @@ function setupUI(){
  $("btnSpace").onclick = () => {
   tc.setSpace(tc.space === "local" ? "world" : "local");
   updateSpaceBtn();
-  toast(tc.space === "local" ? "Local: handle ikut arah part" : "World: handle lurus sumbu dunia");
+  toast(tc.space === "local" ? "Local: handle follows the part's own orientation" : "World: handle aligned to world axes");
  };
  $("btnAuto").onclick = () => {
   autoKey = !autoKey;
@@ -1962,7 +2183,7 @@ function setupUI(){
   } else {
    defaultEase = n; defaultInterp = "smooth";
    updateSel();
-   toast("Ease " + n + " untuk keyframe baru");
+   toast("Ease " + n + " for new keyframes");
   }
  });
  $("dur").onchange = e => {
@@ -2063,6 +2284,19 @@ window.onload = () => {
  applyPose();
  hist = [serialize()]; hi = 0; updateHist();
  requestAnimationFrame(frame);
+
+ /* ada kerjaan tersimpan otomatis dari sesi sebelumnya? tawarin lanjut */
+ const saved = readAutosave();
+ if(saved){
+  setTimeout(() => {
+   if(confirm("There's auto-saved progress from a previous session. Resume it?")){
+    const ok = loadAnim(saved);
+    if(!ok) clearAutosave(); /* data korup/ga valid — buang biar ga nawarin mulu */
+   } else {
+    clearAutosave();
+   }
+  }, 50);
+ }
 };
 </script>
 </body>
