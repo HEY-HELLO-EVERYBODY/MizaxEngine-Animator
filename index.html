@@ -467,7 +467,7 @@ input[type=color]{width:64px;height:38px;padding:0;border:1px solid var(--line);
    <div class="editLbl">Select part (multiple allowed)</div>
    <div id="multiRow"></div>
 
-   <div class="editLbl">CFrame</div>
+   <div class="editLbl">CFrame <span style="color:var(--dim);font-weight:400">— note: Z is mirrored automatically on export, so a positive Z here still ends up correct in Roblox</span></div>
    <div id="cframeSwitch">
     <button id="chPrev">&lt;</button>
     <div id="chLabel">Rotation</div>
@@ -601,11 +601,11 @@ input[type=color]{width:64px;height:38px;padding:0;border:1px solid var(--line);
    <option value="name" selected>New Studio (text)</option>
    <option value="token">Legacy (numeric token)</option>
   </select></div>
- <div class="fr"><span>Flip axis<span class="hint">If the animation faces backward, check X and Z</span></span>
+ <div class="fr"><span>Flip axis<span class="hint">Z is locked on — this rig's front is +Z but Roblox's is -Z, confirmed by testing. X/Y only if something else still looks off</span></span>
   <div class="axes">
    <label><input type="checkbox" id="xFx">X</label>
    <label><input type="checkbox" id="xFy">Y</label>
-   <label><input type="checkbox" id="xFz" checked>Z</label>
+   <label><input type="checkbox" id="xFz" checked disabled>Z</label>
   </div></div>
  <div class="fr"><span>R6 joint axis fix<span class="hint">Adjusts rotation axes to match R6 Motor6D joints</span></span><input type="checkbox" id="xR6" checked></div>
  <div class="fr"><span>Position scale<span class="hint">Distance multiplier (studs)</span></span><input class="num" id="xScale" type="number" value="1" step="0.1"></div>
