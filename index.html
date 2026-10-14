@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>MizaxEngine Animator V2</title>
+<title>MizaxEngine Animator V2.5</title>
 
 <style>
 :root{
@@ -178,6 +178,12 @@ button:disabled{pointer-events:none}
  background:var(--bg);border:1px solid var(--line);
  padding:8px;font:700 12px ui-monospace,monospace;color:var(--accent);letter-spacing:.4px;
 }
+#cframeReadout{
+ font:11px ui-monospace,monospace;color:var(--dim);
+ margin:6px 0 10px;padding:7px 9px;
+ background:var(--bg);border:1px solid var(--line);
+}
+#cframeReadout b{color:var(--accent);font-weight:700}
 #editAxes{display:flex;gap:8px}
 #editAxes .tb{flex:none;padding:0 12px;font-size:12px}
 .exRow{flex:1;display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--line);padding:6px 8px}
@@ -402,6 +408,38 @@ select.sel{width:auto;padding:0 6px}
 .kfdot{position:absolute;top:50%;width:7px;height:7px;margin:-3px 0 0 -3px;background:#8a8a94;transform:rotate(45deg);pointer-events:none}
 
 input.txt,input.num{user-select:text;-webkit-user-select:text}
+/* ---- orientation gate (H/V picker) ---- */
+#orientGate{
+ position:fixed;inset:0;z-index:200;
+ display:none;align-items:center;justify-content:center;
+ background:#0a0a0c;padding:20px;
+}
+#orientGate.show{display:flex}
+.ogCard{width:min(100%,360px);text-align:center}
+.ogDot{width:10px;height:10px;background:var(--accent);margin:0 auto 18px}
+.ogCard h2{font-size:18px;margin:0 0 10px;color:#fff}
+.ogCard p{font-size:12.5px;color:var(--dim);line-height:1.6;margin:0 0 22px}
+.ogBtns{display:flex;gap:10px}
+.ogBtns button{
+ flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;
+ padding:22px 10px;background:var(--panel2);border:1px solid var(--line);
+ color:var(--text);font-size:13px;font-weight:600;cursor:pointer;
+}
+.ogBtns button:active{border-color:var(--accent);color:var(--accent)}
+
+/* ---- one-tap re-entry on return visits (gesture required by browser) ---- */
+#orientPrompt{
+ position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+ z-index:150;display:none;flex-direction:column;gap:6px;align-items:center;
+}
+#orientPrompt.show{display:flex}
+#orientPrompt button{
+ border:1px solid var(--line);color:#fff;font-size:12px;cursor:pointer;
+ padding:10px 16px;backdrop-filter:blur(8px);
+}
+#opGo{background:var(--accent);border-color:var(--accent);font-weight:700}
+#opSkip{background:rgba(20,23,30,.75);color:var(--dim);padding:6px 12px;font-size:11px}
+
 .modal{
  position:fixed;inset:0;z-index:100;
  display:none;align-items:center;justify-content:center;
@@ -470,7 +508,7 @@ input[type=color]{width:64px;height:38px;padding:0;border:1px solid var(--line);
    <div class="editLbl">CFrame <span style="color:var(--dim);font-weight:400">— note: Z is mirrored automatically on export, so a positive Z here still ends up correct in Roblox</span></div>
    <div id="cframeSwitch">
     <button id="chPrev">&lt;</button>
-    <div id="chLabel">Rotation</div>
+    <div id="chLabel">Orientation</div>
     <button id="chNext">&gt;</button>
    </div>
    <div id="editAxes">
@@ -479,6 +517,7 @@ input[type=color]{width:64px;height:38px;padding:0;border:1px solid var(--line);
     <div class="exRow"><label>Z</label><input type="number" id="axZ" step="0.05"></div>
     <button class="tb" id="bMirror" title="Copy this part's pose to its left/right pair">⇄ Mirror</button>
    </div>
+   <div id="cframeReadout">P(0, 0, 0)&nbsp;&nbsp;O(0, 0, 0)</div>
 
    <div class="editLbl">Handle Step — 0 = free/smooth, or set a value to snap (studs for Move, degrees for Rotate)</div>
    <div class="exRow" style="flex:none;width:140px">
@@ -555,8 +594,32 @@ input[type=color]{width:64px;height:38px;padding:0;border:1px solid var(--line);
  <button id="mConvert">Convert .json file to .rbxmx</button>
  <button id="mOpt">Export options</button>
  <button id="mHandle">Handle size: M</button>
+ <button id="mScreen">Screen: H / V</button>
  <button id="mReset">Reset selected part pose</button>
  <button id="mNew">New animation</button>
+</div>
+
+<div id="orientGate">
+ <div class="ogCard">
+  <div class="ogDot"></div>
+  <h2>Choose your layout</h2>
+  <p>Horizontal auto-rotates to landscape (like a video app). You can switch anytime from the ☰ menu.</p>
+  <div class="ogBtns">
+   <button data-v="h">
+    <svg viewBox="0 0 24 24" width="28" height="28"><rect x="2" y="7" width="20" height="10" rx="0" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+    Horizontal
+   </button>
+   <button data-v="v">
+    <svg viewBox="0 0 24 24" width="28" height="28"><rect x="7" y="2" width="10" height="20" rx="0" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+    Vertical
+   </button>
+  </div>
+ </div>
+</div>
+
+<div id="orientPrompt">
+ <button id="opGo">⤢ Tap to go Landscape</button>
+ <button id="opSkip">Stay vertical this time</button>
 </div>
 <div id="setModal" class="modal"><div class="card">
  <h3>Animation settings</h3>
@@ -1229,7 +1292,7 @@ function updateInfo(){
    dipindah pakai panah < >, independen dari mode gizmo (Move/Rotate) di
    top bar — biar ga bingung field-nya ganti-ganti pas gizmo dipindah. */
 let editChannel = "rotation";
-const CH_LABEL = {rotation:"Rotation", position:"Position"};
+const CH_LABEL = {rotation:"Orientation", position:"Position"};
 
 function cycleEditChannel(){
  editChannel = editChannel === "rotation" ? "position" : "rotation";
@@ -1239,9 +1302,18 @@ function cycleEditChannel(){
 
 /* kotak X/Y/Z di panel Edit: nilainya ngikut tab CFrame (Rotation/Position) yang aktif */
 function syncXform(){
- if(xformTyping) return; /* jangan timpa input yang lagi diketik */
  if(selection.size === 0) return;
  const ref = selectedBone && selection.has(selectedBone) ? selectedBone : [...selection][0];
+
+ /* readout gaya Roblox Studio: P(x,y,z) O(x,y,z) — selalu nunjukin
+    dua-duanya sekaligus, ga peduli tab mana yang lagi aktif */
+ const p = getValue(ref, "position"), o = getValue(ref, "rotation");
+ const f1 = n => (+n.toFixed(2));
+ $("cframeReadout").innerHTML =
+  "<b>P</b>(" + f1(p[0]) + ", " + f1(p[1]) + ", " + f1(p[2]) + ")&nbsp;&nbsp;" +
+  "<b>O</b>(" + f1(o[0]) + ", " + f1(o[1]) + ", " + f1(o[2]) + ")";
+
+ if(xformTyping) return; /* jangan timpa input yang lagi diketik */
  const v = getValue(ref, editChannel);
  $("axX").value = +v[0].toFixed(2);
  $("axY").value = +v[1].toFixed(2);
@@ -2029,6 +2101,52 @@ function initLookUI(){
  refreshLookUI();
 }
 /* panel Edit: non-modal, dorong layout turun, viewport tetap bisa dipakai */
+/* =========================================================
+   ORIENTATION GATE — Horizontal/Vertical choice, remembered.
+   Browsers only allow requestFullscreen()/orientation.lock()
+   from a direct tap, never automatically on page load — so a
+   returning "Horizontal" user gets a quick one-tap re-entry
+   prompt instead of a silent (and doomed-to-fail) auto-attempt.
+========================================================= */
+const ORIENT_KEY = "mizax_orient_pref";
+function readOrientPref(){ try{ return localStorage.getItem(ORIENT_KEY); }catch(e){ return null; } }
+function writeOrientPref(v){ try{ localStorage.setItem(ORIENT_KEY, v); }catch(e){} }
+
+async function goHorizontal(){
+ try{
+  if(document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
+  if(screen.orientation && screen.orientation.lock) await screen.orientation.lock("landscape");
+  toast("Locked to landscape");
+ }catch(e){
+  toast("Auto-rotate isn't supported here — turn your phone sideways");
+ }
+}
+function goVertical(){
+ try{ if(screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); }catch(e){}
+ try{ if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen(); }catch(e){}
+}
+
+function openOrientGate(){ $("orientPrompt").classList.remove("show"); $("orientGate").classList.add("show"); }
+function closeOrientGate(){ $("orientGate").classList.remove("show"); }
+
+function initOrientGate(){
+ document.querySelectorAll("#orientGate button[data-v]").forEach(b => {
+  b.onclick = () => {
+   writeOrientPref(b.dataset.v);
+   closeOrientGate();
+   if(b.dataset.v === "h") goHorizontal(); else goVertical();
+  };
+ });
+ $("mScreen").onclick = () => { $("menu").style.display = "none"; openOrientGate(); };
+ $("opGo").onclick = () => { $("orientPrompt").classList.remove("show"); goHorizontal(); };
+ $("opSkip").onclick = () => { $("orientPrompt").classList.remove("show"); };
+
+ const pref = readOrientPref();
+ if(pref === "h") $("orientPrompt").classList.add("show");
+ else if(pref === "v") { /* nothing to show, normal layout */ }
+ else openOrientGate(); /* first-ever visit */
+}
+
 function initEditUI(){
  $("btnEdit").onclick = () => {
   $("editPanel").classList.toggle("open");
@@ -2079,6 +2197,7 @@ function holdRepeat(btn, d){
 }
 
 function setupUI(){
+ initOrientGate();
  initLookUI();
  initSetUI();
  initEditUI();
