@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>MizaxEngine Animator V2.5</title>
+<title>MizaxEngine Animator V2.5.2</title>
 
 <style>
 :root{
@@ -510,6 +510,40 @@ input[type=color]{width:64px;height:38px;padding:0;border:1px solid var(--line);
 .col{display:block}
 .rowc{display:flex;gap:6px;align-items:center;margin-top:6px}
 .rowc .txt{flex:1;width:auto}
+
+/* =========================================================
+   V2.5.2 — landscape: timeline pindah ke kanan (side panel),
+   bukan di bawah. Portrait tetap seperti V2.5.
+========================================================= */
+#menu{max-height:calc(100dvh - 70px);overflow-y:auto}
+
+@media (orientation:landscape){
+ #app{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) clamp(270px,34vw,380px);
+  grid-template-rows:auto auto minmax(0,1fr);
+ }
+ #topbar{grid-column:1 / -1;grid-row:1}
+ #editPanel{grid-column:1;grid-row:2}
+ #viewport{grid-column:1;grid-row:3;min-height:0}
+ #timeline{
+  grid-column:2;grid-row:2 / span 2;
+  height:auto!important;
+  min-height:0;
+  border-top:0;
+  border-left:1px solid var(--line);
+  border-radius:0;
+  box-shadow:-8px 0 24px rgba(0,0,0,.35);
+ }
+ #timeline #tlHandle{display:none}
+ #timeline .bar{
+  height:auto;
+  flex-wrap:wrap;
+  overflow:visible;
+  row-gap:6px;
+ }
+ #timeline #tlScroll{flex:1;min-height:0}
+}
 </style>
 </head>
 
