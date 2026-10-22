@@ -93,7 +93,7 @@ button:disabled{pointer-events:none}
  white-space:nowrap;
 }
 .tb:active{filter:brightness(1.35);transform:scale(.93)}
-.tb.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.tb.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 1px rgba(229,48,58,.25),0 2px 10px rgba(229,48,58,.25)}
 .tb:disabled{opacity:.35}
 
 .sep{flex:none;width:1px;height:22px;background:var(--line);margin:0 5px}
@@ -128,7 +128,7 @@ button:disabled{pointer-events:none}
  cursor:pointer;
 }
 .chip:active{transform:scale(.93)}
-.chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 1px rgba(229,48,58,.25),0 2px 8px rgba(229,48,58,.3)}
 
 #info{
  position:absolute;
@@ -152,9 +152,36 @@ button:disabled{pointer-events:none}
  border-bottom:1px solid var(--line);
  transition:max-height .16s ease;
 }
-#editPanel.open{max-height:min(68vh,460px);overflow-y:auto}
-#editInner{padding:10px 10px 12px}
-.editLbl{font:700 10.5px ui-monospace,monospace;color:var(--dim);letter-spacing:.3px;margin:0 0 6px}
+#editPanel.open{max-height:min(54vh,300px);overflow-y:auto}
+#editInner{padding:4px 10px 12px}
+
+/* ---- paged nav: one section at a time instead of a long stacked scroll ---- */
+#editNav{
+ display:flex;align-items:center;gap:8px;
+ padding:8px 10px;border-bottom:1px solid var(--line);
+ background:linear-gradient(180deg,rgba(255,255,255,.025),transparent);
+}
+#editNav button{
+ flex:none;width:30px;height:30px;
+ background:var(--panel3);border:1px solid var(--line);color:var(--text);
+ font-size:15px;font-weight:700;cursor:pointer;
+}
+#editNav button:active{background:var(--accent);border-color:var(--accent);color:#fff}
+#epTitle{flex:1;display:flex;align-items:center;justify-content:center;gap:9px}
+#epTitle b{font:700 12.5px ui-monospace,monospace;color:var(--text);letter-spacing:.4px}
+#epDots{display:flex;gap:5px}
+#epDots i{width:5px;height:5px;background:var(--line);display:block}
+#epDots i.on{background:var(--accent);box-shadow:0 0 5px rgba(229,48,58,.9)}
+
+.editPage{display:none;padding-top:10px;animation:epIn .14s ease}
+.editPage.show{display:block}
+@keyframes epIn{from{opacity:0;transform:translateY(2px)}to{opacity:1;transform:translateY(0)}}
+
+.editLbl{
+ font:700 10.5px ui-monospace,monospace;color:var(--dim);letter-spacing:.3px;margin:0 0 8px;
+ padding-left:8px;border-left:2px solid var(--accent);
+}
+.dimnote{color:var(--dim);font-weight:400;letter-spacing:0;display:block;margin-top:3px;font-size:10px}
 #multiRow{display:flex;gap:6px;overflow-x:auto;padding-bottom:9px;margin-bottom:9px;border-bottom:1px solid var(--line)}
 .mchip{
  flex:none;
@@ -165,7 +192,7 @@ button:disabled{pointer-events:none}
  font-size:12px;
  cursor:pointer;
 }
-.mchip.sel{background:var(--accent);border-color:var(--accent);color:#fff}
+.mchip.sel{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 1px rgba(229,48,58,.25),0 2px 8px rgba(229,48,58,.3)}
 #cframeSwitch{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 #cframeSwitch button{
  flex:none;width:34px;height:34px;
@@ -255,7 +282,7 @@ button:disabled{pointer-events:none}
 /* ---------- timeline ---------- */
 #timeline{
  flex:none;
- height:310px;
+ height:210px;
  display:flex;
  flex-direction:column;
  background:var(--panel);
@@ -264,6 +291,11 @@ button:disabled{pointer-events:none}
  box-shadow:0 -8px 24px rgba(0,0,0,.4);
  position:relative;
  z-index:10;
+}
+/* landscape di HP itu pendek (~380-450px tinggi layarnya) — default lebih
+   kecil lagi biar viewport 3D ga ketutupan abis */
+@media (orientation:landscape) and (max-height:520px){
+ #timeline{height:150px}
 }
 #timeline.collapsed{height:auto!important}
 #timeline.collapsed .bar,#timeline.collapsed #tlScroll{display:none}
@@ -501,40 +533,58 @@ input[type=color]{width:64px;height:38px;padding:0;border:1px solid var(--line);
  </div>
 
  <div id="editPanel">
+  <div id="editNav">
+   <button id="epPrev">&lt;</button>
+   <div id="epTitle"><span id="epDots"></span><b id="epName">Select</b></div>
+   <button id="epNext">&gt;</button>
+  </div>
   <div id="editInner">
-   <div class="editLbl">Select part (multiple allowed)</div>
-   <div id="multiRow"></div>
 
-   <div class="editLbl">CFrame <span style="color:var(--dim);font-weight:400">— note: Z is mirrored automatically on export, so a positive Z here still ends up correct in Roblox</span></div>
-   <div id="cframeSwitch">
-    <button id="chPrev">&lt;</button>
-    <div id="chLabel">Orientation</div>
-    <button id="chNext">&gt;</button>
-   </div>
-   <div id="editAxes">
-    <div class="exRow"><label>X</label><input type="number" id="axX" step="0.05"></div>
-    <div class="exRow"><label>Y</label><input type="number" id="axY" step="0.05"></div>
-    <div class="exRow"><label>Z</label><input type="number" id="axZ" step="0.05"></div>
-    <button class="tb" id="bMirror" title="Copy this part's pose to its left/right pair">⇄ Mirror</button>
-   </div>
-   <div id="cframeReadout">P(0, 0, 0)&nbsp;&nbsp;O(0, 0, 0)</div>
-
-   <div class="editLbl">Handle Step — 0 = free/smooth, or set a value to snap (studs for Move, degrees for Rotate)</div>
-   <div class="exRow" style="flex:none;width:140px">
-    <label>⇥</label><input type="number" id="stepVal" value="0" min="0" step="0.01">
+   <div class="editPage" data-page="0">
+    <div class="editLbl">Select part (multiple allowed)</div>
+    <div id="multiRow"></div>
+    <div class="editHint" id="editHint"></div>
    </div>
 
-   <div class="editLbl">Camera view</div>
-   <div id="viewCube">
-    <button data-v="front" class="front">Front</button>
-    <button data-v="back">Back</button>
-    <button data-v="left">Left</button>
-    <button data-v="right">Right</button>
-    <button data-v="top">Top</button>
-    <button data-v="persp">3D</button>
+   <div class="editPage" data-page="1">
+    <div class="editLbl">CFrame <span class="dimnote">Z mirrors on export — positive Z here still ends up correct in Roblox</span></div>
+    <div id="cframeSwitch">
+     <button id="chPrev">&lt;</button>
+     <div id="chLabel">Orientation</div>
+     <button id="chNext">&gt;</button>
+    </div>
+    <div id="editAxes">
+     <div class="exRow"><label>X</label><input type="number" id="axX" step="0.05"></div>
+     <div class="exRow"><label>Y</label><input type="number" id="axY" step="0.05"></div>
+     <div class="exRow"><label>Z</label><input type="number" id="axZ" step="0.05"></div>
+     <button class="tb" id="bMirror" title="Copy this part's pose to its left/right pair">⇄ Mirror</button>
+    </div>
+    <div id="cframeReadout">P(0, 0, 0)&nbsp;&nbsp;O(0, 0, 0)</div>
    </div>
 
-   <div class="editHint" id="editHint"></div>
+   <div class="editPage" data-page="2">
+    <div class="editLbl">Handle Step <span class="dimnote">0 = free/smooth, or set a value to snap (studs for Move, degrees for Rotate)</span></div>
+    <div class="exRow" style="flex:none;width:140px">
+     <label>⇥</label><input type="number" id="stepVal" value="1" min="0" step="0.01">
+    </div>
+    <div class="editLbl">Handle Length — gizmo arrow size, sesuka hati</div>
+    <div class="exRow" style="flex:none;width:140px">
+     <label>↕</label><input type="number" id="lengthVal" value="2" min="0.5" max="6" step="0.1">
+    </div>
+   </div>
+
+   <div class="editPage" data-page="3">
+    <div class="editLbl">Camera view</div>
+    <div id="viewCube">
+     <button data-v="front" class="front">Front</button>
+     <button data-v="back">Back</button>
+     <button data-v="left">Left</button>
+     <button data-v="right">Right</button>
+     <button data-v="top">Top</button>
+     <button data-v="persp">3D</button>
+    </div>
+   </div>
+
   </div>
  </div>
 
@@ -568,14 +618,11 @@ input[type=color]{width:64px;height:38px;padding:0;border:1px solid var(--line);
 
   <div class="bar">
    <button class="tb" id="bKey">◆ Add key</button>
-   <select class="sel" id="interpSel">
-    <option value="linear">Linear</option>
-    <option value="smooth">Smooth</option>
-    <option value="step">Step</option>
-   </select>
-   <span class="lbl">Ease</span>
-   <div class="seg" id="easeSeg">
-    <button data-e="1">1</button><button data-e="2">2</button><button data-e="3">3</button><button data-e="4">4</button><button data-e="5">5</button>
+   <span class="lbl">Interpolation</span>
+   <select class="sel" id="interpSel"></select>
+   <span class="lbl">Direction</span>
+   <div class="seg" id="dirSeg">
+    <button data-d="In">In</button><button data-d="Out">Out</button><button data-d="InOut">InOut</button>
    </div>
    <button class="ib" id="bCopy" data-ic="copy"></button>
    <button class="ib" id="bPaste" data-ic="paste"></button>
@@ -701,13 +748,13 @@ const meshes = {}, pivots = {}, rest = {}, mats = {};
 let anim = { name:"MizaxAnimation", priority:"2", duration:2, fps:30, loop:true, tracks:{} };
 let time = 0, playing = false, speed = 1, zoom = 140;
 let selectedBone = null, selKF = null, clipboard = null, xformTyping = false;
-let autoKey = true, defaultInterp = "smooth", dragging = false;
+let autoKey = true, defaultStyle = "Cubic", defaultDirection = "InOut", dragging = false;
 let collapsed = new Set();
 let hist = [], hi = -1;
 let fileMode = "load";
 const HANDLE_SIZES = [1.4, 2.0, 2.7, 3.5], HANDLE_NAMES = ["S","M","L","XL"];
 let handleIdx = 1;
-let defaultEase = 3;
+
 const PARTS_COLOR = ["Torso","Head","Left Arm","Right Arm","Left Leg","Right Leg"];
 const DEFAULT_LOOK = {face:">v<", faceColor:"#111111", colors:{"Torso":"#00a2ff","Head":"#ffffff","Left Arm":"#cccccc","Right Arm":"#cccccc","Left Leg":"#cd2027","Right Leg":"#cd2027"}};
 let look = JSON.parse(JSON.stringify(DEFAULT_LOOK));
@@ -894,7 +941,7 @@ function initScene(){
  scene.background = new THREE.Color(0x121214);
 
  camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
- camera.position.set(7, 5, 9);
+ camera.position.set(4.6, 3.3, 5.9); /* lebih deket dari sebelumnya, rig keliatan lebih gede dari awal */
 
  renderer = new THREE.WebGLRenderer({antialias:true});
  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -911,9 +958,12 @@ function initScene(){
 
  orbit = new THREE.OrbitControls(camera, renderer.domElement);
  orbit.enableDamping = true;
- orbit.dampingFactor = 0.07;
+ orbit.dampingFactor = 0.18;   /* lebih tinggi dari sebelumnya (0.07) = ngerem lebih cepet, ga kesanlicin/geser-geser abis dilepas */
+ orbit.rotateSpeed = 0.55;     /* dikurangin dari default 1 biar muter kameranya ga terlalu sensitif */
+ orbit.zoomSpeed = 0.7;
+ orbit.panSpeed = 0.7;
  orbit.target.set(0, 1.2, 0);
- orbit.minDistance = 3;
+ orbit.minDistance = 2.2;
  orbit.maxDistance = 22;
 
 
@@ -1044,18 +1094,50 @@ function resetChannel(b, ch){
 }
 
 /* =========================================================
-   INTERPOLATION
+   INTERPOLATION — standar Penner easing, sama taksonominya kayak
+   Blockbench & Roblox EasingStyle/EasingDirection, jadi preview di
+   sini dan hasil akhir di Roblox nyambung 1:1.
 ========================================================= */
-const EASE_P = [0, 1.6, 2.0, 2.6, 3.2, 4.0];
-function easeT(k, level){
- const p = EASE_P[Math.max(1, Math.min(5, Math.round(level)))] || 2.6;
- const a = Math.pow(k, p), b = Math.pow(1 - k, p);
- return a / (a + b);
+const EASING_STYLES = ["Linear","Constant","Cubic","Sine","Quad","Quart","Quint","Exponential","Circular","Back","Bounce","Elastic"];
+const EASING_DIRECTIONS = ["In","Out","InOut"];
+
+/* tiap fungsi di bawah ini "In" — Out/InOut diturunin otomatis lewat applyDirection() */
+const EASE_IN = {
+ Linear:      t => t,
+ Constant:    t => 0, /* dihandle khusus di sample(), ga lewat sini */
+ Cubic:       t => t*t*t,
+ Sine:        t => 1 - Math.cos(t * Math.PI / 2),
+ Quad:        t => t*t,
+ Quart:       t => t*t*t*t,
+ Quint:       t => t*t*t*t*t,
+ Exponential: t => t === 0 ? 0 : Math.pow(2, 10*(t-1)),
+ Circular:    t => 1 - Math.sqrt(1 - t*t),
+ Back:        t => { const s = 1.70158; return t*t*((s+1)*t - s); },
+ Bounce:      t => 1 - bounceOutRaw(1 - t),
+ Elastic:     t => {
+  if(t === 0 || t === 1) return t;
+  const p = 0.3;
+  return -Math.pow(2, 10*(t-1)) * Math.sin((t-1-p/4) * (2*Math.PI) / p);
+ },
+};
+function bounceOutRaw(t){
+ if(t < 1/2.75) return 7.5625*t*t;
+ if(t < 2/2.75){ t -= 1.5/2.75; return 7.5625*t*t + 0.75; }
+ if(t < 2.5/2.75){ t -= 2.25/2.75; return 7.5625*t*t + 0.9375; }
+ t -= 2.625/2.75; return 7.5625*t*t + 0.984375;
 }
-function catmull(p0, p1, p2, p3, t){
- const t2 = t*t, t3 = t2*t;
- return 0.5 * ((2*p1) + (-p0 + p2)*t + (2*p0 - 5*p1 + 4*p2 - p3)*t2 + (-p0 + 3*p1 - 3*p2 + p3)*t3);
+
+function applyEasing(style, direction, t){
+ if(t <= 0) return 0;
+ if(t >= 1) return 1;
+ if(style === "Constant") return 0; /* step, dihandle di sample() */
+ const fn = EASE_IN[style] || EASE_IN.Linear;
+ if(direction === "In") return fn(t);
+ if(direction === "Out") return 1 - fn(1 - t);
+ /* InOut */
+ return t < 0.5 ? fn(2*t) / 2 : 1 - fn(2*(1-t)) / 2;
 }
+
 function sample(keys, t){
  const n = keys.length;
  if(!n) return null;
@@ -1065,8 +1147,9 @@ function sample(keys, t){
  while(i < n - 1 && keys[i+1].t <= t) i++;
  const a = keys[i], b = keys[i+1];
  const k = (t - a.t) / (b.t - a.t);
- if(a.interp === "step") return a.v.slice();
- const kk = a.interp === "smooth" ? easeT(k, a.ease || 3) : k;
+ const style = a.style || "Linear";
+ if(style === "Constant") return a.v.slice();
+ const kk = applyEasing(style, a.direction || "InOut", k);
  return a.v.map((x, j) => x + (b.v[j] - x) * kk);
 }
 
@@ -1347,7 +1430,7 @@ function writeAutoKeyFor(bone, ch){
   k.v = v;
   selKF = {bone, ch, key:k};
  } else {
-  k = {t, v, interp:defaultInterp, ease:defaultEase};
+  k = {t, v, style:defaultStyle, direction:defaultDirection};
   tr.keys.push(k);
   tr.keys.sort((a, b) => a.t - b.t);
   selKF = {bone, ch, key:k};
@@ -1355,7 +1438,7 @@ function writeAutoKeyFor(bone, ch){
  }
 }
 
-let handleStep = 0; /* 0 = gizmo halus/bebas; >0 = snap sekian stud (move) / sekian derajat (rotate) */
+let handleStep = 1; /* 0 = gizmo halus/bebas; >0 = snap sekian stud (move) / sekian derajat (rotate). Default 1, ga langsung full-halus. */
 
 function applyHandleStep(){
  if(handleStep <= 0){
@@ -1440,7 +1523,7 @@ function addKey(b, ch){
  let k = tr.keys.find(x => sameT(x.t, t));
  if(k) k.v = v;
  else {
-  k = {t, v, interp:defaultInterp, ease:defaultEase};
+  k = {t, v, style:defaultStyle, direction:defaultDirection};
   tr.keys.push(k);
   tr.keys.sort((a, c) => a.t - c.t);
  }
@@ -1461,7 +1544,7 @@ function deleteKey(){
 
 function copyKey(){
  if(!selKF){ toast("Select a keyframe first"); return; }
- clipboard = {bone:selKF.bone, ch:selKF.ch, v:selKF.key.v.slice(), interp:selKF.key.interp, ease:selKF.key.ease || 3};
+ clipboard = {bone:selKF.bone, ch:selKF.ch, v:selKF.key.v.slice(), style:selKF.key.style, direction:selKF.key.direction};
  updateSel();
  toast("Copied");
 }
@@ -1472,7 +1555,7 @@ function pasteKey(){
  const tr = anim.tracks[b][clipboard.ch];
  const t = snapT(time);
  tr.keys = tr.keys.filter(k => !sameT(k.t, t));
- const k = {t, v:clipboard.v.slice(), interp:clipboard.interp, ease:clipboard.ease || 3};
+ const k = {t, v:clipboard.v.slice(), style:clipboard.style, direction:clipboard.direction};
  tr.keys.push(k);
  tr.keys.sort((a, c) => a.t - c.t);
  tr.muted = false;
@@ -1638,7 +1721,7 @@ function renderKeys(){
 }
 
 function makeKf(b, ch, k){
- const e = el("div", "kf" + (k.interp === "smooth" ? " smooth" : k.interp === "step" ? " step" : ""));
+ const e = el("div", "kf" + (k.style === "Constant" ? " step" : k.style === "Linear" ? "" : " smooth"));
  e.style.left = (k.t * zoom) + "px";
  e._k = k;
  e.addEventListener("click", ev => ev.stopPropagation());
@@ -1691,9 +1774,10 @@ function updateSel(){
  $("bCopy").disabled = !has;
  $("bDel").disabled = !has;
  $("bPaste").disabled = !clipboard;
- $("interpSel").value = has ? selKF.key.interp : defaultInterp;
- const ez = has ? (selKF.key.ease || 3) : defaultEase;
- document.querySelectorAll("#easeSeg button").forEach(b => b.classList.toggle("active", +b.dataset.e === ez));
+ $("interpSel").value = has ? selKF.key.style : defaultStyle;
+ const dir = has ? selKF.key.direction : defaultDirection;
+ document.querySelectorAll("#dirSeg button").forEach(b => b.classList.toggle("active", b.dataset.d === dir));
+ $("dirSeg").classList.toggle("hide", $("interpSel").value === "Constant" || $("interpSel").value === "Linear");
  if(has){
   const lab = CHANNELS.find(c => c.id === selKF.ch).label;
   $("kfInfo").textContent = selKF.bone + " · " + lab + " @ " + selKF.key.t.toFixed(2) + "s";
@@ -1875,7 +1959,14 @@ function loadAnim(text){
     tracks[b][c.id].muted = !!src.muted;
     tracks[b][c.id].keys = src.keys
      .filter(k => typeof k.t === "number" && Array.isArray(k.v) && k.v.length === 3)
-     .map(k => ({t:k.t, v:k.v.map(Number), interp:["linear","smooth","step"].includes(k.interp) ? k.interp : "linear", ease:Math.max(1, Math.min(5, Math.round(+k.ease || 3)))}))
+     .map(k => {
+      let style = EASING_STYLES.includes(k.style) ? k.style : null;
+      let direction = EASING_DIRECTIONS.includes(k.direction) ? k.direction : "InOut";
+      if(!style){ /* file lama (interp/ease) */
+       style = k.interp === "step" ? "Constant" : k.interp === "smooth" ? "Cubic" : "Linear";
+      }
+      return {t:k.t, v:k.v.map(Number), style, direction};
+     })
      .sort((a, b) => a.t - b.t);
    }
   }));
@@ -1934,16 +2025,35 @@ function poseData(b, t, o){
  return {R:E, p:d};
 }
 
-function easingFor(b, t){
+/* PENTING: Roblox Pose/Keyframe pakai enum PoseEasingStyle, BUKAN
+   EasingStyle generik (yang dipakai Tween UI). PoseEasingStyle cuma
+   punya 5 anggota: Linear, Constant, Elastic, Bounce, CubicV2 — Sine,
+   Quad, Quart, Quint, Exponential, Circular, Back TIDAK ADA di situ.
+   Jadi 5 ini diekspor native (sama persis kayak preview), 7 sisanya
+   WAJIB di-bake (exportTimes di bawah) jadi banyak titik Linear kecil
+   yang ngikutin bentuk kurva aslinya. */
+const NATIVE_STYLE = {
+ Linear:   {num:0, name:"Linear"},
+ Constant: {num:1, name:"Constant"},
+ Elastic:  {num:2, name:"Elastic"},
+ Bounce:   {num:4, name:"Bounce"},
+ Cubic:    {num:5, name:"CubicV2"}, /* Cubic lama (3) sudah deprecated di Roblox, pakai CubicV2 */
+};
+const DIR_NUM = {In:0, Out:1, InOut:2};
+
+function easingFor(b, t, named){
  let best = null;
  ["rotation","position"].forEach(ch => {
   anim.tracks[b][ch].keys.forEach(k => {
    if(k.t <= t + 1e-4 && (!best || k.t > best.t + 1e-6)) best = k;
   });
  });
- const i = best ? best.interp : "linear";
- if(i === "step")   return {style:1, dir:2};
- return {style:0, dir:2};
+ const style = best ? (best.style || "Linear") : "Linear";
+ const dir = best ? (best.direction || "InOut") : "InOut";
+ const mapped = NATIVE_STYLE[style] || NATIVE_STYLE.Linear; /* style yang di-bake (Sine dkk) turun jadi Linear di titik asalnya, kurvanya sudah terwakili lewat titik-titik bakingnya */
+ return named
+  ? {style:mapped.name, dir:(DIR_NUM[dir] !== undefined ? dir : "InOut")}
+  : {style:mapped.num, dir:DIR_NUM[dir] !== undefined ? DIR_NUM[dir] : 2};
 }
 
 function exportTimes(o){
@@ -1954,7 +2064,7 @@ function exportTimes(o){
  BONES.forEach(b => CHANNELS.forEach(c => {
   const ks = anim.tracks[b][c.id].keys, step = 2 / anim.fps;
   for(let i = 0; i < ks.length - 1; i++){
-   if(ks[i].interp !== "smooth") continue;
+   if(NATIVE_STYLE[ks[i].style || "Linear"]) continue; /* style ini didukung native Roblox, ga perlu di-bake */
    for(let t = ks[i].t + step; t < ks[i+1].t - 1e-4 && t <= anim.duration + 1e-6; t += step) all.push(t);
   }
  }));
@@ -1979,16 +2089,15 @@ function buildRbxmx(o){
   '<R10>'+n(R[1][0])+'</R10><R11>'+n(R[1][1])+'</R11><R12>'+n(R[1][2])+'</R12>' +
   '<R20>'+n(R[2][0])+'</R20><R21>'+n(R[2][1])+'</R21><R22>'+n(R[2][2])+'</R22></CoordinateFrame>';
  const named = o.fmt === "name";
- const SN = {0:"Linear", 1:"Constant", 3:"Cubic"}, DN = {0:"In", 1:"Out", 2:"InOut"};
  const en = (style, dir) => named
-  ? '<string name="EasingDirection">'+DN[dir]+'</string><string name="EasingStyle">'+SN[style]+'</string>'
+  ? '<string name="EasingDirection">'+dir+'</string><string name="EasingStyle">'+style+'</string>'
   : '<token name="EasingDirection">'+dir+'</token><token name="EasingStyle">'+style+'</token>';
  const open = (name, w, style, dir, R, p) =>
   '<Item class="Pose" referent="'+ref()+'"><Properties><string name="Name">'+esc(name)+'</string>' +
   '<float name="Weight">'+w+'</float>' + (named ? '<bool name="Weighted">false</bool>' : '') +
   en(style, dir) + cf(R, p)+'</Properties>';
  const boneXml = (b, t) => {
-  const e = easingFor(b, t), d = poseData(b, t, o);
+  const e = easingFor(b, t, named), d = poseData(b, t, o);
   return open(b, 1, e.style, e.dir, d.R, d.p);
  };
 
@@ -2012,7 +2121,7 @@ function buildRbxmx(o){
   out.push('<Item class="Keyframe" referent="'+ref()+'"><Properties>' +
    (named ? '<bool name="IsPose">false</bool>' : '') +
    '<string name="Name">Keyframe</string><float name="Time">'+n(t)+'</float></Properties>');
-  out.push(open("HumanoidRootPart", named ? 1 : 0, 0, named ? 2 : 0, I3, [0,0,0]));
+  out.push(open("HumanoidRootPart", named ? 1 : 0, named ? "Linear" : 0, named ? "InOut" : 2, I3, [0,0,0]));
   out.push(boneXml("Torso", t));
   ["Head","Left Arm","Right Arm","Left Leg","Right Leg"].forEach(b => out.push(boneXml(b, t) + '</Item>'));
   out.push('</Item></Item>');   /* close Torso, HumanoidRootPart */
@@ -2147,7 +2256,27 @@ function initOrientGate(){
  else openOrientGate(); /* first-ever visit */
 }
 
+/* ---- Edit panel paging: one section visible at a time ---- */
+const EDIT_PAGES = ["Select", "CFrame", "Step", "View"];
+let editPage = 0;
+
+function buildEpDots(){
+ $("epDots").innerHTML = EDIT_PAGES.map((_, i) => '<i data-i="' + i + '"></i>').join("");
+}
+function showEditPage(i){
+ editPage = (i + EDIT_PAGES.length) % EDIT_PAGES.length;
+ document.querySelectorAll(".editPage").forEach(p => p.classList.toggle("show", +p.dataset.page === editPage));
+ document.querySelectorAll("#epDots i").forEach((d, i) => d.classList.toggle("on", i === editPage));
+ $("epName").textContent = EDIT_PAGES[editPage];
+}
+
 function initEditUI(){
+ buildEpDots();
+ showEditPage(0);
+ $("epPrev").onclick = () => showEditPage(editPage - 1);
+ $("epNext").onclick = () => showEditPage(editPage + 1);
+ document.querySelectorAll("#epDots i").forEach(d => d.onclick = () => showEditPage(+d.dataset.i));
+
  $("btnEdit").onclick = () => {
   $("editPanel").classList.toggle("open");
   $("btnEdit").classList.toggle("active", $("editPanel").classList.contains("open"));
@@ -2157,6 +2286,10 @@ function initEditUI(){
  $("stepVal").addEventListener("input", e => {
   handleStep = Math.max(0, parseFloat(e.target.value) || 0);
   applyHandleStep();
+ });
+ $("lengthVal").addEventListener("input", e => {
+  const v = Math.max(0.5, Math.min(6, parseFloat(e.target.value) || 2));
+  tc.setSize(v);
  });
  $("chPrev").onclick = cycleEditChannel;
  $("chNext").onclick = cycleEditChannel;
@@ -2285,24 +2418,30 @@ function setupUI(){
  $("bCopy").onclick = copyKey;
  $("bPaste").onclick = pasteKey;
  $("bDel").onclick = deleteKey;
+ EASING_STYLES.forEach(s => {
+  const opt = document.createElement("option");
+  opt.value = s; opt.textContent = s === "Cubic" ? "Cubic (Smooth)" : s;
+  $("interpSel").appendChild(opt);
+ });
+
  $("interpSel").onchange = e => {
   if(selKF){
-   selKF.key.interp = e.target.value;
+   selKF.key.style = e.target.value;
    applyPose(); renderKeys(); updateSel(); commit();
-  } else defaultInterp = e.target.value;
+  } else {
+   defaultStyle = e.target.value;
+   updateSel();
+  }
  };
 
- document.querySelectorAll("#easeSeg button").forEach(b => b.onclick = () => {
-  const n = +b.dataset.e;
+ document.querySelectorAll("#dirSeg button").forEach(b => b.onclick = () => {
+  const d = b.dataset.d;
   if(selKF){
-   selKF.key.ease = n;
-   selKF.key.interp = "smooth";
+   selKF.key.direction = d;
    applyPose(); renderKeys(); updateSel(); commit();
-   toast("Ease " + n);
   } else {
-   defaultEase = n; defaultInterp = "smooth";
+   defaultDirection = d;
    updateSel();
-   toast("Ease " + n + " for new keyframes");
   }
  });
  $("dur").onchange = e => {
