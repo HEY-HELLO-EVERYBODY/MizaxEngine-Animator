@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>MizaxEngine Animator V2.5.2</title>
+<title>MizaxEngine Animator V2.5.3</title>
 
 <style>
 :root{
@@ -543,6 +543,31 @@ input[type=color]{width:64px;height:38px;padding:0;border:1px solid var(--line);
   row-gap:6px;
  }
  #timeline #tlScroll{flex:1;min-height:0}
+}
+
+/* =========================================================
+   V2.5.3 — landscape: panel timeline di samping bisa di-scroll
+   (seluruh panel), dan area keyframe punya tinggi tetap supaya
+   bisa diedit. Portrait tidak berubah.
+========================================================= */
+@media (orientation:landscape){
+ #timeline{
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-y;
+  overscroll-behavior:contain;
+ }
+ #timeline > *{flex:none}
+ #timeline #tlHead{position:sticky;top:0;z-index:4;background:var(--panel)}
+ #timeline .bar{position:relative;z-index:3}
+ #timeline #tlScroll{
+  height:max(300px, calc(100dvh - 230px));
+  min-height:300px;
+  overflow:auto;
+  touch-action:pan-x pan-y;
+ }
+ #timeline .lab{width:110px}
 }
 </style>
 </head>
